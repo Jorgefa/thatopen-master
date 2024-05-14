@@ -1,12 +1,6 @@
 import * as React from 'react';
 
 export function ProjectsPage() {
-  // const tipStyle: React.CSSProperties = {
-  //   color: "gray",
-  //   fontSize: "var(--font-sm)",
-  //   marginTop: "5px",
-  //   fontStyle: "italic"
-  // }
   return (
     <div className="page" id="projects-page" style={{ display: "flex" }}>
       <dialog id="new-project-modal">
