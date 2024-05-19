@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { IProject, Project, ProjectStatus, UserRole } from '../classes/Project';
-import { ProjectsManager } from '../classes/ProjectsManager';
-import { ProjectCard } from './ProjectCard';
+import * as React from "react"
+import { IProject, Project, ProjectStatus, UserRole } from "../classes/Project";
+import { ProjectsManager } from "../classes/ProjectsManager";
+import { ProjectCard } from "./ProjectCard";
 
 export function ProjectsPage() {
   const [projectsManager] = React.useState(new ProjectsManager())
