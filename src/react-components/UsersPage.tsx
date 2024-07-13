@@ -4,42 +4,89 @@ import * as BUI from "@thatopen/ui"
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      'bim-button': any;
       'bim-grid': any;
     }
   }
 }
 
+const bimTable = BUI.Component.create<BUI.Table>(() => {
+  const onTableCreated = (element?: Element) => {
+    if (!element) return;
+    const table = element as BUI.Table;
+    table.data = [
+      {
+        data: {
+          name: "John Doe",
+          task: "Create Work Orders",
+          role: "Engineer",
+        },
+      },
+      {
+        data: {
+          name: "Jane Doe",
+          task: "Review Work Orders",
+          role: "Manager",
+        },
+      },
+    ]
+  }
+
+  return BUI.html `
+    <bim-table ${BUI.ref(onTableCreated)}></bim-table>
+  `
+})
+
+const contentPanel = BUI.Component.create<BUI.Panel>(() => {
+  return BUI.html `
+    <bim-panel style="border-radius: 0px">
+      <bim-panel-section label="Tasks">
+        ${bimTable}
+      </bim-panel-section>
+    </bim-panel> 
+  `;
+})
+
+const footerPanel = BUI.Component.create<BUI.Component>(() => {
+  const labelStyles = {
+    "color": "#ffffff",
+  }
+  return BUI.html `
+    <div style="display: flex; justify-content: center;">
+      <bim-label style=${BUI.styleMap(labelStyles)}>Copyright of That Contruction Company</bim-label>
+    </div>
+  `;
+})
+
+const sidebarPanel = BUI.Component.create<BUI.Component>(() => {
+  return BUI.html `
+    <div style="padding: 4px">
+      <bim-button label="Click Me"></bim-button>
+      <bim-button label="Export"></bim-button>
+    </div>
+  `;
+})
+
 export const gridLayout: BUI.Layouts = {
   primary: {
     template: `
       "header header header" 40px
-      "sidebar content content" 1fr
-      "footer footer footer" 40px
-      / 60px 1fr 1fr
+      "contentPanel contentPanel sidebarPanel" 1fr
+      "footerPanel footerPanel footerPanel" 40px
+      / 1fr 1fr 60px
     `,
     elements: {
       header: (() => {
-        const header = document.createElement("div");
-        header.style.backgroundColor = "#641b1b66";
-        return header;
+        const inputBox = BUI.Component.create<BUI.TextInput>(() => {
+          return BUI.html `
+            <bim-text-input style="padding: 8px" placeholder="Search"></bim-text-input>
+          `
+        })
+        return inputBox;
       })(),
-      sidebar: (() => {
-        const sidebar = document.createElement("div");
-        sidebar.style.backgroundColor = "#1b641b66";
-        return sidebar;
-      })(),
-      content: (() => {
-        const content = document.createElement("div");
-        content.style.backgroundColor = "#7D7D7D66";
-        return content;
-      })(),
-      footer: (() => {
-        const footer = document.createElement("div");
-        footer.style.backgroundColor = "#ff440066";
-        return footer;
-      })(),
-    }
+      sidebarPanel,
+      contentPanel,
+      footerPanel,
+    },
   }
 }
 
