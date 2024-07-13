@@ -26,5 +26,3 @@ export async function updateDocument<T extends Record<string, any>>(path: string
   const doc = Firestore.doc(firebaseDB, `${path}/${id}`)
   await Firestore.updateDoc(doc, data)
 }
-
-// updateDocument<Partial<IProject>>("/projects", "asdf", {name: "New Name"})
