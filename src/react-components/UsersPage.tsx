@@ -136,7 +136,6 @@ export function UsersPage() {
   }
 
   React.useEffect (() => {
-    BUI.Manager.init()
     const grid = document.getElementById("bimGrid") as BUI.Grid
     grid.layouts = gridLayout
     grid.layout = "primary"

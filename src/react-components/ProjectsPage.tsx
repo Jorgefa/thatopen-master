@@ -6,6 +6,7 @@ import { ProjectCard } from "./ProjectCard";
 import { SearchBox } from "./SearchBox";
 import { ProjectsManager } from "../classes/ProjectsManager";
 import { getCollection } from "../firebase";
+import * as BUI from "@thatopen/ui";
 
 interface Props {
   projectsManager: ProjectsManager
@@ -92,6 +93,19 @@ export function ProjectsPage(props: Props) {
     setProjects(props.projectsManager.filterProjects(value))
   }
 
+  const uploadBtn = document.getElementById("upload-btn")
+  if (uploadBtn) {
+    uploadBtn.addEventListener("click", onImportProject)
+  }
+  const downloadBtn = document.getElementById("download-btn")
+  if (downloadBtn) {
+    downloadBtn.addEventListener("click", onExportProject)
+  }
+  const newProjectBtn = document.getElementById("new-project-btn")
+  if (newProjectBtn) {
+    newProjectBtn.addEventListener("click", onNewProjectClick)
+  }
+
   return (
     <div className="page" id="projects-page" style={{ display: "flex" }}>
       <dialog id="new-project-modal">
@@ -176,26 +190,12 @@ export function ProjectsPage(props: Props) {
         </form>
       </dialog>
       <header>
-        <h2>Projects</h2>
+        <bim-label>Projects</bim-label>
         <SearchBox onChange={(value) => onProjectSearch(value)}/>
         <div style={{ display: "flex", alignItems: "center", columnGap: 15 }}>
-          <span
-            id="import-projects-btn"
-            className="material-icons-round action-icon"
-            onClick={onImportProject}
-          >
-            file_upload
-          </span>
-          <span
-            id="export-projects-btn"
-            className="material-icons-round action-icon"
-            onClick={onExportProject}
-          >
-            file_download
-          </span>
-          <button onClick={onNewProjectClick} id="new-project-btn">
-            <span className="material-icons-round">add</span>New Project
-          </button>
+          <bim-button id="upload-btn" icon="ic:round-upload"></bim-button>
+          <bim-button id="download-btn" icon="ic:round-download"></bim-button>
+          <bim-button id="new-project-btn" label="New Project" icon="fluent:add-20-regular"></bim-button>
         </div>
       </header>
       {
