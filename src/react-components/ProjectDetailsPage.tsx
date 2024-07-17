@@ -33,14 +33,6 @@ export function ProjectDetailsPage(props: Props) {
       }
     ]
   }
-
-  const deleteBtnRef = (element?: Element) => {
-    if (!element) return;
-    const deleteBtn = element as BUI.Button;
-    deleteBtn.addEventListener("click", () => {
-      props.projectsManager.deleteProject(project.id)
-    })
-  }
   
   return (
     <div className="page" id="project-details">
@@ -50,7 +42,7 @@ export function ProjectDetailsPage(props: Props) {
           <bim-label style={{ color: "#969696" }}>{project.description}</bim-label>
         </div>
         <div>
-          <bim-button label="Delete" icon="material-symbols:delete" ref={deleteBtnRef}></bim-button>
+          <bim-button label="Delete" icon="material-symbols:delete" onClick={() => props.projectsManager.deleteProject(project.id)} style={{backgroundColor: "red"}}></bim-button>
         </div>
       </header>
       <div className="main-page-content">

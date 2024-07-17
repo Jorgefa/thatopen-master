@@ -93,19 +93,6 @@ export function ProjectsPage(props: Props) {
     setProjects(props.projectsManager.filterProjects(value))
   }
 
-  const uploadBtn = document.getElementById("upload-btn")
-  if (uploadBtn) {
-    uploadBtn.addEventListener("click", onImportProject)
-  }
-  const downloadBtn = document.getElementById("download-btn")
-  if (downloadBtn) {
-    downloadBtn.addEventListener("click", onExportProject)
-  }
-  const newProjectBtn = document.getElementById("new-project-btn")
-  if (newProjectBtn) {
-    newProjectBtn.addEventListener("click", onNewProjectClick)
-  }
-
   return (
     <div className="page" id="projects-page" style={{ display: "flex" }}>
       <dialog id="new-project-modal">
@@ -193,9 +180,22 @@ export function ProjectsPage(props: Props) {
         <bim-label>Projects</bim-label>
         <SearchBox onChange={(value) => onProjectSearch(value)}/>
         <div style={{ display: "flex", alignItems: "center", columnGap: 15 }}>
-          <bim-button id="upload-btn" icon="ic:round-upload"></bim-button>
-          <bim-button id="download-btn" icon="ic:round-download"></bim-button>
-          <bim-button id="new-project-btn" label="New Project" icon="fluent:add-20-regular"></bim-button>
+          <bim-button 
+            id="upload-btn" 
+            icon="ic:round-upload"
+            onClick={onImportProject}
+          ></bim-button>
+          <bim-button 
+            id="download-btn" 
+            icon="ic:round-download"
+            onClick={onExportProject}
+          ></bim-button>
+          <bim-button 
+            id="new-project-btn" 
+            label="New Project" 
+            icon="fluent:add-20-regular" 
+            onClick={onNewProjectClick}
+          ></bim-button>
         </div>
       </header>
       {
