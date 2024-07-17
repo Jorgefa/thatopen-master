@@ -100,15 +100,13 @@ export function ProjectsPage(props: Props) {
           <h2>New Project</h2>
           <div className="input-list">
             <div className="form-field-container">
-              <label>
-                <span className="material-icons-round">apartment</span>Name
-              </label>
-              <input
-                name="name"
+              <bim-label icon="material-symbols:apartment" style={{ marginBottom: 5 }}>Name</bim-label>
+              <bim-text-input 
+                name="name" 
                 type="text"
                 placeholder="What's the name of your project?"
-              />
-              <p
+              ></bim-text-input>
+              <bim-label
                 style={{
                   color: "gray",
                   fontSize: "var(--font-sm)",
@@ -117,47 +115,38 @@ export function ProjectsPage(props: Props) {
                 }}
               >
                 TIP: Give it a short name
-              </p>
+              </bim-label>
             </div>
             <div className="form-field-container">
-              <label>
-                <span className="material-icons-round">subject</span>Description
-              </label>
+              <bim-label icon="material-symbols:subject" style={{ marginBottom: 5 }}>Description</bim-label>
               <textarea
                 name="description"
                 cols={30}
                 rows={5}
                 placeholder="Give your project a nice description! So people is jealous about it."
                 defaultValue={""}
+                style={{ background: "var(--bim-ui_bg-contrast-20)" }}
               />
             </div>
             <div className="form-field-container">
-              <label>
-                <span className="material-icons-round">person</span>Role
-              </label>
-              <select name="userRole">
-                <option>Architect</option>
-                <option>Engineer</option>
-                <option>Developer</option>
-              </select>
+              <bim-label icon="material-symbols:person" style={{ marginBottom: 5 }}>Role</bim-label>
+              <bim-dropdown name="userRole">
+                <bim-option label="Architect" checked></bim-option>
+                <bim-option label="Engineer"></bim-option>
+                <bim-option label="Developer"></bim-option>
+              </bim-dropdown>
             </div>
             <div className="form-field-container">
-              <label>
-                <span className="material-icons-round">not_listed_location</span>
-                Status
-              </label>
-              <select name="status">
-                <option>Pending</option>
-                <option>Active</option>
-                <option>Finished</option>
-              </select>
+              <bim-label icon="material-symbols:info" style={{ marginBottom: 5 }}>Status</bim-label>
+              <bim-dropdown name="status">
+                <bim-option label="Pending" checked></bim-option>
+                <bim-option label="Active"></bim-option>
+                <bim-option label="Finished"></bim-option>
+              </bim-dropdown>
             </div>
             <div className="form-field-container">
-              <label htmlFor="finishDate">
-                <span className="material-icons-round">calendar_month</span>
-                Finish Date
-              </label>
-              <input name="finishDate" type="date" />
+              <bim-label icon="mdi:calendar" style={{ marginBottom: 5 }}>Finish Date</bim-label>
+              <bim-text-input type="date" name="finishDate"></bim-text-input>
             </div>
             <div
               style={{
@@ -166,12 +155,14 @@ export function ProjectsPage(props: Props) {
                 columnGap: 10
               }}
             >
-              <button type="button" style={{ backgroundColor: "transparent" }}>
-                Cancel
-              </button>
-              <button type="submit" style={{ backgroundColor: "rgb(18, 145, 18)" }}>
-                Accept
-              </button>
+              <bim-button type="button" label="Cancel" 
+                onClick={() => { 
+                  const modal = document.getElementById("new-project-modal")
+                  if (!(modal && modal instanceof HTMLDialogElement)) {return}
+                  modal.close()
+                }}
+              ></bim-button>
+              <bim-button type="submit" name="submit" label="Accept" style={{ backgroundColor: "rgb(18, 145, 18)" }}></bim-button>
             </div>
           </div>
         </form>

@@ -19,6 +19,8 @@ declare global {
       "bim-panel": any;
       "bim-panel-section": any;
       "bim-table": any;
+      "bim-dropdown": any;
+      "bim-option": any;
     }
   }
 }
