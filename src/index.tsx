@@ -21,6 +21,10 @@ declare global {
       "bim-table": any;
       "bim-dropdown": any;
       "bim-option": any;
+      "bim-toolbar": any;
+      "bim-toolbar-section": any;
+      "bim-toolbar-group": any;
+      "bim-viewport": any;
     }
   }
 }

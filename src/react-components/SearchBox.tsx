@@ -14,7 +14,14 @@ export function SearchBox(props: Props) {
   }
 
   return (
-    <div style={{ display: "flex", alignItems: "center", columnGap: 10, width: "40%" }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        columnGap: 10,
+        width: "40%",
+      }}
+    >
       <bim-text-input placeholder="Search" id="search-input"></bim-text-input>
     </div>
   )

@@ -1,0 +1,106 @@
+import * as React from "react";
+import * as OBC from "@thatopen/components";
+import * as BUI from "@thatopen/ui";
+import * as CUI from "@thatopen/ui-obc";
+
+export function IFCViewer() {
+  let viewer: OBC.Components
+
+  const setViewer = () => {
+    viewer = new OBC.Components()
+  
+    const worlds = viewer.get(OBC.Worlds)
+
+    const world = worlds.create<
+      OBC.SimpleScene,
+      OBC.SimpleCamera,
+      OBC.SimpleRenderer
+    >()
+
+    const sceneComponent = new OBC.SimpleScene(viewer)
+    world.scene = sceneComponent
+    world.scene.setup()
+
+    const viewerContainer = document.getElementById("viewer-container") as HTMLElement
+    const rendererComponent = new OBC.SimpleRenderer(viewer, viewerContainer)
+    world.renderer = rendererComponent
+
+    const cameraComponent = new OBC.OrthoPerspectiveCamera(viewer)
+    world.camera = cameraComponent
+    
+    viewer.init()
+
+    world.camera.controls.setLookAt(3, 3, 3, 0, 0, 0)
+    world.camera.updateAspect()
+
+    const ifcLoader = new OBC.IfcLoader(viewer)
+    ifcLoader.setup()
+
+    const fragmentsManager = viewer.get(OBC.FragmentsManager);
+    fragmentsManager.onFragmentsLoaded.add((model) => {
+      world.scene.three.add(model);
+    });
+
+    viewerContainer.addEventListener("resize", () => {
+      rendererComponent.resize();
+      cameraComponent.updateAspect();
+    });
+  }
+
+  const setUI = () => {
+    const viewerContainer = document.getElementById("viewer-container") as HTMLElement
+    if (!viewerContainer) return
+
+    const floatingGrid = BUI.Component.create<BUI.Grid>(() => {
+      return BUI.html`
+        <bim-grid floating style="padding: 20px;"></bim-grid>
+      `;
+    });
+
+    const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
+      const [loadIfcBtn] = CUI.buttons.loadIfc({ components: viewer });
+      return BUI.html`
+        <bim-toolbar style="justify-self: center;">
+          <bim-toolbar-section>
+            ${loadIfcBtn}
+          </bim-toolbar-section>
+        </bim-toolbar>
+      `;
+    });
+
+    floatingGrid.layouts = {
+      main: {
+        template: `
+          "empty" 1fr
+          "toolbar" auto
+          /1fr
+        `,
+        elements: { toolbar },
+      },
+    }
+    floatingGrid.layout = "main"
+
+    viewerContainer.appendChild(floatingGrid)
+  }
+
+  React.useEffect(() => {
+    setViewer()
+    setUI()
+
+    return () => {
+      // if (viewer) {
+      //   viewer.dispose()
+      // } 
+      const viewerContainer = document.getElementById("viewer-container")
+      if (viewerContainer) {
+        viewerContainer.innerHTML = ""
+      }
+    }
+  }, [])
+
+  return (
+    <bim-viewport
+      id="viewer-container"
+    />
+  )
+}
