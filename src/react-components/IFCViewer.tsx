@@ -4,12 +4,12 @@ import * as BUI from "@thatopen/ui";
 import * as CUI from "@thatopen/ui-obc";
 
 export function IFCViewer() {
-  let viewer: OBC.Components
+  let components: OBC.Components
 
   const setViewer = () => {
-    viewer = new OBC.Components()
+    components = new OBC.Components()
   
-    const worlds = viewer.get(OBC.Worlds)
+    const worlds = components.get(OBC.Worlds)
 
     const world = worlds.create<
       OBC.SimpleScene,
@@ -17,26 +17,26 @@ export function IFCViewer() {
       OBC.SimpleRenderer
     >()
 
-    const sceneComponent = new OBC.SimpleScene(viewer)
+    const sceneComponent = new OBC.SimpleScene(components)
     world.scene = sceneComponent
     world.scene.setup()
 
     const viewerContainer = document.getElementById("viewer-container") as HTMLElement
-    const rendererComponent = new OBC.SimpleRenderer(viewer, viewerContainer)
+    const rendererComponent = new OBC.SimpleRenderer(components, viewerContainer)
     world.renderer = rendererComponent
 
-    const cameraComponent = new OBC.OrthoPerspectiveCamera(viewer)
+    const cameraComponent = new OBC.OrthoPerspectiveCamera(components)
     world.camera = cameraComponent
     
-    viewer.init()
+    components.init()
 
     world.camera.controls.setLookAt(3, 3, 3, 0, 0, 0)
     world.camera.updateAspect()
 
-    const ifcLoader = new OBC.IfcLoader(viewer)
+    const ifcLoader = new OBC.IfcLoader(components)
     ifcLoader.setup()
 
-    const fragmentsManager = viewer.get(OBC.FragmentsManager);
+    const fragmentsManager = components.get(OBC.FragmentsManager);
     fragmentsManager.onFragmentsLoaded.add((model) => {
       world.scene.three.add(model);
     });
@@ -58,7 +58,7 @@ export function IFCViewer() {
     });
 
     const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
-      const [loadIfcBtn] = CUI.buttons.loadIfc({ components: viewer });
+      const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components });
       return BUI.html`
         <bim-toolbar style="justify-self: center;">
           <bim-toolbar-section>
