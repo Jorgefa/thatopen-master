@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as OBC from "@thatopen/components";
+import * as OBCF from "@thatopen/components-front";
 import * as BUI from "@thatopen/ui";
 import * as CUI from "@thatopen/ui-obc";
 
@@ -40,6 +41,9 @@ export function IFCViewer() {
     fragmentsManager.onFragmentsLoaded.add((model) => {
       world.scene.three.add(model);
     });
+
+    const highlighter = components.get(OBCF.Highlighter);
+    highlighter.setup({ world });
 
     viewerContainer.addEventListener("resize", () => {
       rendererComponent.resize();
