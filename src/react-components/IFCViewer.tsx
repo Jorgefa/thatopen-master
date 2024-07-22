@@ -44,6 +44,7 @@ export function IFCViewer() {
 
     const highlighter = components.get(OBCF.Highlighter);
     highlighter.setup({ world });
+    highlighter.zoomToSelection = true;
 
     viewerContainer.addEventListener("resize", () => {
       rendererComponent.resize();
