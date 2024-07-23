@@ -39,17 +39,50 @@ export function IFCViewer() {
 
     const fragmentsManager = components.get(OBC.FragmentsManager);
     fragmentsManager.onFragmentsLoaded.add((model) => {
-      world.scene.three.add(model);
-    });
+      world.scene.three.add(model)
+    })
 
     const highlighter = components.get(OBCF.Highlighter);
-    highlighter.setup({ world });
+    highlighter.setup({ world })
     highlighter.zoomToSelection = true;
 
     viewerContainer.addEventListener("resize", () => {
-      rendererComponent.resize();
-      cameraComponent.updateAspect();
-    });
+      rendererComponent.resize()
+      cameraComponent.updateAspect()
+    })
+  }
+
+  const onToggleVisibility = () => {
+    const highlighter = components.get(OBCF.Highlighter)
+    const fragments = components.get(OBC.FragmentsManager)
+
+    const selection = highlighter.selection.select
+    if (Object.keys(selection).length === 0) return;
+    for (const fragmentID in selection) {  
+      const fragment = fragments.list.get(fragmentID)
+      const expressIDs = selection[fragmentID]
+      for (const id of expressIDs) {
+        if (!fragment) continue
+        const isHidden = fragment.hiddenItems.has(id)
+        if (isHidden) {
+          fragment.setVisibility(true, [id])
+        } else {
+          fragment.setVisibility(false, [id])
+        }
+      }
+    }
+  }
+
+  const onIsolate = () => {
+    const highlighter = components.get(OBCF.Highlighter)
+    const hider = components.get(OBC.Hider)
+    const selection = highlighter.selection.select
+    hider.isolate(selection)
+  };
+
+  const onShowAll = () => {
+    const hider = components.get(OBC.Hider)
+    hider.set(true)
   }
 
   const setUI = () => {
@@ -59,19 +92,36 @@ export function IFCViewer() {
     const floatingGrid = BUI.Component.create<BUI.Grid>(() => {
       return BUI.html`
         <bim-grid floating style="padding: 20px;"></bim-grid>
-      `;
-    });
+      `
+    })
 
     const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
       const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components });
       return BUI.html`
         <bim-toolbar style="justify-self: center;">
-          <bim-toolbar-section>
+          <bim-toolbar-section label="Import">
             ${loadIfcBtn}
           </bim-toolbar-section>
+          <bim-toolbar-section label="Selection">
+            <bim-button 
+              label="Visibility" 
+              icon="tabler:square-toggle" 
+              @click=${onToggleVisibility}
+            ></bim-button>
+            <bim-button
+              label="Isolate"
+              icon="prime:filter-fill"
+              @click=${onIsolate}
+            ></bim-button>
+            <bim-button
+              label="Show All"
+              icon="tabler:eye-filled"
+              @click=${onShowAll}
+            ></bim-button>
+          </bim-toolbar-section>
         </bim-toolbar>
-      `;
-    });
+      `
+    })
 
     floatingGrid.layouts = {
       main: {
