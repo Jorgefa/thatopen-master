@@ -33,7 +33,7 @@ export function IFCViewer() {
     world.camera.controls.setLookAt(3, 3, 3, 0, 0, 0)
     world.camera.updateAspect()
 
-    const ifcLoader = new OBC.IfcLoader(components)
+    const ifcLoader = components.get(OBC.IfcLoader)
     ifcLoader.setup()
 
     const fragmentsManager = components.get(OBC.FragmentsManager);
@@ -88,9 +88,9 @@ export function IFCViewer() {
     setUI()
 
     return () => {
-      // if (viewer) {
-      //   viewer.dispose()
-      // } 
+      if (components) {
+        components.dispose()
+      } 
       const viewerContainer = document.getElementById("viewer-container")
       if (viewerContainer) {
         viewerContainer.innerHTML = ""
