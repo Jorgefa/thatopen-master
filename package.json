@@ -18,7 +18,7 @@
     "vite": "^4.4.10"
   },
   "dependencies": {
-    "@thatopen/components": "2.1.9",
+    "@thatopen/components": "2.1.19",
     "@thatopen/ui": "2.1.3",
     "firebase": "10.5.2",
     "react": "18.2.0",
