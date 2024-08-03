@@ -175,7 +175,7 @@ export function IFCViewer() {
     return () => {
       if (components) {
         components.dispose()
-      } 
+      }
       const viewerContainer = document.getElementById("viewer-container")
       if (viewerContainer) {
         viewerContainer.innerHTML = ""
