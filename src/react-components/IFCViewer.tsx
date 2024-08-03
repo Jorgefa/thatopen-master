@@ -3,8 +3,10 @@ import * as OBC from "@thatopen/components";
 import * as OBCF from "@thatopen/components-front";
 import * as BUI from "@thatopen/ui";
 import * as CUI from "@thatopen/ui-obc";
+import { FragmentsGroup } from "@thatopen/fragments";
 
 export function IFCViewer() {
+  let fragmentModel: FragmentsGroup | undefined
   let components: OBC.Components
 
   const setViewer = () => {
@@ -38,8 +40,14 @@ export function IFCViewer() {
     ifcLoader.setup()
 
     const fragmentsManager = components.get(OBC.FragmentsManager);
-    fragmentsManager.onFragmentsLoaded.add((model) => {
+    fragmentsManager.onFragmentsLoaded.add(async (model) => {
+      
       world.scene.three.add(model)
+
+      const indexer = components.get(OBC.IfcRelationsIndexer)
+      await indexer.process(model)
+
+      fragmentModel = model
     })
 
     const highlighter = components.get(OBCF.Highlighter);
@@ -85,6 +93,21 @@ export function IFCViewer() {
     hider.set(true)
   }
 
+  const onShowProperties = () => {
+    if (!fragmentModel) return
+
+    const indexer = components.get(OBC.IfcRelationsIndexer)
+    const highlighter = components.get(OBCF.Highlighter)
+    const selection = highlighter.selection.select
+    for (const fragmentID in selection) {
+      const expressIDs = selection[fragmentID]
+      for (const id of expressIDs) {
+        const psets = indexer.getEntityRelations(fragmentModel, id, "IsDefinedBy")
+        console.log(psets)
+      }
+    }
+  }
+
   const setUI = () => {
     const viewerContainer = document.getElementById("viewer-container") as HTMLElement
     if (!viewerContainer) return
@@ -119,6 +142,13 @@ export function IFCViewer() {
               @click=${onShowAll}
             ></bim-button>
           </bim-toolbar-section>
+          <bim-toolbar-section label="Property">
+            <bim-button
+              label="Show"
+              icon="material-symbols:list"
+              @click=${onShowProperties}
+            ></bim-button>
+          </bim-toolbar-section>
         </bim-toolbar>
       `
     })
@@ -149,6 +179,10 @@ export function IFCViewer() {
       const viewerContainer = document.getElementById("viewer-container")
       if (viewerContainer) {
         viewerContainer.innerHTML = ""
+      }
+      if (fragmentModel) {
+        fragmentModel.dispose()
+        fragmentModel = undefined
       }
     }
   }, [])
