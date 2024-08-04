@@ -13,7 +13,7 @@ export function IFCViewer() {
 
     const world = worlds.create<
       OBC.SimpleScene,
-      OBC.SimpleCamera,
+      OBC.OrthoPerspectiveCamera,
       OBC.SimpleRenderer
     >()
 
