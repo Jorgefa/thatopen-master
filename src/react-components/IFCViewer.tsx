@@ -14,8 +14,8 @@ export function IFCViewer() {
 
     const world = worlds.create<
       OBC.SimpleScene,
-      OBC.SimpleCamera,
-      OBC.SimpleRenderer
+      OBC.OrthoPerspectiveCamera,
+      OBCF.PostproductionRenderer
     >()
 
     const sceneComponent = new OBC.SimpleScene(components)
@@ -23,7 +23,7 @@ export function IFCViewer() {
     world.scene.setup()
 
     const viewerContainer = document.getElementById("viewer-container") as HTMLElement
-    const rendererComponent = new OBC.SimpleRenderer(components, viewerContainer)
+    const rendererComponent = new OBCF.PostproductionRenderer(components, viewerContainer)
     world.renderer = rendererComponent
 
     const cameraComponent = new OBC.OrthoPerspectiveCamera(components)
