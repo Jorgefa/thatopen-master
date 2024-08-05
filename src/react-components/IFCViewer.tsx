@@ -93,7 +93,7 @@ export function IFCViewer() {
     hider.set(true)
   }
 
-  const onShowProperties = () => {
+  const onShowProperties = async () => {
     if (!fragmentModel) return
 
     const indexer = components.get(OBC.IfcRelationsIndexer)
@@ -103,7 +103,13 @@ export function IFCViewer() {
       const expressIDs = selection[fragmentID]
       for (const id of expressIDs) {
         const psets = indexer.getEntityRelations(fragmentModel, id, "IsDefinedBy")
-        console.log(psets)
+
+        if (psets) {
+          for (const expressId of psets) {
+            const prop = await fragmentModel.getProperties(expressId)
+            console.log(prop)
+          }
+        }
       }
     }
   }
@@ -116,6 +122,41 @@ export function IFCViewer() {
       return BUI.html`
         <bim-grid floating style="padding: 20px;"></bim-grid>
       `
+    })
+
+    const elementPropertyPanel = BUI.Component.create<BUI.Panel>(() => {
+      const [propsTable, updatePropsTable] = CUI.tables.elementProperties({
+        components,
+        fragmentIdMap: {},
+      });
+
+      const highlighter = components.get(OBCF.Highlighter)
+      highlighter.events.select.onHighlight.add((fragmentIdMap) => {
+        if (!floatingGrid) return
+        floatingGrid.layout = "second"
+        updatePropsTable({ fragmentIdMap })
+        propsTable.expanded = false
+      })
+
+      highlighter.events.select.onClear.add(() => {
+        updatePropsTable({ fragmentIdMap: {} })
+        if (!floatingGrid) return
+        floatingGrid.layout = "main"
+      })
+
+      const search = (e: Event) => {
+        const input = e.target as BUI.TextInput
+        propsTable.queryString = input.value
+      }
+
+      return BUI.html`
+        <bim-panel>
+          <bim-panel-section name="property" label="Property Information" icon="solar:document-bold" fixed>
+            <bim-text-input @input=${search} placeholder="Search..."></bim-text-input>
+            ${propsTable}
+          </bim-panel-section>
+        </bim-panel>  
+      `;
     })
 
     const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
@@ -161,6 +202,17 @@ export function IFCViewer() {
           /1fr
         `,
         elements: { toolbar },
+      },
+      second: {
+        template: `
+          "empty elementPropertyPanel" 1fr
+          "toolbar toolbar" auto
+          /1fr 20rem
+        `,
+        elements: { 
+          toolbar,
+          elementPropertyPanel
+        },
       },
     }
     floatingGrid.layout = "main"
