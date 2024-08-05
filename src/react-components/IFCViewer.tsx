@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as WEBIFC from "web-ifc";
 import * as OBC from "@thatopen/components";
 import * as OBCF from "@thatopen/components-front";
 import * as BUI from "@thatopen/ui";
@@ -8,6 +9,8 @@ import { FragmentsGroup } from "@thatopen/fragments";
 export function IFCViewer() {
   let fragmentModel: FragmentsGroup | undefined
   let components: OBC.Components
+
+  const [classes, setClasses] = React.useState<any>([])
 
   const setViewer = () => {
     components = new OBC.Components()
@@ -47,7 +50,15 @@ export function IFCViewer() {
       const indexer = components.get(OBC.IfcRelationsIndexer)
       await indexer.process(model)
 
+      const classifier = components.get(OBC.Classifier)
+      classifier.byEntity(model)
+      classifier.byIfcRel(model, WEBIFC.IFCRELCONTAINEDINSPATIALSTRUCTURE, "storeys")
+      classifier.byModel(model.uuid, model)
+
       fragmentModel = model
+
+      const cc = [1, 0, 0]
+      setClasses(cc)
     })
 
     const highlighter = components.get(OBCF.Highlighter);
@@ -114,6 +125,16 @@ export function IFCViewer() {
     }
   }
 
+  const onClassifier = () => {
+    const floatingGrid = document.querySelector("bim-grid") as BUI.Grid
+    if (!floatingGrid) return
+    if (floatingGrid.layout !== "classifier") {
+      floatingGrid.layout = "classifier"
+    } else {
+      floatingGrid.layout = "main"
+    }
+  }
+
   const setUI = () => {
     const viewerContainer = document.getElementById("viewer-container") as HTMLElement
     if (!viewerContainer) return
@@ -159,6 +180,21 @@ export function IFCViewer() {
       `;
     })
 
+    const classifierPanel = BUI.Component.create<BUI.Panel>(() => {
+      return BUI.html`
+        <bim-panel>
+          <bim-panel-section 
+            name="classifier" 
+            label="Classifier" 
+            icon="solar:document-bold" 
+            fixed
+          >
+            <span>Classes: ${classes}</span>
+          </bim-panel-section>
+        </bim-panel>
+      `;
+    })
+
     const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
       const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components });
       return BUI.html`
@@ -181,6 +217,11 @@ export function IFCViewer() {
               label="Show All"
               icon="tabler:eye-filled"
               @click=${onShowAll}
+            ></bim-button>
+            <bim-button
+              label="Classifier"
+              icon="tabler:eye-filled"
+              @click=${onClassifier}
             ></bim-button>
           </bim-toolbar-section>
           <bim-toolbar-section label="Property">
@@ -212,6 +253,17 @@ export function IFCViewer() {
         elements: { 
           toolbar,
           elementPropertyPanel
+        },
+      },
+      classifier: {
+        template: `
+          "empty classifierPanel" 1fr
+          "toolbar toolbar" auto
+          /1fr 20rem
+        `,
+        elements: { 
+          toolbar,
+          classifierPanel
         },
       },
     }
