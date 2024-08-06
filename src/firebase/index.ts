@@ -10,9 +10,9 @@ const firebaseConfig = {
   appId: "1:614427913592:web:01985bb027ba89c8a0ac8d"
 };
 
-const app = initializeApp(firebaseConfig);
-export const firebaseDB = Firestore.getFirestore(app);
+const app = initializeApp(firebaseConfig)
+export const firestoreDB = Firestore.getFirestore()
 
 export function getCollection<T>(path: string) {
-  return Firestore.collection(firebaseDB, path)as Firestore.CollectionReference<T>
+  return Firestore.collection(firestoreDB, path) as Firestore.CollectionReference<T>
 }

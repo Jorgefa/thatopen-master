@@ -11,7 +11,7 @@ interface Props {
   projectsManager: ProjectsManager
 }
 
-const projectsCollection = getCollection<IProject>("projects")
+const projectsCollection = getCollection<IProject>("/projects")
 
 export function ProjectsPage(props: Props) {
 
