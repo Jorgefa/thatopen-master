@@ -19,7 +19,6 @@ export function ProjectDetailsPage(props: Props) {
     await deleteDocument("/projects", id)
     navigateTo("/")
   }
-  
   return (
     <div className="page" id="project-details">
       <header>
