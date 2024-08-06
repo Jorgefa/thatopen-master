@@ -68,20 +68,8 @@ export function UsersPage() {
     `;
   })
   
-  const footer = BUI.Component.create<BUI.Component>(() => {
-    const labelStyles = {
-      "color": "#ffffff",
-    }
-    return BUI.html `
-      <div style="display: flex; justify-content: center;">
-        <bim-label style=${BUI.styleMap(labelStyles)}>Copyright of That Contruction Company</bim-label>
-      </div>
-    `;
-  })
-  
   const sidebar = BUI.Component.create<BUI.Component>(() => {
     const buttonStyles = {
-      "font-size": "20px",
       "height": "50px",
     }
   
@@ -89,11 +77,11 @@ export function UsersPage() {
       <div style="padding: 4px">
         <bim-button 
           style=${BUI.styleMap(buttonStyles)} 
-          icon="fluent:dark-theme-20-regular"
+          icon="material-symbols:print-sharp"
           @click=${() => {
             console.log(userTable.value)
           }}
-          ></bim-button>
+        ></bim-button>
         <bim-button 
           style=${BUI.styleMap(buttonStyles)} 
           icon="uil:file-export"
@@ -110,28 +98,29 @@ export function UsersPage() {
       </div>
     `;
   })
-  
+
   const gridLayout: BUI.Layouts = {
     primary: {
       template: `
-        "header header header" 40px
-        "content content sidebar" 1fr
-        "footer footer footer" 40px
-        / 1fr 1fr 60px
+        "header header" 40px
+        "content sidebar" 1fr
+        "footer footer" 40px
+        / 1fr 60px
       `,
       elements: {
         header: (() => {
-          const inputBox = BUI.Component.create<BUI.TextInput>(() => {
-            return BUI.html `
-              <bim-text-input style="padding: 8px" placeholder="Search Something"></bim-text-input>
-            `
-          })
-          return inputBox;
+          const header = document.createElement("div");
+          header.style.backgroundColor = "#641b1b66";
+          return header;
         })(),
         sidebar,
         content,
-        footer,
-      },
+        footer: (() => {
+          const footer = document.createElement("div");
+          footer.style.backgroundColor = "#ff440066";
+          return footer;
+        })(),
+      }
     }
   }
 
@@ -140,7 +129,7 @@ export function UsersPage() {
     const grid = document.getElementById("bimGrid") as BUI.Grid
     grid.layouts = gridLayout
     grid.layout = "primary"
-  })
+  }, [])
   
   return (
     <div>
