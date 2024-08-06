@@ -5,7 +5,7 @@ import { IProject, Project, ProjectStatus, UserRole } from "../classes/Project";
 import { ProjectCard } from "./ProjectCard";
 import { SearchBox } from "./SearchBox";
 import { ProjectsManager } from "../classes/ProjectsManager";
-import { firebaseDb } from "../firebase";
+import { firebaseDB } from "../firebase";
 
 interface Props {
   projectsManager: ProjectsManager
@@ -18,7 +18,7 @@ export function ProjectsPage(props: Props) {
   props.projectsManager.OnProjectDeleted = () => {setProjects([...props.projectsManager.list])}
 
   const getFirestoreProjects = async () => {
-    const projectsCollection = Firestore.collection(firebaseDb, "/projects") as Firestore.CollectionReference<IProject>
+    const projectsCollection = Firestore.collection(firebaseDB, "/projects") as Firestore.CollectionReference<IProject>
     const firebaseProjects = await Firestore.getDocs(projectsCollection)
     for (const doc of firebaseProjects.docs) {
       const data = doc.data()
