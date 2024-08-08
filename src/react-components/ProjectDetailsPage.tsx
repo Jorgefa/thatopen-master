@@ -31,7 +31,7 @@ export function ProjectDetailsPage(props: Props) {
           Date: "Fri 20th Sept"
         }
       }
-    ]
+    ] 
   }
   
   return (
