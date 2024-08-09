@@ -1,14 +1,6 @@
 import React from "react"
 import * as BUI from "@thatopen/ui"
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      "bim-grid": any;
-    }
-  }
-}
-
 export function UsersPage() {
   const userTable = BUI.Component.create<BUI.Table>(() => {
     const onTableCreated = (element?: Element) => {
