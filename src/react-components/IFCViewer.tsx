@@ -45,29 +45,12 @@ export function IFCViewer() {
     const ifcLoader = components.get(OBC.IfcLoader)
     ifcLoader.setup()
 
+    ifcLoader.onSetup.add(async () => {
+      console.log("IFC Loader setup")
+    })
+
     const fragmentsManager = components.get(OBC.FragmentsManager);
     fragmentsManager.onFragmentsLoaded.add(async (model) => {
-      world.scene.three.add(model)
-
-      const indexer = components.get(OBC.IfcRelationsIndexer)
-      await indexer.process(model)
-
-      const classifier = components.get(OBC.Classifier)
-      await classifier.bySpatialStructure(model)
-      classifier.byEntity(model)
-
-      console.log(classifier.list)
-
-      const classifications = [
-        { system: "entities", label: "Entities" },
-        { system: "spatialStructures", label: "Spatial Containers" }
-      ]
-      if (updateClassificationsTree) {
-        updateClassificationsTree({classifications})
-      }
-
-      fragmentModel = model
-
       exportFragment(model)
     })
 
@@ -90,6 +73,27 @@ export function IFCViewer() {
       rendererComponent.resize()
       cameraComponent.updateAspect()
     })
+  }
+
+  const onFragmentImport = async () => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = '.frag'
+    const reader = new FileReader()
+    reader.addEventListener("load", async () => {
+      const binary = reader.result
+      if (!(binary instanceof ArrayBuffer)) { return }
+      const fragmentsBinary = new Uint8Array(binary)
+      
+      const fragmentsManager = components.get(OBC.FragmentsManager)
+      fragmentsManager.load(fragmentsBinary)
+    })
+    input.addEventListener('change', () => {
+      const filesList = input.files
+      if (!filesList) { return }
+      reader.readAsArrayBuffer(filesList[0])
+    })
+    input.click()
   }
 
   const onToggleVisibility = () => {
@@ -218,10 +222,16 @@ export function IFCViewer() {
 
     const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
       const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components });
+      loadIfcBtn.label = "IFC"
       return BUI.html`
         <bim-toolbar style="justify-self: center;">
           <bim-toolbar-section label="Import">
             ${loadIfcBtn}
+            <bim-button 
+              label="Fragments" 
+              icon="mdi:cube-scan" 
+              @click=${onFragmentImport}
+            ></bim-button>
           </bim-toolbar-section>
           <bim-toolbar-section label="Selection">
             <bim-button 
