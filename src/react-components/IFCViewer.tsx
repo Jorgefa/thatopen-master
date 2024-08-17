@@ -33,7 +33,7 @@ export function IFCViewer() {
     const viewerContainer = document.getElementById("viewer-container") as HTMLElement
     const rendererComponent = new OBCF.PostproductionRenderer(components, viewerContainer)
     world.renderer = rendererComponent
-
+    
     const cameraComponent = new OBC.OrthoPerspectiveCamera(components)
     world.camera = cameraComponent
     
@@ -42,28 +42,21 @@ export function IFCViewer() {
     world.camera.controls.setLookAt(3, 3, 3, 0, 0, 0)
     world.camera.updateAspect()
 
+    world.renderer.postproduction.enabled = true
+
     const ifcLoader = components.get(OBC.IfcLoader)
     ifcLoader.setup()
 
-    ifcLoader.onSetup.add(async () => {
-      console.log("IFC Loader setup")
-    })
-
     const fragmentsManager = components.get(OBC.FragmentsManager);
     fragmentsManager.onFragmentsLoaded.add(async (model) => {
-      exportFragment(model)
-    })
+      world.scene.three.add(model)
 
-    const exportFragment = (model: FragmentsGroup) => {
-      const fragmentsBinary = fragmentsManager.export(model)
-      const blob = new Blob([fragmentsBinary])
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${model.name}.frag`
-      a.click()
-      URL.revokeObjectURL(url)
-    }
+      if (model.hasProperties) {
+        await processModel(model)
+      }
+
+      fragmentModel = model
+    })
 
     const highlighter = components.get(OBCF.Highlighter);
     highlighter.setup({ world })
@@ -75,6 +68,72 @@ export function IFCViewer() {
     })
   }
 
+  const processModel = async (model: FragmentsGroup) => {
+    const indexer = components.get(OBC.IfcRelationsIndexer)
+    await indexer.process(model)
+
+    const classifier = components.get(OBC.Classifier)
+    await classifier.bySpatialStructure(model)
+    classifier.byEntity(model)
+    
+    console.log(classifier.list)
+
+    const classifications = [
+      { system: "entities", label: "Entities" },
+      { system: "spatialStructures", label: "Spatial Containers" }
+    ]
+    if (updateClassificationsTree) {
+      updateClassificationsTree({classifications})
+    }
+  }
+
+  const onPopertyExport = async () => {
+    if (!fragmentModel) return
+    const exported = fragmentModel.getLocalProperties()
+    const serialized = JSON.stringify(exported);
+    const file = new File([new Blob([serialized])], "properties.json");
+    const url = URL.createObjectURL(file);
+    const link = document.createElement("a");
+    link.download = "properties.json";
+    link.href = url;
+    link.click();
+    URL.revokeObjectURL(url);
+    link.remove();
+  }
+
+  const onPropertyImport = async () => {
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = 'application/json'
+    const reader = new FileReader()
+    reader.addEventListener("load", async () => {
+      const json = reader.result
+      if (!json) { return }
+      const properties = JSON.parse(json as string)
+      if (!fragmentModel) return
+      fragmentModel.setLocalProperties(properties)
+      await processModel(fragmentModel)
+    })
+    input.addEventListener('change', () => {
+      const filesList = input.files
+      if (!filesList) { return }
+      reader.readAsText(filesList[0])
+    })
+    input.click()
+  }
+
+  const onFragmentExport = (model: FragmentsGroup) => {
+    const fragmentsManager = components.get(OBC.FragmentsManager)
+    const fragmentsBinary = fragmentsManager.export(model)
+    const blob = new Blob([fragmentsBinary])
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${model.name}.frag`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   const onFragmentImport = async () => {
     const input = document.createElement('input')
     input.type = 'file'
@@ -84,7 +143,6 @@ export function IFCViewer() {
       const binary = reader.result
       if (!(binary instanceof ArrayBuffer)) { return }
       const fragmentsBinary = new Uint8Array(binary)
-      
       const fragmentsManager = components.get(OBC.FragmentsManager)
       fragmentsManager.load(fragmentsBinary)
     })
@@ -222,15 +280,21 @@ export function IFCViewer() {
 
     const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
       const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components });
-      loadIfcBtn.label = "IFC"
       return BUI.html`
         <bim-toolbar style="justify-self: center;">
           <bim-toolbar-section label="Import">
             ${loadIfcBtn}
+          </bim-toolbar-section>
+          <bim-toolbar-section label="Fragments">
             <bim-button 
-              label="Fragments" 
+              label="Import"
               icon="mdi:cube-scan" 
               @click=${onFragmentImport}
+            ></bim-button>
+            <bim-button 
+              label="Export"
+              icon="tabler:package-export"
+              @click=${onFragmentExport}
             ></bim-button>
           </bim-toolbar-section>
           <bim-toolbar-section label="Selection">
@@ -255,6 +319,16 @@ export function IFCViewer() {
               label="Show"
               icon="material-symbols:list"
               @click=${onShowProperties}
+            ></bim-button>
+            <bim-button
+              label="Import"
+              icon="clarity:import-line"
+              @click=${onPropertyImport}
+            ></bim-button>
+            <bim-button
+              label="Export"
+              icon="clarity:export-line"
+              @click=${onPopertyExport}
             ></bim-button>
           </bim-toolbar-section>
           <bim-toolbar-section label="Groups">
@@ -300,6 +374,7 @@ export function IFCViewer() {
         },
       },
     }
+  
     floatingGrid.layout = "main"
 
     viewerContainer.appendChild(floatingGrid)
