@@ -8,12 +8,15 @@ import { FragmentsGroup } from "@thatopen/fragments";
 
 export function IFCViewer() {
   let fragmentModel: FragmentsGroup | undefined
-  let components: OBC.Components
+  const components: OBC.Components = new OBC.Components()
 
-  const [classes, setClasses] = React.useState<any>([])
+  const [classificationsTree, updateClassificationsTree] = CUI.tables.classificationTree(
+  {
+    components,
+    classifications: [],
+  });
 
   const setViewer = () => {
-    components = new OBC.Components()
   
     const worlds = components.get(OBC.Worlds)
 
@@ -51,14 +54,20 @@ export function IFCViewer() {
       await indexer.process(model)
 
       const classifier = components.get(OBC.Classifier)
+      await classifier.bySpatialStructure(model)
       classifier.byEntity(model)
-      classifier.byIfcRel(model, WEBIFC.IFCRELCONTAINEDINSPATIALSTRUCTURE, "storeys")
-      classifier.byModel(model.uuid, model)
+
+      console.log(classifier.list)
+
+      const classifications = [
+        { system: "entities", label: "Entities" },
+        { system: "spatialStructures", label: "Spatial Containers" }
+      ]
+      if (updateClassificationsTree) {
+        updateClassificationsTree({classifications})
+      }
 
       fragmentModel = model
-
-      const cc = [1, 0, 0]
-      setClasses(cc)
     })
 
     const highlighter = components.get(OBCF.Highlighter);
@@ -189,7 +198,7 @@ export function IFCViewer() {
             icon="solar:document-bold" 
             fixed
           >
-            <span>Classes: ${classes}</span>
+            ${classificationsTree}
           </bim-panel-section>
         </bim-panel>
       `;
@@ -218,17 +227,19 @@ export function IFCViewer() {
               icon="tabler:eye-filled"
               @click=${onShowAll}
             ></bim-button>
-            <bim-button
-              label="Classifier"
-              icon="tabler:eye-filled"
-              @click=${onClassifier}
-            ></bim-button>
           </bim-toolbar-section>
           <bim-toolbar-section label="Property">
             <bim-button
               label="Show"
               icon="material-symbols:list"
               @click=${onShowProperties}
+            ></bim-button>
+          </bim-toolbar-section>
+          <bim-toolbar-section label="Groups">
+            <bim-button
+              label="Classifier"
+              icon="tabler:eye-filled"
+              @click=${onClassifier}
             ></bim-button>
           </bim-toolbar-section>
         </bim-toolbar>
@@ -280,14 +291,15 @@ export function IFCViewer() {
       if (components) {
         components.dispose()
       }
+
       const viewerContainer = document.getElementById("viewer-container")
       if (viewerContainer) {
         viewerContainer.innerHTML = ""
       }
-      if (fragmentModel) {
-        fragmentModel.dispose()
-        fragmentModel = undefined
-      }
+      // if (fragmentModel) {
+      //   fragmentModel.dispose()
+      //   fragmentModel = undefined
+      // }
     }
   }, [])
 
