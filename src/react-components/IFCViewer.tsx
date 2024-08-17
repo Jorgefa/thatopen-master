@@ -47,7 +47,6 @@ export function IFCViewer() {
 
     const fragmentsManager = components.get(OBC.FragmentsManager);
     fragmentsManager.onFragmentsLoaded.add(async (model) => {
-      
       world.scene.three.add(model)
 
       const indexer = components.get(OBC.IfcRelationsIndexer)
@@ -68,7 +67,20 @@ export function IFCViewer() {
       }
 
       fragmentModel = model
+
+      exportFragment(model)
     })
+
+    const exportFragment = (model: FragmentsGroup) => {
+      const fragmentsBinary = fragmentsManager.export(model)
+      const blob = new Blob([fragmentsBinary])
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${model.name}.frag`
+      a.click()
+      URL.revokeObjectURL(url)
+    }
 
     const highlighter = components.get(OBCF.Highlighter);
     highlighter.setup({ world })
