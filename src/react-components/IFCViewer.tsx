@@ -47,6 +47,9 @@ export function IFCViewer() {
     const ifcLoader = components.get(OBC.IfcLoader)
     ifcLoader.setup()
 
+    const cullers = components.get(OBC.Cullers)
+    const culler = cullers.create(world)
+
     const fragmentsManager = components.get(OBC.FragmentsManager);
     fragmentsManager.onFragmentsLoaded.add(async (model) => {
       world.scene.three.add(model)
@@ -54,6 +57,11 @@ export function IFCViewer() {
       if (model.hasProperties) {
         await processModel(model)
       }
+
+      for (const fragment of model.items) {
+        culler.add(fragment.mesh)
+      }
+      culler.needsUpdate = true
 
       fragmentModel = model
     })
@@ -65,6 +73,10 @@ export function IFCViewer() {
     viewerContainer.addEventListener("resize", () => {
       rendererComponent.resize()
       cameraComponent.updateAspect()
+    })
+
+    world.camera.controls.addEventListener("controlend", () => {
+      culler.needsUpdate = true
     })
   }
 
@@ -152,6 +164,16 @@ export function IFCViewer() {
       reader.readAsArrayBuffer(filesList[0])
     })
     input.click()
+  }
+
+  const onFragmentDispose = () => {
+    const fragmentsManager = components.get(OBC.FragmentsManager)
+    if (!fragmentModel) return
+    fragmentsManager.disposeGroup(fragmentModel)
+    fragmentModel = undefined
+
+    const highlighter = components.get(OBC.IfcRelationsIndexer)
+    console.log(highlighter)
   }
 
   const onToggleVisibility = () => {
@@ -280,6 +302,9 @@ export function IFCViewer() {
 
     const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
       const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components });
+      loadIfcBtn.tooltipTitle = "Load IFC"
+      loadIfcBtn.label = ""
+
       return BUI.html`
         <bim-toolbar style="justify-self: center;">
           <bim-toolbar-section label="Import">
@@ -287,53 +312,58 @@ export function IFCViewer() {
           </bim-toolbar-section>
           <bim-toolbar-section label="Fragments">
             <bim-button 
-              label="Import"
+              tooltip-title="Import"
               icon="mdi:cube-scan" 
               @click=${onFragmentImport}
             ></bim-button>
             <bim-button 
-              label="Export"
+              tooltip-title="Export"
               icon="tabler:package-export"
               @click=${onFragmentExport}
+            ></bim-button>
+            <bim-button
+              tooltip-title="Dispose"
+              icon="tabler:trash"
+              @click=${onFragmentDispose}
             ></bim-button>
           </bim-toolbar-section>
           <bim-toolbar-section label="Selection">
             <bim-button 
-              label="Visibility" 
+              tooltip-title="Visibility" 
               icon="tabler:square-toggle" 
               @click=${onToggleVisibility}
             ></bim-button>
             <bim-button
-              label="Isolate"
+              tooltip-title="Isolate"
               icon="prime:filter-fill"
               @click=${onIsolate}
             ></bim-button>
             <bim-button
-              label="Show All"
+              tooltip-title="Show All"
               icon="tabler:eye-filled"
               @click=${onShowAll}
             ></bim-button>
           </bim-toolbar-section>
           <bim-toolbar-section label="Property">
             <bim-button
-              label="Show"
+              tooltip-title="Show"
               icon="material-symbols:list"
               @click=${onShowProperties}
             ></bim-button>
             <bim-button
-              label="Import"
+              tooltip-title="Import"
               icon="clarity:import-line"
               @click=${onPropertyImport}
             ></bim-button>
             <bim-button
-              label="Export"
+              tooltip-title="Export"
               icon="clarity:export-line"
               @click=${onPopertyExport}
             ></bim-button>
           </bim-toolbar-section>
           <bim-toolbar-section label="Groups">
             <bim-button
-              label="Classifier"
+              tooltip-title="Classifier"
               icon="tabler:eye-filled"
               @click=${onClassifier}
             ></bim-button>
