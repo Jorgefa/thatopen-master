@@ -31,7 +31,7 @@ export function ProjectDetailsPage(props: Props) {
           Date: "Fri 20th Sept"
         }
       }
-    ]
+    ] 
   }
   
   return (
@@ -74,8 +74,8 @@ export function ProjectDetailsPage(props: Props) {
             </div>
             <div style={{ padding: "0 30px" }}>
               <div>
-                <h5>{project.name}</h5>
-                <p>{project.description}</p>
+                <bim-label style={{ color: "#fff", fontSize: "var(--font-xl)"}}>{project.name}</bim-label>
+                <bim-label>{project.description}</bim-label>
               </div>
               <div
                 style={{

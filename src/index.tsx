@@ -13,6 +13,7 @@ BUI.Manager.init()
 declare global {
   namespace JSX {
     interface IntrinsicElements {
+      "bim-grid": any;
       "bim-text-input": any;
       "bim-button": any;
       "bim-label": any;
