@@ -39,6 +39,8 @@ export function IFCViewer() {
     
     components.init()
 
+    world.renderer.postproduction.enabled = true
+
     world.camera.controls.setLookAt(3, 3, 3, 0, 0, 0)
     world.camera.updateAspect()
 
@@ -215,11 +217,41 @@ export function IFCViewer() {
         </bim-panel>
       `;
     })
+    
+    const onWorldsUpdate = () => {
+      if (!floatingGrid) return
+      floatingGrid.layout = "world"
+    }
+
+    const worldPanel = BUI.Component.create<BUI.Panel>(() => {
+      const [worldsTable] = CUI.tables.worldsConfiguration({ components });
+
+      const search = (e: Event) => {
+        const input = e.target as BUI.TextInput
+        worldsTable.queryString = input.value
+      }
+
+      return BUI.html`
+        <bim-panel>
+          <bim-panel-section name="world" label="World Information" icon="tabler:brush" fixed>
+            <bim-text-input @input=${search} placeholder="Search..."></bim-text-input>
+            ${worldsTable}
+          </bim-panel-section>
+        </bim-panel>  
+      `
+    })
 
     const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
       const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components });
       return BUI.html`
         <bim-toolbar style="justify-self: center;">
+          <bim-toolbar-section label="App">
+            <bim-button 
+              label="World" 
+              icon="tabler:brush" 
+              @click=${onWorldsUpdate}
+            ></bim-button>
+          </bim-toolbar-section>
           <bim-toolbar-section label="Import">
             ${loadIfcBtn}
           </bim-toolbar-section>
@@ -278,6 +310,17 @@ export function IFCViewer() {
           elementPropertyPanel
         },
       },
+      world: {
+        template: `
+          "empty worldPanel" 1fr
+          "toolbar toolbar" auto
+          /1fr 20rem
+        `,
+        elements: { 
+          toolbar,
+          worldPanel 
+        },
+      },
       classifier: {
         template: `
           "empty classifierPanel" 1fr
@@ -286,9 +329,9 @@ export function IFCViewer() {
         `,
         elements: { 
           toolbar,
-          classifierPanel
+          classifierPanel 
         },
-      },
+      }
     }
     floatingGrid.layout = "main"
 
@@ -308,10 +351,11 @@ export function IFCViewer() {
       if (viewerContainer) {
         viewerContainer.innerHTML = ""
       }
-      // if (fragmentModel) {
-      //   fragmentModel.dispose()
-      //   fragmentModel = undefined
-      // }
+      
+      if (fragmentModel) {
+        fragmentModel.dispose()
+        fragmentModel = undefined
+      }
     }
   }, [])
 
