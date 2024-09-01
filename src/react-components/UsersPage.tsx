@@ -1,14 +1,6 @@
 import React from "react"
 import * as BUI from "@thatopen/ui"
 
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      "bim-grid": any;
-    }
-  }
-}
-
 export function UsersPage() {
   const userTable = BUI.Component.create<BUI.Table>(() => {
     const onTableCreated = (element?: Element) => {
@@ -68,20 +60,8 @@ export function UsersPage() {
     `;
   })
   
-  const footer = BUI.Component.create<BUI.Component>(() => {
-    const labelStyles = {
-      "color": "#ffffff",
-    }
-    return BUI.html `
-      <div style="display: flex; justify-content: center;">
-        <bim-label style=${BUI.styleMap(labelStyles)}>Copyright of That Contruction Company</bim-label>
-      </div>
-    `;
-  })
-  
   const sidebar = BUI.Component.create<BUI.Component>(() => {
     const buttonStyles = {
-      "font-size": "20px",
       "height": "50px",
     }
   
@@ -89,11 +69,11 @@ export function UsersPage() {
       <div style="padding: 4px">
         <bim-button 
           style=${BUI.styleMap(buttonStyles)} 
-          icon="fluent:dark-theme-20-regular"
+          icon="material-symbols:print-sharp"
           @click=${() => {
             console.log(userTable.value)
           }}
-          ></bim-button>
+        ></bim-button>
         <bim-button 
           style=${BUI.styleMap(buttonStyles)} 
           icon="uil:file-export"
@@ -110,28 +90,39 @@ export function UsersPage() {
       </div>
     `;
   })
-  
+
+  const footer = BUI.Component.create<BUI.Component>(() => {
+    return BUI.html `
+      <div style="display: flex; justify-content: center;">
+        <bim-label>Copyright of That Contruction Company</bim-label>
+      </div>
+    `;
+  })
+
   const gridLayout: BUI.Layouts = {
     primary: {
       template: `
-        "header header header" 40px
-        "content content sidebar" 1fr
-        "footer footer footer" 40px
-        / 1fr 1fr 60px
+        "header header" 40px
+        "content sidebar" 1fr
+        "footer footer" 40px
+        / 1fr 60px
       `,
       elements: {
         header: (() => {
           const inputBox = BUI.Component.create<BUI.TextInput>(() => {
             return BUI.html `
-              <bim-text-input style="padding: 8px" placeholder="Search Something"></bim-text-input>
+              <bim-text-input style="padding: 8px" placeholder="Search Users"></bim-text-input>
             `
           })
-          return inputBox;
+          inputBox.addEventListener("input", () => {
+            userTable.queryString = inputBox.value
+          })
+          return inputBox
         })(),
         sidebar,
         content,
         footer,
-      },
+      }
     }
   }
 
@@ -139,7 +130,7 @@ export function UsersPage() {
     const grid = document.getElementById("bimGrid") as BUI.Grid
     grid.layouts = gridLayout
     grid.layout = "primary"
-  })
+  }, [])
   
   return (
     <div>
