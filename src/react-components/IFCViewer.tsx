@@ -336,7 +336,7 @@ export function IFCViewer() {
         <bim-toolbar style="justify-self: center;">
           <bim-toolbar-section label="App">
             <bim-button 
-              label="World" 
+              tooltip-title="World" 
               icon="tabler:brush" 
               @click=${onWorldsUpdate}
             ></bim-button>
