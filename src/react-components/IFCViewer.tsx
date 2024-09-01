@@ -339,10 +339,11 @@ export function IFCViewer() {
       if (viewerContainer) {
         viewerContainer.innerHTML = ""
       }
-      // if (fragmentModel) {
-      //   fragmentModel.dispose()
-      //   fragmentModel = undefined
-      // }
+      
+      if (fragmentModel) {
+        fragmentModel.dispose()
+        fragmentModel = undefined
+      }
     }
   }, [])
 
