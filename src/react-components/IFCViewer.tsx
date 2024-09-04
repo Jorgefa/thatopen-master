@@ -5,11 +5,14 @@ import * as OBCF from "@thatopen/components-front";
 import * as BUI from "@thatopen/ui";
 import * as CUI from "@thatopen/ui-obc";
 import { FragmentsGroup } from "@thatopen/fragments";
-import { TodoCreator } from "../bim-components";
 
-export function IFCViewer() {
+interface Props {
+  components: OBC.Components
+}
+
+export function IFCViewer(props: Props) {
   let fragmentModel: FragmentsGroup | undefined
-  const components: OBC.Components = new OBC.Components()
+  const components: OBC.Components = props.components
 
   const [classificationsTree, updateClassificationsTree] = CUI.tables.classificationTree(
   {
@@ -328,11 +331,6 @@ export function IFCViewer() {
       `
     })
 
-    const todo = components.get(TodoCreator)
-    todo.grid = floatingGrid
-    const todoButton = todo.get()
-    const todoPanel = todo.todoPanel
-
     const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
       const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components });
       loadIfcBtn.tooltipTitle = "Load IFC"
@@ -349,9 +347,6 @@ export function IFCViewer() {
           </bim-toolbar-section>
           <bim-toolbar-section label="Import">
             ${loadIfcBtn}
-          </bim-toolbar-section>
-          <bim-toolbar-section label="TODO">
-            ${todoButton}
           </bim-toolbar-section>
           <bim-toolbar-section label="Fragments">
             <bim-button 
@@ -456,18 +451,7 @@ export function IFCViewer() {
           toolbar,
           classifierPanel 
         },
-      },
-      todoLayout: {
-        template: `
-          "empty todoPanel" 1fr
-          "toolbar toolbar" auto
-          /1fr 20rem
-        `,
-        elements: { 
-          toolbar,
-          todoPanel 
-        },
-      },
+      }
     }
   
     floatingGrid.layout = "main"
