@@ -5,51 +5,49 @@ import { IFCViewer } from "./IFCViewer";
 import { deleteDocument } from "../firebase";
 import * as OBC from "@thatopen/components";
 import * as BUI from "@thatopen/ui";
-import { todoUI } from "../bim-components/TodoCreator/ui";
-import { TodoCreator } from "../bim-components/TodoCreator/TodoCreator";
-// import { TodoCreator } from "../bim-components/TodoCreator";
+import { TodoCreator, TodoData, todoTool } from "../bim-components/TodoCreator/";
 
 interface Props {
   projectsManager: ProjectsManager
 }
 
 export function ProjectDetailsPage(props: Props) {
-  const components: OBC.Components = new OBC.Components()
-
-  const todoContainer = React.useRef<HTMLDivElement>(null)
-
   const routeParams = Router.useParams<{id: string}>()
   if (!routeParams.id) {return (<p>Project ID is needed to see this page</p>)}
   const project = props.projectsManager.getProject(routeParams.id)
   if (!project) {return (<p>The project with ID {routeParams.id} wasn't found.</p>)}
 
+  const components: OBC.Components = new OBC.Components()
+  const todoContainer = React.useRef<HTMLDivElement>(null)
+  
   const navigateTo = Router.useNavigate()
   props.projectsManager.OnProjectDeleted = async (id) => {
     await deleteDocument("/projects", id)
     navigateTo("/")
   }
 
-  const tableRef = React.useRef<BUI.Table>()
+  const tableRef = React.useRef<BUI.Table>(null)
 
-  const createTodo = (name: string) => {
+  const addTodo = (data: TodoData) => {
     if (!tableRef.current) {return}
     const newData = {
       data: {
-        Name: name,
-        Task: "Create Work Orders",
-        Role: "Engineer",
+        Name: data.name,
+        Task: data.task,
+        Date: new Date().toDateString(),
       },
     }
     tableRef.current.data = [...tableRef.current.data, newData];
   }
+
   const todoCreator = components.get(TodoCreator)
-  todoCreator.onTodoCreated.add((data) => createTodo(data))
+  todoCreator.onTodoCreated.add((data) => addTodo(data))
 
   React.useEffect(() => {
-    const todoButton = todoUI({ components })
+    const todoButton = todoTool({ components })
     todoContainer.current?.appendChild( todoButton )
   }, [])
-
+  
   return (
     <div className="page" id="project-details">
       <header>

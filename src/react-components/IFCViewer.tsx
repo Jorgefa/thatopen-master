@@ -6,14 +6,14 @@ import * as BUI from "@thatopen/ui";
 import * as CUI from "@thatopen/ui-obc";
 import { FragmentsGroup } from "@thatopen/fragments";
 
-interface IFCViewerProps {
+interface Props {
   components: OBC.Components
 }
 
-export function IFCViewer(props: IFCViewerProps) {
+export function IFCViewer(props: Props) {
   let fragmentModel: FragmentsGroup | undefined
-  const components = props.components
-  
+  const components: OBC.Components = props.components
+
   const [classificationsTree, updateClassificationsTree] = CUI.tables.classificationTree(
   {
     components,
@@ -331,12 +331,6 @@ export function IFCViewer(props: IFCViewerProps) {
       `
     })
     
-    // const adddTodo = () => {
-    //   console.log("Adding Hahahahahha")
-    // }
-    // const [todoButton] = TodoCreator({ addTodo: adddTodo })
-
-
     const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
       const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components });
       loadIfcBtn.tooltipTitle = "Load IFC"
@@ -457,7 +451,7 @@ export function IFCViewer(props: IFCViewerProps) {
           toolbar,
           classifierPanel 
         },
-      },
+      }
     }
   
     floatingGrid.layout = "main"
