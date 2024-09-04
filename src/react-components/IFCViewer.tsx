@@ -6,9 +6,13 @@ import * as BUI from "@thatopen/ui";
 import * as CUI from "@thatopen/ui-obc";
 import { FragmentsGroup } from "@thatopen/fragments";
 
-export function IFCViewer() {
+interface Props {
+  components: OBC.Components
+}
+
+export function IFCViewer(props: Props) {
   let fragmentModel: FragmentsGroup | undefined
-  const components: OBC.Components = new OBC.Components()
+  const components: OBC.Components = props.components
 
   const [classificationsTree, updateClassificationsTree] = CUI.tables.classificationTree(
   {

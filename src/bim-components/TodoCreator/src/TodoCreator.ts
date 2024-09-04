@@ -1,5 +1,4 @@
 import * as OBC from "@thatopen/components"
-import * as BUI from "@thatopen/ui"
 
 export class TodoCreator extends OBC.Component {
   static uuid = "f26555ec-4394-4349-986a-7409e4fd308e"
@@ -12,7 +11,7 @@ export class TodoCreator extends OBC.Component {
     components.add(TodoCreator.uuid, this)
   }
 
-  private setUI() {
-    
+  addTodo() {
+    console.log("Adding A Todo")
   }
 }
