@@ -5,7 +5,7 @@ import { IFCViewer } from "./IFCViewer";
 import { deleteDocument } from "../firebase";
 import * as BUI from "@thatopen/ui";
 import * as OBC from "@thatopen/components";
-import { todoTool } from "../bim-components/TodoCreator/";
+import { TodoCreator, TodoData, todoTool } from "../bim-components/TodoCreator/";
 
 interface Props {
   projectsManager: ProjectsManager
@@ -26,18 +26,24 @@ export function ProjectDetailsPage(props: Props) {
     navigateTo("/")
   }
 
-  const onTableCreated = (element?: Element) => {
-    if (!element) return;
-    const toDoTable = element as BUI.Table;
-    toDoTable.data = [
-      {
-        data: {
-          Task: "Do Rebar for Column",
-          Date: "Fri 20th Sept"
-        }
-      }
-    ] 
+  const tableRef = React.useRef<BUI.Table>(null)
+
+  const addTodo = (data: TodoData) => {
+    if (!tableRef.current) {return}
+    const newData = {
+      data: {
+        Name: data.name,
+        Task: data.task,
+        Date: new Date().toDateString(),
+      },
+    }
+    tableRef.current.data = [...tableRef.current.data, newData];
   }
+
+  // perfect now let's add description task from the UI as well and not hard code it
+
+  const todoCreator = components.get(TodoCreator)
+  todoCreator.onTodoCreated.add((data) => addTodo(data))
 
   React.useEffect(() => {
     const todoButton = todoTool({ components })
@@ -167,7 +173,7 @@ export function ProjectDetailsPage(props: Props) {
                 </div>
               </div>
             </div>
-            <bim-table id="todo-table" ref={onTableCreated}></bim-table>
+            <bim-table id="todo-table" ref={tableRef}></bim-table>
           </div>
         </div>
         <IFCViewer components={components}/>
