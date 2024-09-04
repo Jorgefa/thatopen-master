@@ -3,13 +3,21 @@ import * as Router from "react-router-dom";
 import { ProjectsManager } from "../classes/ProjectsManager";
 import { IFCViewer } from "./IFCViewer";
 import { deleteDocument } from "../firebase";
+import * as OBC from "@thatopen/components";
 import * as BUI from "@thatopen/ui";
+import { todoUI } from "../bim-components/TodoCreator/ui";
+import { TodoCreator } from "../bim-components/TodoCreator/TodoCreator";
+// import { TodoCreator } from "../bim-components/TodoCreator";
 
 interface Props {
   projectsManager: ProjectsManager
 }
 
 export function ProjectDetailsPage(props: Props) {
+  const components: OBC.Components = new OBC.Components()
+
+  const todoContainer = React.useRef<HTMLDivElement>(null)
+
   const routeParams = Router.useParams<{id: string}>()
   if (!routeParams.id) {return (<p>Project ID is needed to see this page</p>)}
   const project = props.projectsManager.getProject(routeParams.id)
@@ -21,19 +29,27 @@ export function ProjectDetailsPage(props: Props) {
     navigateTo("/")
   }
 
-  const onTableCreated = (element?: Element) => {
-    if (!element) return;
-    const toDoTable = element as BUI.Table;
-    toDoTable.data = [
-      {
-        data: {
-          Task: "Do Rebar for Column",
-          Date: "Fri 20th Sept"
-        }
-      }
-    ] 
+  const tableRef = React.useRef<BUI.Table>()
+
+  const createTodo = (name: string) => {
+    if (!tableRef.current) {return}
+    const newData = {
+      data: {
+        Name: name,
+        Task: "Create Work Orders",
+        Role: "Engineer",
+      },
+    }
+    tableRef.current.data = [...tableRef.current.data, newData];
   }
-  
+  const todoCreator = components.get(TodoCreator)
+  todoCreator.onTodoCreated.add((data) => createTodo(data))
+
+  React.useEffect(() => {
+    const todoButton = todoUI({ components })
+    todoContainer.current?.appendChild( todoButton )
+  }, [])
+
   return (
     <div className="page" id="project-details">
       <header>
@@ -147,6 +163,7 @@ export function ProjectDetailsPage(props: Props) {
                   justifyContent: "end",
                   columnGap: 20
                 }}
+                ref={todoContainer}
               >
                 <div
                   style={{ display: "flex", alignItems: "center", columnGap: 10 }}
@@ -154,13 +171,12 @@ export function ProjectDetailsPage(props: Props) {
                   <bim-label icon="material-symbols:search" style={{ color: "#fff" }}></bim-label>
                   <bim-text-input placeholder="Search To-Do's by name"></bim-text-input>
                 </div>
-                <bim-label icon="material-symbols:add" style={{ color: "#fff" }}></bim-label>
               </div>
             </div>
-            <bim-table id="todo-table" ref={onTableCreated}></bim-table>
+            <bim-table id="todo-table" ref={tableRef}></bim-table>
           </div>
         </div>
-        <IFCViewer />
+        <IFCViewer components={components}/>
       </div>
     </div>
   );
