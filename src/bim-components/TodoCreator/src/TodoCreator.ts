@@ -1,8 +1,10 @@
 import * as OBC from "@thatopen/components"
+import * as FRAGS from "@thatopen/fragments"
 
 export interface TodoData {
   name: string
   task: string
+  fragmentMap: FRAGS.FragmentIdMap
 }
 
 export class TodoCreator extends OBC.Component {
@@ -17,7 +19,7 @@ export class TodoCreator extends OBC.Component {
     components.add(TodoCreator.uuid, this)
   }
 
-  addTodo(data: TodoData) {
+  async addTodo(data: TodoData) {
     this.onTodoCreated.trigger(data)
   }
 }

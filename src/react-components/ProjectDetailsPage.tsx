@@ -4,14 +4,18 @@ import { ProjectsManager } from "../classes/ProjectsManager";
 import { IFCViewer } from "./IFCViewer";
 import { deleteDocument } from "../firebase";
 import * as OBC from "@thatopen/components";
+import * as OBCF from "@thatopen/components-front";
 import * as BUI from "@thatopen/ui";
 import { TodoCreator, TodoData, todoTool } from "../bim-components/TodoCreator/";
+import * as FRAGS from "@thatopen/fragments";
 
 interface Props {
   projectsManager: ProjectsManager
 }
 
 export function ProjectDetailsPage(props: Props) {
+  const fragmentMaps: { [key: string]: FRAGS.FragmentIdMap } = {}
+  
   const routeParams = Router.useParams<{id: string}>()
   if (!routeParams.id) {return (<p>Project ID is needed to see this page</p>)}
   const project = props.projectsManager.getProject(routeParams.id)
@@ -27,7 +31,7 @@ export function ProjectDetailsPage(props: Props) {
   }
 
   const tableRef = React.useRef<BUI.Table>(null)
-
+  
   const addTodo = (data: TodoData) => {
     if (!tableRef.current) {return}
     const newData = {
@@ -35,9 +39,14 @@ export function ProjectDetailsPage(props: Props) {
         Name: data.name,
         Task: data.task,
         Date: new Date().toDateString(),
+        Fragment: JSON.stringify(data.fragmentMap),
       },
     }
-    tableRef.current.data = [...tableRef.current.data, newData];
+
+    tableRef.current.data = [...tableRef.current.data, newData]
+    tableRef.current.hiddenColumns = ["Fragment"];
+
+    fragmentMaps[newData.data.Fragment] = data.fragmentMap
   }
 
   const todoCreator = components.get(TodoCreator)
@@ -46,6 +55,19 @@ export function ProjectDetailsPage(props: Props) {
   React.useEffect(() => {
     const todoButton = todoTool({ components })
     todoContainer.current?.appendChild( todoButton )
+
+    tableRef.current?.addEventListener("rowcreated", (event) => {
+      event.stopImmediatePropagation()
+
+      const { row } = event.detail;
+      row.addEventListener("click", async () => {
+        const fragment = JSON.parse(row.data.Fragment as string)
+        if (!fragment) {return}
+        const fragmentMap = fragmentMaps[JSON.stringify(fragment)]
+        const highlighter = components.get(OBCF.Highlighter)
+        await highlighter.highlightByID('select', fragmentMap)
+      })
+    })
   }, [])
   
   return (
