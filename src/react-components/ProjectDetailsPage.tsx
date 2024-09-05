@@ -6,7 +6,8 @@ import { deleteDocument } from "../firebase";
 import * as OBC from "@thatopen/components";
 import * as OBCF from "@thatopen/components-front";
 import * as BUI from "@thatopen/ui";
-import { TodoCreator, TodoData, todoTool } from "../bim-components/TodoCreator/";
+import { TodoCreator, todoTool } from "../bim-components/TodoCreator/";
+import { TodoData } from "../bim-components/TodoCreator/src/base-types";
 
 interface Props {
   projectsManager: ProjectsManager
@@ -33,11 +34,12 @@ export function ProjectDetailsPage(props: Props) {
     event.stopImmediatePropagation()
     const { row } = event.detail;
     row.addEventListener("click", async () => {
-      const fragments = components.get(OBC.FragmentsManager)
-      const fragmentMap = JSON.parse(row.data.Fragment)
-      const fragmentIdMap = fragments.guidToFragmentIdMap(fragmentMap)
-      const highlighter = components.get(OBCF.Highlighter)
-      await highlighter.highlightByID("select", fragmentIdMap)
+      todoCreator.highlightTodo({
+        name: row.data.Name,
+        task: row.data.Task,
+        fragmentGuids: JSON.parse(row.data.Fragment),
+        camera: JSON.parse(row.data.Camera)
+      })
     })
   }
   
@@ -47,18 +49,18 @@ export function ProjectDetailsPage(props: Props) {
   })
 
   const addTodo = (data: TodoData) => {
-    console.log(data)
     const newData = {
       data: {
         Name: data.name,
         Task: data.task,
         Date: new Date().toDateString(),
-        Fragment: JSON.stringify(data.fragmentGuids)
+        Fragment: JSON.stringify(data.fragmentGuids),
+        Camera: data.camera ? JSON.stringify(data.camera) : ""
       },
     }
 
     todoTable.data = [...todoTable.data, newData]
-    todoTable.hiddenColumns = ["Fragment"];
+    todoTable.hiddenColumns = ["Fragment", "Camera"];
   }
 
   const todoCreator = components.get(TodoCreator)
