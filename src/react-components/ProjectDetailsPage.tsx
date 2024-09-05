@@ -45,7 +45,7 @@ export function ProjectDetailsPage(props: Props) {
   
   const todoTable = BUI.Component.create<BUI.Table>(() => {
     return BUI.html`
-      <bim-table @rowcreated=${onRowCreated}></bim-table>`
+      <bim-table @rowcreated=${ onRowCreated }></bim-table>`
   })
 
   const addTodo = (data: TodoData) => {
@@ -177,7 +177,7 @@ export function ProjectDetailsPage(props: Props) {
                 justifyContent: "space-between"
               }}
             >
-              <bim-label style={{fontSize: "var(--font-lg", color: "#fff"}}>To-Do</bim-label>
+              <bim-label style={{ fontSize: "var(--font-lg", color: "#fff" }}>To-Do</bim-label>
               <div
                 style={{
                   display: "flex",
@@ -197,7 +197,7 @@ export function ProjectDetailsPage(props: Props) {
             </div>
           </div>
         </div>
-        <IFCViewer components={components}/>
+        <IFCViewer components={ components } todoCreator={ todoCreator }/>
       </div>
     </div>
   );

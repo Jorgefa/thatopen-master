@@ -5,9 +5,11 @@ import * as OBCF from "@thatopen/components-front";
 import * as BUI from "@thatopen/ui";
 import * as CUI from "@thatopen/ui-obc";
 import { FragmentsGroup } from "@thatopen/fragments";
+import { TodoCreator } from "../bim-components/TodoCreator";
 
 interface Props {
   components: OBC.Components
+  todoCreator: TodoCreator
 }
 
 export function IFCViewer(props: Props) {
@@ -84,6 +86,8 @@ export function IFCViewer(props: Props) {
     world.camera.controls.addEventListener("controlend", () => {
       culler.needsUpdate = true
     })
+
+    props.todoCreator.world = world
   }
 
   const processModel = async (model: FragmentsGroup) => {

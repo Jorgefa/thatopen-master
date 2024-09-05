@@ -7,6 +7,7 @@ export class TodoCreator extends OBC.Component {
   static uuid = "f26555ec-4394-4349-986a-7409e4fd308e"
   enabled = true
   private _components: OBC.Components
+  private _world: OBC.World
   onTodoCreated = new OBC.Event<TodoData>()
 
   constructor(components: OBC.Components) {
@@ -15,13 +16,16 @@ export class TodoCreator extends OBC.Component {
     components.add(TodoCreator.uuid, this)
   }
 
+  set world(world: OBC.World) {
+    this._world = world
+  }
+
   async addTodo(data: TodoInput) {
     const fragments = this._components.get(OBC.FragmentsManager)
     const highlighter = this._components.get(OBCF.Highlighter)
     const guids = fragments.fragmentIdMapToGuids(highlighter.selection.select)
 
-    const world = this._components.get(OBC.Worlds).list.values().next().value as OBC.World
-    const camera = world.camera
+    const camera = this._world.camera
 
     if (!(camera instanceof OBC.OrthoPerspectiveCamera)) {
       throw new Error("No camera found in the world")
@@ -51,9 +55,11 @@ export class TodoCreator extends OBC.Component {
     const highlighter = this._components.get(OBCF.Highlighter)
     await highlighter.highlightByID("select", fragmentIdMap, true, false)
 
-    const world = this._components.get(OBC.Worlds).list.values().next().value as OBC.World
-    const camera = world.camera
+    if (!this._world) {
+      throw new Error("No world found")
+    }
 
+    const camera = this._world.camera
     if (!(camera instanceof OBC.OrthoPerspectiveCamera)) {
       throw new Error("No camera found in the world")
     }
