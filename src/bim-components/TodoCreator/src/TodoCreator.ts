@@ -4,7 +4,7 @@ import * as FRAGS from "@thatopen/fragments"
 export interface TodoData {
   name: string
   task: string
-  fragmentMap: FRAGS.FragmentIdMap
+  fragmentGuids: string[]
 }
 
 export class TodoCreator extends OBC.Component {

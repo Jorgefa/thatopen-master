@@ -26,11 +26,13 @@ export const todoTool = (state: todoUIState) => {
             <bim-button 
               label="Create todo"
               @click=${() => {
+                const fragments = components.get(OBC.FragmentsManager)
                 const highlighter = components.get(OBCF.Highlighter)
+                const guids = fragments.fragmentIdMapToGuids(highlighter.selection.select)
                 const todoValue: TodoData = {
                   name: nameInput.value,
                   task: taskInput.value,
-                  fragmentMap: highlighter.selection.select
+                  fragmentGuids: guids
                 }
                 if (!todoValue) {return}
                 todoCreator.addTodo(todoValue)

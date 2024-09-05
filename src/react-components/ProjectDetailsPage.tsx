@@ -7,21 +7,20 @@ import * as OBC from "@thatopen/components";
 import * as OBCF from "@thatopen/components-front";
 import * as BUI from "@thatopen/ui";
 import { TodoCreator, TodoData, todoTool } from "../bim-components/TodoCreator/";
-import * as FRAGS from "@thatopen/fragments";
 
 interface Props {
   projectsManager: ProjectsManager
 }
 
 export function ProjectDetailsPage(props: Props) {
-  const fragmentMaps: { [key: string]: FRAGS.FragmentIdMap } = {}
-  
   const routeParams = Router.useParams<{id: string}>()
   if (!routeParams.id) {return (<p>Project ID is needed to see this page</p>)}
   const project = props.projectsManager.getProject(routeParams.id)
   if (!project) {return (<p>The project with ID {routeParams.id} wasn't found.</p>)}
 
   const components: OBC.Components = new OBC.Components()
+
+  const dashboard = React.useRef<HTMLDivElement>(null)
   const todoContainer = React.useRef<HTMLDivElement>(null)
   
   const navigateTo = Router.useNavigate()
@@ -30,44 +29,45 @@ export function ProjectDetailsPage(props: Props) {
     navigateTo("/")
   }
 
-  const tableRef = React.useRef<BUI.Table>(null)
+  const onRowCreated = (event) => {
+    event.stopImmediatePropagation()
+    const { row } = event.detail;
+    row.addEventListener("click", async () => {
+      const fragments = components.get(OBC.FragmentsManager)
+      const fragmentMap = JSON.parse(row.data.Fragment)
+      const fragmentIdMap = fragments.guidToFragmentIdMap(fragmentMap)
+      const highlighter = components.get(OBCF.Highlighter)
+      await highlighter.highlightByID("select", fragmentIdMap)
+    })
+  }
   
+  const todoTable = BUI.Component.create<BUI.Table>(() => {
+    return BUI.html`
+      <bim-table @rowcreated=${onRowCreated}></bim-table>`
+  })
+
   const addTodo = (data: TodoData) => {
-    if (!tableRef.current) {return}
+    console.log(data)
     const newData = {
       data: {
         Name: data.name,
         Task: data.task,
         Date: new Date().toDateString(),
-        Fragment: JSON.stringify(data.fragmentMap),
+        Fragment: JSON.stringify(data.fragmentGuids)
       },
     }
 
-    tableRef.current.data = [...tableRef.current.data, newData]
-    tableRef.current.hiddenColumns = ["Fragment"];
-
-    fragmentMaps[newData.data.Fragment] = data.fragmentMap
+    todoTable.data = [...todoTable.data, newData]
+    todoTable.hiddenColumns = ["Fragment"];
   }
 
   const todoCreator = components.get(TodoCreator)
   todoCreator.onTodoCreated.add((data) => addTodo(data))
 
   React.useEffect(() => {
+    dashboard.current?.appendChild(todoTable)
     const todoButton = todoTool({ components })
     todoContainer.current?.appendChild( todoButton )
-
-    tableRef.current?.addEventListener("rowcreated", (event) => {
-      event.stopImmediatePropagation()
-
-      const { row } = event.detail;
-      row.addEventListener("click", async () => {
-        const fragment = JSON.parse(row.data.Fragment as string)
-        if (!fragment) {return}
-        const fragmentMap = fragmentMaps[JSON.stringify(fragment)]
-        const highlighter = components.get(OBCF.Highlighter)
-        await highlighter.highlightByID('select', fragmentMap)
-      })
-    })
   }, [])
   
   return (
@@ -166,7 +166,7 @@ export function ProjectDetailsPage(props: Props) {
               </div>
             </div>
           </div>
-          <div className="dashboard-card" style={{ flexGrow: 1 }}>
+          <div className="dashboard-card" style={{ flexGrow: 1 }} ref={dashboard}>
             <div
               style={{
                 padding: "20px 30px",
@@ -193,7 +193,6 @@ export function ProjectDetailsPage(props: Props) {
                 </div>
               </div>
             </div>
-            <bim-table id="todo-table" ref={tableRef}></bim-table>
           </div>
         </div>
         <IFCViewer components={components}/>
