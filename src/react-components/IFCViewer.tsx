@@ -88,6 +88,7 @@ export function IFCViewer(props: Props) {
     })
 
     props.todoCreator.world = world
+    props.todoCreator.setup()
   }
 
   const processModel = async (model: FragmentsGroup) => {

@@ -1,7 +1,7 @@
 import * as OBC from "@thatopen/components"
 import * as BUI from "@thatopen/ui"
 import { TodoCreator } from "./TodoCreator"
-import { TodoInput } from "./base-types"
+import { Priority, TodoInput } from "./base-types"
 
 export interface todoUIState {
   components: OBC.Components
@@ -16,6 +16,16 @@ export const todoTool = (state: todoUIState) => {
   const taskInput = document.createElement("bim-text-input")
   taskInput.label = "Task"
 
+  const priorityInput = BUI.Component.create<BUI.Dropdown>(() => {
+    return BUI.html`
+      <bim-dropdown label="Priority">
+        <bim-option value="Low" label="Low" checked></bim-option>
+        <bim-option value="Medium" label="Medium"></bim-option>
+        <bim-option value="High" label="High"></bim-option>
+      </bim-dropdown>
+    `
+  })
+
   const todoModal = BUI.Component.create<HTMLDialogElement>(() => {
     return BUI.html`
       <dialog>
@@ -24,12 +34,14 @@ export const todoTool = (state: todoUIState) => {
             <bim-label>Create A To-Do For Future</bim-label>
             ${nameInput}
             ${taskInput}
+            ${priorityInput}
             <bim-button 
               label="Create todo"
               @click=${() => {
                 const todoValue: TodoInput = {
                   name: nameInput.value,
                   task: taskInput.value,
+                  priority: priorityInput.value[0] as Priority
                 }
                 if (!todoValue) {return}
                 todoCreator.addTodo(todoValue)
@@ -45,7 +57,7 @@ export const todoTool = (state: todoUIState) => {
   })
   document.body.appendChild(todoModal)
 
-  return BUI.Component.create<BUI.Button>(() => {
+  const todoButton = BUI.Component.create<BUI.Button>(() => {
     return BUI.html`
       <bim-button
         @click=${() => todoModal.showModal()}
@@ -54,4 +66,22 @@ export const todoTool = (state: todoUIState) => {
       ></bim-button>
     `
   })
+
+  const onTogglePriority = (event: Event) => {
+    const btn = event.target as BUI.Button
+    btn.active = !btn.active
+    todoCreator.enablePriorityHighlight = btn.active
+  }
+
+  const todoPriorityButton = BUI.Component.create<BUI.Button>(() => {
+    return BUI.html`
+      <bim-button 
+        icon="iconoir:fill-color"
+        tooltip-title="Show Priority Filter"
+        @click=${onTogglePriority}
+      ></bim-button>
+    `
+  })
+
+  return [todoButton, todoPriorityButton]
 }

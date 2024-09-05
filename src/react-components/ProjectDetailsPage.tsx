@@ -38,7 +38,8 @@ export function ProjectDetailsPage(props: Props) {
         name: row.data.Name,
         task: row.data.Task,
         fragmentGuids: JSON.parse(row.data.Fragment),
-        camera: JSON.parse(row.data.Camera)
+        camera: JSON.parse(row.data.Camera),
+        priority: row.data.Priority
       })
     })
   }
@@ -68,8 +69,9 @@ export function ProjectDetailsPage(props: Props) {
 
   React.useEffect(() => {
     dashboard.current?.appendChild(todoTable)
-    const todoButton = todoTool({ components })
+    const [todoButton, todoPriorityButton] = todoTool({ components })
     todoContainer.current?.appendChild( todoButton )
+    todoContainer.current?.appendChild( todoPriorityButton )
   }, [])
   
   return (

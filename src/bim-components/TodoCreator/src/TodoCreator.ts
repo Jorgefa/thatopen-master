@@ -8,6 +8,8 @@ export class TodoCreator extends OBC.Component {
   enabled = true
   private _components: OBC.Components
   private _world: OBC.World
+  private _list: TodoData[] = []
+  
   onTodoCreated = new OBC.Event<TodoData>()
 
   constructor(components: OBC.Components) {
@@ -16,8 +18,28 @@ export class TodoCreator extends OBC.Component {
     components.add(TodoCreator.uuid, this)
   }
 
+  async setup() {
+    const highlighter = this._components.get(OBCF.Highlighter)
+    highlighter.add(`${TodoCreator.uuid}-priority-Low`, new THREE.Color(0x59bc59))
+    highlighter.add(`${TodoCreator.uuid}-priority-Medium`, new THREE.Color(0x597cff))
+    highlighter.add(`${TodoCreator.uuid}-priority-High`, new THREE.Color(0xff7676))
+  }
+
   set world(world: OBC.World) {
     this._world = world
+  }
+
+  set enablePriorityHighlight(value: boolean) {
+    const highlighter = this._components.get(OBCF.Highlighter)
+    if (value) {
+      for (const todo of this._list) {
+        const fragments = this._components.get(OBC.FragmentsManager)
+        const fragmentIdMap = fragments.guidToFragmentIdMap(todo.fragmentGuids)
+        highlighter.highlightByID(`${TodoCreator.uuid}-priority-${todo.priority}`, fragmentIdMap, false, false)
+      }
+    } else {
+        highlighter.clear()
+    }
   }
 
   async addTodo(data: TodoInput) {
@@ -39,6 +61,7 @@ export class TodoCreator extends OBC.Component {
     const todoData: TodoData = {
       name: data.name,
       task: data.task,
+      priority: data.priority,
       fragmentGuids: guids,
       camera: {
         position,
@@ -46,6 +69,7 @@ export class TodoCreator extends OBC.Component {
       }
     }
 
+    this._list.push(todoData)
     this.onTodoCreated.trigger(todoData)
   }
 
