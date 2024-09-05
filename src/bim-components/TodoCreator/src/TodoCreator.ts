@@ -3,7 +3,7 @@ import * as OBCF from "@thatopen/components-front"
 import * as THREE from "three"
 import { TodoData, TodoInput } from "./base-types"
 
-export class TodoCreator extends OBC.Component {
+export class TodoCreator extends OBC.Component implements OBC.Disposable {
   static uuid = "f26555ec-4394-4349-986a-7409e4fd308e"
   enabled = true
   private _components: OBC.Components
@@ -11,11 +11,18 @@ export class TodoCreator extends OBC.Component {
   private _list: TodoData[] = []
   
   onTodoCreated = new OBC.Event<TodoData>()
+  // to dispose UI
+  onDisposed: OBC.Event<any> = new OBC.Event()
 
   constructor(components: OBC.Components) {
     super(components)
     this._components = components
     components.add(TodoCreator.uuid, this)
+  }
+
+  async dispose() {
+    this.onDisposed.trigger()
+    this._list = []
   }
 
   async setup() {

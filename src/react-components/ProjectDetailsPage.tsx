@@ -48,6 +48,8 @@ export function ProjectDetailsPage(props: Props) {
     return BUI.html`
       <bim-table @rowcreated=${ onRowCreated }></bim-table>`
   })
+  todoTable.hiddenColumns = ["Fragment", "Camera"];
+  todoTable.columns = ["Name", "Task", "Date", { name: "Actions", width: "100px" }]
 
   const addTodo = (data: TodoData) => {
     const newData = {
@@ -56,12 +58,21 @@ export function ProjectDetailsPage(props: Props) {
         Task: data.task,
         Date: new Date().toDateString(),
         Fragment: JSON.stringify(data.fragmentGuids),
-        Camera: data.camera ? JSON.stringify(data.camera) : ""
+        Camera: data.camera ? JSON.stringify(data.camera) : "",
+        Actions: "" 
       },
     }
-
     todoTable.data = [...todoTable.data, newData]
-    todoTable.hiddenColumns = ["Fragment", "Camera"];
+    
+    todoTable.dataTransform = {
+      Actions: () => {
+        return BUI.html`
+          <div>
+            <bim-button icon="material-symbols:delete" style="background-color: red"></bim-button>
+          </div>
+        `;
+      }
+    }
   }
 
   const todoCreator = components.get(TodoCreator)
@@ -72,6 +83,14 @@ export function ProjectDetailsPage(props: Props) {
     const [todoButton, todoPriorityButton] = todoTool({ components })
     todoContainer.current?.appendChild( todoButton )
     todoContainer.current?.appendChild( todoPriorityButton )
+
+    todoCreator.onDisposed.add(() => {
+      // your disposed being called
+      console.log("Disposed")
+      todoButton.remove()
+      todoPriorityButton.remove()
+      todoTable.data = []
+    })
   }, [])
   
   return (
