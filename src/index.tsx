@@ -14,14 +14,9 @@ declare global {
   namespace JSX {
     interface IntrinsicElements {
       "bim-grid": any;
-      "bim-text-input": any;
-      "bim-button": any;
       "bim-label": any;
-      "bim-panel": any;
-      "bim-panel-section": any;
-      "bim-table": any;
-      "bim-dropdown": any;
-      "bim-option": any;
+      "bim-button": any;
+      "bim-text-input": any;
     }
   }
 }

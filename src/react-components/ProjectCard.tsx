@@ -20,7 +20,13 @@ export function ProjectCard(props: Props) {
           HC
         </p>
         <div>
-          <bim-label style={{ fontSize: "16px", color: "#fff", fontWeight: "bold" }}>{ props.project.name }</bim-label>
+          <bim-label 
+            style={{ 
+              fontSize: "16px", 
+              color: "#fff", 
+              fontWeight: "bold" 
+            }}
+          >{ props.project.name }</bim-label>
           <bim-label style={{ color: "#fff" }}>{ props.project.description }</bim-label>
         </div>
       </div>

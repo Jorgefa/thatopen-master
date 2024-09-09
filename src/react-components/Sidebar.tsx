@@ -13,7 +13,7 @@ export function Sidebar() {
         </Router.Link>
         <Router.Link to="/users">
           <li>
-            <bim-label style={{ color: "#fff" }} icon="mdi:users">Users</bim-label>
+            <bim-label style={{ color: "#fff" }} icon="mdi:user">Users</bim-label>
           </li>
         </Router.Link>
       </ul>

@@ -180,22 +180,21 @@ export function ProjectsPage(props: Props) {
         <bim-label>Projects</bim-label>
         <SearchBox onChange={(value) => onProjectSearch(value)}/>
         <div style={{ display: "flex", alignItems: "center", columnGap: 15 }}>
-          <bim-button 
-            id="upload-btn" 
-            icon="ic:round-upload"
-            onClick={onImportProject}
-          ></bim-button>
-          <bim-button 
-            id="download-btn" 
-            icon="ic:round-download"
-            onClick={onExportProject}
-          ></bim-button>
-          <bim-button 
-            id="new-project-btn" 
-            label="New Project" 
-            icon="fluent:add-20-regular" 
-            onClick={onNewProjectClick}
-          ></bim-button>
+          <bim-button
+            id="import-projects-btn"
+            icon="iconoir:import"
+          >
+          </bim-button>
+          <bim-button
+            id="export-projects-btn"
+            icon="ph:export"
+          >
+          </bim-button>
+          <bim-button onClick={onNewProjectClick} id="new-project-btn"
+            label="New Project"
+            icon="fluent:add-20-regular"
+          >
+          </bim-button>
         </div>
       </header>
       {

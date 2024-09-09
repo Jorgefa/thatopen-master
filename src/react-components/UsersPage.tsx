@@ -111,12 +111,15 @@ export function UsersPage() {
         header: (() => {
           const inputBox = BUI.Component.create<BUI.TextInput>(() => {
             return BUI.html `
-              <bim-text-input style="padding: 8px" placeholder="Search Users"></bim-text-input>
-            `
+              <bim-text-input style="padding: 8px" placeholder="Search Users">
+              </bim-text-input>
+            `;
           })
+
           inputBox.addEventListener("input", () => {
             userTable.queryString = inputBox.value
           })
+
           return inputBox
         })(),
         sidebar,

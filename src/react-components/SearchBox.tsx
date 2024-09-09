@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as BUI from "@thatopen/ui";
+import * as BUI from "@thatopen/ui"
 
 interface Props {
   onChange: (value: string) => void
