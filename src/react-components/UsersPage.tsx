@@ -10,24 +10,19 @@ declare global {
 }
 
 export function UsersPage() {
+  
   const userTable = BUI.Component.create<BUI.Table>(() => {
+    
     const onTableCreated = (element?: Element) => {
-      if (!element) return;
-      const table = element as BUI.Table;
+      const table = element as BUI.Table
+
       table.data = [
         {
           data: {
             Name: "John Doe",
             Task: "Create Work Orders",
             Role: "Engineer",
-          },
-        },
-        {
-          data: {
-            Name: "Jane Doe",
-            Task: "Review Work Orders",
-            Role: "Manager",
-          },
+          }
         },
         {
           data: {
@@ -52,7 +47,7 @@ export function UsersPage() {
         }
       ]
     }
-  
+
     return BUI.html `
       <bim-table ${BUI.ref(onTableCreated)}></bim-table>
     `
@@ -64,27 +59,27 @@ export function UsersPage() {
         <bim-panel-section label="Tasks">
           ${userTable}
         </bim-panel-section>
-      </bim-panel> 
+      </bim-panel>
     `;
   })
-  
+
   const sidebar = BUI.Component.create<BUI.Component>(() => {
     const buttonStyles = {
       "height": "50px",
     }
-  
+
     return BUI.html `
       <div style="padding: 4px">
-        <bim-button 
+        <bim-button
           style=${BUI.styleMap(buttonStyles)} 
           icon="material-symbols:print-sharp"
           @click=${() => {
             console.log(userTable.value)
           }}
         ></bim-button>
-        <bim-button 
+        <bim-button
           style=${BUI.styleMap(buttonStyles)} 
-          icon="uil:file-export"
+          icon="mdi:file"
           @click=${() => {
             const csvData = userTable.csv
             const blob = new Blob([csvData], { type: "text/csv" })
@@ -109,9 +104,9 @@ export function UsersPage() {
       `,
       elements: {
         header: (() => {
-          const header = document.createElement("div");
-          header.style.backgroundColor = "#641b1b66";
-          return header;
+          const header = document.createElement("div")
+          header.style.backgroundColor = "#641b1b66"
+          return header
         })(),
         sidebar,
         content,
@@ -130,7 +125,7 @@ export function UsersPage() {
     grid.layouts = gridLayout
     grid.layout = "primary"
   }, [])
-  
+
   return (
     <div>
       <bim-grid id="bimGrid"></bim-grid>
