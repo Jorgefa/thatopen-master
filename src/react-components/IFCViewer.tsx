@@ -6,11 +6,9 @@ import * as CUI from "@thatopen/ui-obc";
 import { FragmentsGroup } from "@thatopen/fragments";
 
 export function IFCViewer() {
+  const components = new OBC.Components()
   let fragmentModel: FragmentsGroup | undefined
-  let components: OBC.Components
-
   const setViewer = () => {
-    components = new OBC.Components()
   
     const worlds = components.get(OBC.Worlds)
 
@@ -41,7 +39,6 @@ export function IFCViewer() {
 
     const fragmentsManager = components.get(OBC.FragmentsManager);
     fragmentsManager.onFragmentsLoaded.add(async (model) => {
-      
       world.scene.three.add(model)
 
       const indexer = components.get(OBC.IfcRelationsIndexer)
@@ -95,20 +92,19 @@ export function IFCViewer() {
 
   const onShowProperties = () => {
     if (!fragmentModel) return
-
-    const indexer = components.get(OBC.IfcRelationsIndexer)
     const highlighter = components.get(OBCF.Highlighter)
     const selection = highlighter.selection.select
+    const indexer = components.get(OBC.IfcRelationsIndexer)
     for (const fragmentID in selection) {
       const expressIDs = selection[fragmentID]
       for (const id of expressIDs) {
-        const psets = indexer.getEntityRelations(fragmentModel, id, "IsDefinedBy")
+        const psets = indexer.getEntityRelations(fragmentModel, id, "ContainedInStructure")
         console.log(psets)
       }
     }
   }
 
-  const setUI = () => {
+  const setupUI = () => {
     const viewerContainer = document.getElementById("viewer-container") as HTMLElement
     if (!viewerContainer) return
 
@@ -149,6 +145,13 @@ export function IFCViewer() {
               @click=${onShowProperties}
             ></bim-button>
           </bim-toolbar-section>
+          <bim-toolbar-section label="Property">
+            <bim-button
+              label="Show"
+              icon="clarity:list-line"
+              @click=${onShowProperties}
+            ></bim-button>
+          </bim-toolbar-section>
         </bim-toolbar>
       `
     })
@@ -170,15 +173,11 @@ export function IFCViewer() {
 
   React.useEffect(() => {
     setViewer()
-    setUI()
+    setupUI()
 
     return () => {
       if (components) {
         components.dispose()
-      }
-      const viewerContainer = document.getElementById("viewer-container")
-      if (viewerContainer) {
-        viewerContainer.innerHTML = ""
       }
       if (fragmentModel) {
         fragmentModel.dispose()
