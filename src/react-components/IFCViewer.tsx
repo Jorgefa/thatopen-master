@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as OBC from "@thatopen/components";
 import * as OBCF from "@thatopen/components-front";
-import * as BUI from "@thatopen/ui";
+import * as BUI from "@thatopen/ui"
 import * as CUI from "@thatopen/ui-obc";
 
 export function IFCViewer() {
