@@ -1,14 +1,13 @@
 import * as React from "react";
+import * as THREE from "three";
 import * as OBC from "@thatopen/components";
-import * as BUI from "@thatopen/ui";
+import * as BUI from "@thatopen/ui"
 import * as CUI from "@thatopen/ui-obc";
 
 export function IFCViewer() {
-  let components: OBC.Components
+  const components = new OBC.Components();
 
   const setViewer = () => {
-    components = new OBC.Components()
-  
     const worlds = components.get(OBC.Worlds)
 
     const world = worlds.create<
@@ -27,46 +26,50 @@ export function IFCViewer() {
 
     const cameraComponent = new OBC.OrthoPerspectiveCamera(components)
     world.camera = cameraComponent
-    
-    components.init()
 
+    components.init()
+    
     world.camera.controls.setLookAt(3, 3, 3, 0, 0, 0)
     world.camera.updateAspect()
 
     const ifcLoader = components.get(OBC.IfcLoader)
     ifcLoader.setup()
 
-    const fragmentsManager = components.get(OBC.FragmentsManager);
-    fragmentsManager.onFragmentsLoaded.add((model) => {
-      world.scene.three.add(model);
-    });
+    const fragmentsManager = components.get(OBC.FragmentsManager)
+    fragmentsManager.onFragmentsLoaded.add( (model) => {
+      world.scene.three.add(model)
+    })
 
     viewerContainer.addEventListener("resize", () => {
-      rendererComponent.resize();
-      cameraComponent.updateAspect();
-    });
+      rendererComponent.resize()
+      cameraComponent.updateAspect()
+    })
   }
 
-  const setUI = () => {
+  const setupUI = () => {
     const viewerContainer = document.getElementById("viewer-container") as HTMLElement
     if (!viewerContainer) return
 
     const floatingGrid = BUI.Component.create<BUI.Grid>(() => {
-      return BUI.html`
-        <bim-grid floating style="padding: 20px;"></bim-grid>
+      return BUI.html `
+        <bim-grid
+          floating
+          style="padding: 20px"
+        >
+        </bim-grid>
       `;
-    });
+    })
 
     const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
-      const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components });
-      return BUI.html`
+      const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components })
+      return BUI.html `
         <bim-toolbar style="justify-self: center;">
           <bim-toolbar-section>
             ${loadIfcBtn}
           </bim-toolbar-section>
         </bim-toolbar>
       `;
-    });
+    })
 
     floatingGrid.layouts = {
       main: {
@@ -75,8 +78,10 @@ export function IFCViewer() {
           "toolbar" auto
           /1fr
         `,
-        elements: { toolbar },
-      },
+        elements: {
+          toolbar
+        }
+      }
     }
     floatingGrid.layout = "main"
 
@@ -85,18 +90,11 @@ export function IFCViewer() {
 
   React.useEffect(() => {
     setViewer()
-    setUI()
-
+    setupUI()
     return () => {
-      if (components) {
-        components.dispose()
-      } 
-      const viewerContainer = document.getElementById("viewer-container")
-      if (viewerContainer) {
-        viewerContainer.innerHTML = ""
-      }
-    }
-  }, [])
+      components.dispose() 
+    };
+  }, []); 
 
   return (
     <bim-viewport
