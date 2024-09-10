@@ -145,13 +145,6 @@ export function IFCViewer() {
               @click=${onShowProperties}
             ></bim-button>
           </bim-toolbar-section>
-          <bim-toolbar-section label="Property">
-            <bim-button
-              label="Show"
-              icon="clarity:list-line"
-              @click=${onShowProperties}
-            ></bim-button>
-          </bim-toolbar-section>
         </bim-toolbar>
       `
     })
