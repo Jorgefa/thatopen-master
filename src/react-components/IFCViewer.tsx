@@ -37,17 +37,17 @@ export function IFCViewer() {
 
     const fragmentsManager = components.get(OBC.FragmentsManager);
     fragmentsManager.onFragmentsLoaded.add((model) => {
-      world.scene.three.add(model);
+      world.scene.three.add(model)
     });
 
-    const highlighter = components.get(OBCF.Highlighter);
-    highlighter.setup({ world });
-    highlighter.zoomToSelection = true;
+    const highlighter = components.get(OBCF.Highlighter)
+    highlighter.setup({ world })
+    highlighter.zoomToSelection = true
 
     viewerContainer.addEventListener("resize", () => {
-      rendererComponent.resize();
-      cameraComponent.updateAspect();
-    });
+      rendererComponent.resize()
+      cameraComponent.updateAspect()
+    })
   }
 
   const setupUI = () => {
@@ -58,10 +58,10 @@ export function IFCViewer() {
       return BUI.html`
         <bim-grid floating style="padding: 20px;"></bim-grid>
       `;
-    });
+    })
 
     const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
-      const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components });
+      const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components })
       return BUI.html`
         <bim-toolbar style="justify-self: center;">
           <bim-toolbar-section>
