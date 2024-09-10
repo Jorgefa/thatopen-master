@@ -1,15 +1,13 @@
 import * as React from "react";
 import * as OBC from "@thatopen/components";
 import * as OBCF from "@thatopen/components-front";
-import * as BUI from "@thatopen/ui";
+import * as BUI from "@thatopen/ui"
 import * as CUI from "@thatopen/ui-obc";
 
 export function IFCViewer() {
-  let components: OBC.Components
+  const components = new OBC.Components();
 
   const setViewer = () => {
-    components = new OBC.Components()
-  
     const worlds = components.get(OBC.Worlds)
 
     const world = worlds.create<
@@ -55,10 +53,9 @@ export function IFCViewer() {
   const onToggleVisibility = () => {
     const highlighter = components.get(OBCF.Highlighter)
     const fragments = components.get(OBC.FragmentsManager)
-
     const selection = highlighter.selection.select
-    if (Object.keys(selection).length === 0) return;
-    for (const fragmentID in selection) {  
+    if (Object.keys(selection).length === 0) return
+    for (const fragmentID in selection) {
       const fragment = fragments.list.get(fragmentID)
       const expressIDs = selection[fragmentID]
       for (const id of expressIDs) {
@@ -78,14 +75,14 @@ export function IFCViewer() {
     const hider = components.get(OBC.Hider)
     const selection = highlighter.selection.select
     hider.isolate(selection)
-  };
+  }
 
-  const onShowAll = () => {
+  const onShow = () => {
     const hider = components.get(OBC.Hider)
     hider.set(true)
   }
 
-  const setUI = () => {
+  const setupUI = () => {
     const viewerContainer = document.getElementById("viewer-container") as HTMLElement
     if (!viewerContainer) return
 
@@ -96,27 +93,27 @@ export function IFCViewer() {
     })
 
     const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
-      const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components });
+      const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components })
       return BUI.html`
         <bim-toolbar style="justify-self: center;">
           <bim-toolbar-section label="Import">
             ${loadIfcBtn}
           </bim-toolbar-section>
           <bim-toolbar-section label="Selection">
-            <bim-button 
-              label="Visibility" 
-              icon="tabler:square-toggle" 
+            <bim-button
+              label="Visibility"
+              icon="material-symbols:visibility-outline"
               @click=${onToggleVisibility}
             ></bim-button>
             <bim-button
               label="Isolate"
-              icon="prime:filter-fill"
+              icon="mdi:filter"
               @click=${onIsolate}
             ></bim-button>
             <bim-button
               label="Show All"
               icon="tabler:eye-filled"
-              @click=${onShowAll}
+              @click=${onShow}
             ></bim-button>
           </bim-toolbar-section>
         </bim-toolbar>
@@ -140,15 +137,11 @@ export function IFCViewer() {
 
   React.useEffect(() => {
     setViewer()
-    setUI()
+    setupUI()
 
     return () => {
       if (components) {
         components.dispose()
-      } 
-      const viewerContainer = document.getElementById("viewer-container")
-      if (viewerContainer) {
-        viewerContainer.innerHTML = ""
       }
     }
   }, [])
