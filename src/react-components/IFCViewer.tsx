@@ -5,11 +5,9 @@ import * as BUI from "@thatopen/ui"
 import * as CUI from "@thatopen/ui-obc";
 
 export function IFCViewer() {
-  let components: OBC.Components
+  const components = new OBC.Components();
 
   const setViewer = () => {
-    components = new OBC.Components()
-  
     const worlds = components.get(OBC.Worlds)
 
     const world = worlds.create<
@@ -52,7 +50,7 @@ export function IFCViewer() {
     });
   }
 
-  const setUI = () => {
+  const setupUI = () => {
     const viewerContainer = document.getElementById("viewer-container") as HTMLElement
     if (!viewerContainer) return
 
@@ -90,15 +88,11 @@ export function IFCViewer() {
 
   React.useEffect(() => {
     setViewer()
-    setUI()
+    setupUI()
 
     return () => {
       if (components) {
         components.dispose()
-      } 
-      const viewerContainer = document.getElementById("viewer-container")
-      if (viewerContainer) {
-        viewerContainer.innerHTML = ""
       }
     }
   }, [])
