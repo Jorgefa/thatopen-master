@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as WEBIFC from "web-ifc";
 import * as OBC from "@thatopen/components";
 import * as OBCF from "@thatopen/components-front";
 import * as BUI from "@thatopen/ui";
@@ -7,15 +6,13 @@ import * as CUI from "@thatopen/ui-obc";
 import { FragmentsGroup } from "@thatopen/fragments";
 
 export function IFCViewer() {
+  const components = new OBC.Components()
   let fragmentModel: FragmentsGroup | undefined
-  const components: OBC.Components = new OBC.Components()
-
-  const [classificationsTree, updateClassificationsTree] = CUI.tables.classificationTree(
-  {
+  const [classificationsTree, updateClassificationsTree] = CUI.tables.classificationTree({
     components,
-    classifications: [],
-  });
-
+    classifications: []
+  })
+  
   const setViewer = () => {
   
     const worlds = components.get(OBC.Worlds)
@@ -40,7 +37,6 @@ export function IFCViewer() {
     components.init()
 
     world.renderer.postproduction.enabled = true
-
     world.camera.controls.setLookAt(3, 3, 3, 0, 0, 0)
     world.camera.updateAspect()
 
@@ -57,25 +53,27 @@ export function IFCViewer() {
       const classifier = components.get(OBC.Classifier)
       await classifier.bySpatialStructure(model)
       classifier.byEntity(model)
-
-      console.log(classifier.list)
+      classifier.byPredefinedType
 
       const classifications = [
-        { system: "entities", label: "Entities" },
-        { system: "spatialStructures", label: "Spatial Containers" }
+        {
+          system: "entities", label: "Entities"
+        },
+        {
+          system: "spatialStructures", label: "Spatial Containers"
+        }
       ]
       if (updateClassificationsTree) {
         updateClassificationsTree({classifications})
       }
 
       fragmentModel = model
-
-      exportFragment(model)
+      exportFragments(model)
     })
 
-    const exportFragment = (model: FragmentsGroup) => {
-      const fragmentsBinary = fragmentsManager.export(model)
-      const blob = new Blob([fragmentsBinary])
+    const exportFragments = (model: FragmentsGroup) => {
+      const fragmentBinary = fragmentsManager.export(model)
+      const blob = new Blob([fragmentBinary])
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -129,15 +127,13 @@ export function IFCViewer() {
 
   const onShowProperties = async () => {
     if (!fragmentModel) return
-
-    const indexer = components.get(OBC.IfcRelationsIndexer)
     const highlighter = components.get(OBCF.Highlighter)
     const selection = highlighter.selection.select
+    const indexer = components.get(OBC.IfcRelationsIndexer)
     for (const fragmentID in selection) {
       const expressIDs = selection[fragmentID]
       for (const id of expressIDs) {
-        const psets = indexer.getEntityRelations(fragmentModel, id, "IsDefinedBy")
-
+        const psets = indexer.getEntityRelations(fragmentModel, id, "ContainedInStructure")
         if (psets) {
           for (const expressId of psets) {
             const prop = await fragmentModel.getProperties(expressId)
@@ -148,17 +144,7 @@ export function IFCViewer() {
     }
   }
 
-  const onClassifier = () => {
-    const floatingGrid = document.querySelector("bim-grid") as BUI.Grid
-    if (!floatingGrid) return
-    if (floatingGrid.layout !== "classifier") {
-      floatingGrid.layout = "classifier"
-    } else {
-      floatingGrid.layout = "main"
-    }
-  }
-
-  const setUI = () => {
+  const setupUI = () => {
     const viewerContainer = document.getElementById("viewer-container") as HTMLElement
     if (!viewerContainer) return
 
@@ -171,9 +157,8 @@ export function IFCViewer() {
     const elementPropertyPanel = BUI.Component.create<BUI.Panel>(() => {
       const [propsTable, updatePropsTable] = CUI.tables.elementProperties({
         components,
-        fragmentIdMap: {},
-      });
-
+        fragmentIdMap: {}
+      })
       const highlighter = components.get(OBCF.Highlighter)
       highlighter.events.select.onHighlight.add((fragmentIdMap) => {
         if (!floatingGrid) return
@@ -193,15 +178,29 @@ export function IFCViewer() {
         propsTable.queryString = input.value
       }
 
-      return BUI.html`
+      return BUI.html `
         <bim-panel>
-          <bim-panel-section name="property" label="Property Information" icon="solar:document-bold" fixed>
+          <bim-panel-section
+            name="property"
+            label="Property Information"
+            icon="solar:document-bold"
+            fixed
+          >
             <bim-text-input @input=${search} placeholder="Search..."></bim-text-input>
-            ${propsTable}
+            ${propsTable}  
           </bim-panel-section>
-        </bim-panel>  
+        </bim-panel>
       `;
     })
+
+    const onClassifier = () => {
+      if (!floatingGrid) return
+      if (floatingGrid.layout !== "classifier") {
+        floatingGrid.layout = "classifier"
+      } else {
+        floatingGrid.layout = "main"
+      }
+    }
 
     const classifierPanel = BUI.Component.create<BUI.Panel>(() => {
       return BUI.html`
@@ -212,33 +211,39 @@ export function IFCViewer() {
             icon="solar:document-bold" 
             fixed
           >
+            <bim-label>Classifications</bim-label>
             ${classificationsTree}
           </bim-panel-section>
         </bim-panel>
       `;
     })
-    
+
     const onWorldsUpdate = () => {
       if (!floatingGrid) return
       floatingGrid.layout = "world"
     }
 
     const worldPanel = BUI.Component.create<BUI.Panel>(() => {
-      const [worldsTable] = CUI.tables.worldsConfiguration({ components });
-
+      const [worldsTable] = CUI.tables.worldsConfiguration({ components })
+      
       const search = (e: Event) => {
         const input = e.target as BUI.TextInput
         worldsTable.queryString = input.value
       }
-
-      return BUI.html`
+      
+      return BUI.html `
         <bim-panel>
-          <bim-panel-section name="world" label="World Information" icon="tabler:brush" fixed>
+          <bim-panel-section
+            name="world"
+            label="Worlds"
+            icon="tabler:brush"
+            fixed
+          >
             <bim-text-input @input=${search} placeholder="Search..."></bim-text-input>
-            ${worldsTable}
+            ${worldsTable}  
           </bim-panel-section>
-        </bim-panel>  
-      `
+        </bim-panel>
+      `;
     })
 
     const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
@@ -282,10 +287,10 @@ export function IFCViewer() {
           <bim-toolbar-section label="Groups">
             <bim-button
               label="Classifier"
-              icon="tabler:eye-filled"
+	            icon="tabler:eye-filled"
               @click=${onClassifier}
             ></bim-button>
-          </bim-toolbar-section>
+          </bim-toolbar-section
         </bim-toolbar>
       `
     })
@@ -318,7 +323,7 @@ export function IFCViewer() {
         `,
         elements: { 
           toolbar,
-          worldPanel 
+          worldPanel
         },
       },
       classifier: {
@@ -329,9 +334,9 @@ export function IFCViewer() {
         `,
         elements: { 
           toolbar,
-          classifierPanel 
+          classifierPanel
         },
-      }
+      },
     }
     floatingGrid.layout = "main"
 
@@ -340,18 +345,12 @@ export function IFCViewer() {
 
   React.useEffect(() => {
     setViewer()
-    setUI()
+    setupUI()
 
     return () => {
       if (components) {
         components.dispose()
       }
-
-      const viewerContainer = document.getElementById("viewer-container")
-      if (viewerContainer) {
-        viewerContainer.innerHTML = ""
-      }
-      
       if (fragmentModel) {
         fragmentModel.dispose()
         fragmentModel = undefined
