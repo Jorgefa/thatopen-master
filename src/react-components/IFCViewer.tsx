@@ -72,7 +72,6 @@ export function IFCViewer() {
     const classifier = components.get(OBC.Classifier)
     await classifier.bySpatialStructure(model)
     classifier.byEntity(model)
-    classifier.byPredefinedType
 
     const classifications = [
       {
