@@ -9,7 +9,6 @@ import { TodoCreator } from "../bim-components/TodoCreator";
 
 interface Props {
   components: OBC.Components
-  todoCreator: TodoCreator
 }
 
 export function IFCViewer(props: Props) {
@@ -87,7 +86,8 @@ export function IFCViewer(props: Props) {
       culler.needsUpdate = true
     })
 
-    props.todoCreator.world = world
+    const todoCreator = components.get(TodoCreator)
+    todoCreator.world = world
   }
 
   const processModel = async (model: FragmentsGroup) => {

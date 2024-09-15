@@ -197,7 +197,7 @@ export function ProjectDetailsPage(props: Props) {
             </div>
           </div>
         </div>
-        <IFCViewer components={ components } todoCreator={ todoCreator }/>
+        <IFCViewer components={ components }/>
       </div>
     </div>
   );
