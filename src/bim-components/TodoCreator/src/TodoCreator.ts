@@ -25,7 +25,7 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
     this._list = []
   }
 
-  async setup() {
+  setup() {
     const highlighter = this._components.get(OBCF.Highlighter)
     highlighter.add(`${TodoCreator.uuid}-priority-Low`, new THREE.Color(0x59bc59))
     highlighter.add(`${TodoCreator.uuid}-priority-Medium`, new THREE.Color(0x597cff))
