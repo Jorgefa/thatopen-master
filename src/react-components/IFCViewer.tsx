@@ -88,6 +88,7 @@ export function IFCViewer(props: Props) {
 
     const todoCreator = components.get(TodoCreator)
     todoCreator.world = world
+    todoCreator.setup()
   }
 
   const processModel = async (model: FragmentsGroup) => {
