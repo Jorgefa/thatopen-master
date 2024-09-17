@@ -409,7 +409,7 @@ export function IFCViewer(props: Props) {
 	            icon="tabler:eye-filled"
               @click=${onClassifier}
             ></bim-button>
-          </bim-toolbar-section
+          </bim-toolbar-section>
         </bim-toolbar>
       `
     })
