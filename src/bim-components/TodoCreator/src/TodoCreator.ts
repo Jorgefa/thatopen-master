@@ -60,8 +60,8 @@ export class TodoCreator extends OBC.Component {
     }
 
     const camera = this._world.camera
-    if (!(camera instanceof OBC.OrthoPerspectiveCamera)) {
-      throw new Error("No camera found in the world")
+    if (!(camera.hasCameraControls())) {
+      throw new Error("The world camera doesn't have camera controls")
     }
 
     await camera.controls.setLookAt(
