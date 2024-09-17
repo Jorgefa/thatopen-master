@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as WEBIFC from "web-ifc";
 import * as OBC from "@thatopen/components";
 import * as OBCF from "@thatopen/components-front";
 import * as BUI from "@thatopen/ui";
@@ -17,9 +16,9 @@ export function IFCViewer(props: Props) {
   const [classificationsTree, updateClassificationsTree] = CUI.tables.classificationTree(
   {
     components,
-    classifications: [],
-  });
-
+    classifications: []
+  })
+  
   const setViewer = () => {
   
     const worlds = components.get(OBC.Worlds)
@@ -37,18 +36,15 @@ export function IFCViewer(props: Props) {
     const viewerContainer = document.getElementById("viewer-container") as HTMLElement
     const rendererComponent = new OBCF.PostproductionRenderer(components, viewerContainer)
     world.renderer = rendererComponent
-    
+
     const cameraComponent = new OBC.OrthoPerspectiveCamera(components)
     world.camera = cameraComponent
     
     components.init()
 
     world.renderer.postproduction.enabled = true
-
     world.camera.controls.setLookAt(3, 3, 3, 0, 0, 0)
     world.camera.updateAspect()
-
-    world.renderer.postproduction.enabled = true
 
     const ifcLoader = components.get(OBC.IfcLoader)
     ifcLoader.setup()
@@ -56,10 +52,11 @@ export function IFCViewer(props: Props) {
     const cullers = components.get(OBC.Cullers)
     const culler = cullers.create(world)
 
-    const fragmentsManager = components.get(OBC.FragmentsManager);
+    const fragmentsManager = components.get(OBC.FragmentsManager)
     fragmentsManager.onFragmentsLoaded.add(async (model) => {
+      console.log(model)
       world.scene.three.add(model)
-
+      
       if (model.hasProperties) {
         await processModel(model)
       }
@@ -93,12 +90,14 @@ export function IFCViewer(props: Props) {
     const classifier = components.get(OBC.Classifier)
     await classifier.bySpatialStructure(model)
     classifier.byEntity(model)
-    
-    console.log(classifier.list)
 
     const classifications = [
-      { system: "entities", label: "Entities" },
-      { system: "spatialStructures", label: "Spatial Containers" }
+      {
+        system: "entities", label: "Entities"
+      },
+      {
+        system: "spatialStructures", label: "Spatial Containers"
+      }
     ]
     if (updateClassificationsTree) {
       updateClassificationsTree({classifications})
@@ -142,10 +141,10 @@ export function IFCViewer(props: Props) {
 
   const onFragmentExport = () => {
     const fragmentsManager = components.get(OBC.FragmentsManager)
-    
+
     if (!fragmentModel) return
-    const fragmentsBinary = fragmentsManager.export(fragmentModel)
-    const blob = new Blob([fragmentsBinary])
+    const fragmentBinary = fragmentsManager.export(fragmentModel)
+    const blob = new Blob([fragmentBinary])
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
@@ -159,12 +158,12 @@ export function IFCViewer(props: Props) {
     input.type = 'file'
     input.accept = '.frag'
     const reader = new FileReader()
-    reader.addEventListener("load", async () => {
+    reader.addEventListener("load", () => {
       const binary = reader.result
-      if (!(binary instanceof ArrayBuffer)) { return }
-      const fragmentsBinary = new Uint8Array(binary)
+      if(!(binary instanceof ArrayBuffer)) return
+      const fragmentBinary = new Uint8Array(binary)
       const fragmentsManager = components.get(OBC.FragmentsManager)
-      fragmentsManager.load(fragmentsBinary)
+      fragmentsManager.load(fragmentBinary)
     })
     input.addEventListener('change', () => {
       const filesList = input.files
@@ -176,12 +175,10 @@ export function IFCViewer(props: Props) {
 
   const onFragmentDispose = () => {
     const fragmentsManager = components.get(OBC.FragmentsManager)
-    if (!fragmentModel) return
-    fragmentsManager.disposeGroup(fragmentModel)
+    for (const [, group] of fragmentsManager.groups) {
+      fragmentsManager.disposeGroup(group)
+    }
     fragmentModel = undefined
-
-    const highlighter = components.get(OBC.IfcRelationsIndexer)
-    console.log(highlighter)
   }
 
   const onToggleVisibility = () => {
@@ -219,15 +216,13 @@ export function IFCViewer(props: Props) {
 
   const onShowProperties = async () => {
     if (!fragmentModel) return
-
-    const indexer = components.get(OBC.IfcRelationsIndexer)
     const highlighter = components.get(OBCF.Highlighter)
     const selection = highlighter.selection.select
+    const indexer = components.get(OBC.IfcRelationsIndexer)
     for (const fragmentID in selection) {
       const expressIDs = selection[fragmentID]
       for (const id of expressIDs) {
-        const psets = indexer.getEntityRelations(fragmentModel, id, "IsDefinedBy")
-
+        const psets = indexer.getEntityRelations(fragmentModel, id, "ContainedInStructure")
         if (psets) {
           for (const expressId of psets) {
             const prop = await fragmentModel.getProperties(expressId)
@@ -238,17 +233,7 @@ export function IFCViewer(props: Props) {
     }
   }
 
-  const onClassifier = () => {
-    const floatingGrid = document.querySelector("bim-grid") as BUI.Grid
-    if (!floatingGrid) return
-    if (floatingGrid.layout !== "classifier") {
-      floatingGrid.layout = "classifier"
-    } else {
-      floatingGrid.layout = "main"
-    }
-  }
-
-  const setUI = () => {
+  const setupUI = () => {
     const viewerContainer = document.getElementById("viewer-container") as HTMLElement
     if (!viewerContainer) return
 
@@ -261,9 +246,8 @@ export function IFCViewer(props: Props) {
     const elementPropertyPanel = BUI.Component.create<BUI.Panel>(() => {
       const [propsTable, updatePropsTable] = CUI.tables.elementProperties({
         components,
-        fragmentIdMap: {},
-      });
-
+        fragmentIdMap: {}
+      })
       const highlighter = components.get(OBCF.Highlighter)
       highlighter.events.select.onHighlight.add((fragmentIdMap) => {
         if (!floatingGrid) return
@@ -283,15 +267,29 @@ export function IFCViewer(props: Props) {
         propsTable.queryString = input.value
       }
 
-      return BUI.html`
+      return BUI.html `
         <bim-panel>
-          <bim-panel-section name="property" label="Property Information" icon="solar:document-bold" fixed>
+          <bim-panel-section
+            name="property"
+            label="Property Information"
+            icon="solar:document-bold"
+            fixed
+          >
             <bim-text-input @input=${search} placeholder="Search..."></bim-text-input>
-            ${propsTable}
+            ${propsTable}  
           </bim-panel-section>
-        </bim-panel>  
+        </bim-panel>
       `;
     })
+
+    const onClassifier = () => {
+      if (!floatingGrid) return
+      if (floatingGrid.layout !== "classifier") {
+        floatingGrid.layout = "classifier"
+      } else {
+        floatingGrid.layout = "main"
+      }
+    }
 
     const classifierPanel = BUI.Component.create<BUI.Panel>(() => {
       return BUI.html`
@@ -302,37 +300,43 @@ export function IFCViewer(props: Props) {
             icon="solar:document-bold" 
             fixed
           >
+            <bim-label>Classifications</bim-label>
             ${classificationsTree}
           </bim-panel-section>
         </bim-panel>
       `;
     })
-    
+
     const onWorldsUpdate = () => {
       if (!floatingGrid) return
       floatingGrid.layout = "world"
     }
 
     const worldPanel = BUI.Component.create<BUI.Panel>(() => {
-      const [worldsTable] = CUI.tables.worldsConfiguration({ components });
-
+      const [worldsTable] = CUI.tables.worldsConfiguration({ components })
+      
       const search = (e: Event) => {
         const input = e.target as BUI.TextInput
         worldsTable.queryString = input.value
       }
-
-      return BUI.html`
+      
+      return BUI.html `
         <bim-panel>
-          <bim-panel-section name="world" label="World Information" icon="tabler:brush" fixed>
+          <bim-panel-section
+            name="world"
+            label="Worlds"
+            icon="tabler:brush"
+            fixed
+          >
             <bim-text-input @input=${search} placeholder="Search..."></bim-text-input>
-            ${worldsTable}
+            ${worldsTable}  
           </bim-panel-section>
-        </bim-panel>  
-      `
+        </bim-panel>
+      `;
     })
 
     const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
-      const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components });
+      const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components })
       loadIfcBtn.tooltipTitle = "Load IFC"
       loadIfcBtn.label = ""
 
@@ -349,21 +353,21 @@ export function IFCViewer(props: Props) {
             ${loadIfcBtn}
           </bim-toolbar-section>
           <bim-toolbar-section label="Fragments">
-            <bim-button 
-              tooltip-title="Import"
-              icon="mdi:cube-scan" 
-              @click=${onFragmentImport}
-            ></bim-button>
-            <bim-button 
-              tooltip-title="Export"
-              icon="tabler:package-export"
-              @click=${onFragmentExport}
-            ></bim-button>
-            <bim-button
-              tooltip-title="Dispose"
-              icon="tabler:trash"
-              @click=${onFragmentDispose}
-            ></bim-button>
+              <bim-button 
+                tooltip-title="Import"
+                icon="mdi:cube"
+                @click=${onFragmentImport}
+              ></bim-button>
+              <bim-button
+                tooltip-title="Export"
+                icon="tabler:package-export"
+                @click=${onFragmentExport}
+              ></bim-button>
+              <bim-button
+                tooltip-title="Dispose"
+                icon="tabler:trash"
+                @click=${onFragmentDispose}
+              ></bim-button>
           </bim-toolbar-section>
           <bim-toolbar-section label="Selection">
             <bim-button 
@@ -402,10 +406,10 @@ export function IFCViewer(props: Props) {
           <bim-toolbar-section label="Groups">
             <bim-button
               tooltip-title="Classifier"
-              icon="tabler:eye-filled"
+	            icon="tabler:eye-filled"
               @click=${onClassifier}
             ></bim-button>
-          </bim-toolbar-section>
+          </bim-toolbar-section
         </bim-toolbar>
       `
     })
@@ -438,7 +442,7 @@ export function IFCViewer(props: Props) {
         `,
         elements: { 
           toolbar,
-          worldPanel 
+          worldPanel
         },
       },
       classifier: {
@@ -449,30 +453,25 @@ export function IFCViewer(props: Props) {
         `,
         elements: { 
           toolbar,
-          classifierPanel 
+          classifierPanel
         },
-      }
+      },
     }
-  
     floatingGrid.layout = "main"
 
     viewerContainer.appendChild(floatingGrid)
   }
 
   React.useEffect(() => {
-    setViewer()
-    setUI()
+    setTimeout(() => {
+      setViewer()
+      setupUI()
+    })
 
     return () => {
       if (components) {
         components.dispose()
       }
-
-      const viewerContainer = document.getElementById("viewer-container")
-      if (viewerContainer) {
-        viewerContainer.innerHTML = ""
-      }
-      
       if (fragmentModel) {
         fragmentModel.dispose()
         fragmentModel = undefined
