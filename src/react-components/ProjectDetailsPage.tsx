@@ -37,7 +37,7 @@ export function ProjectDetailsPage(props: Props) {
       todoCreator.highlightTodo({
         name: row.data.Name,
         task: row.data.Task,
-        fragmentGuids: JSON.parse(row.data.Fragment),
+        ifcGuids: JSON.parse(row.data.Guids),
         camera: JSON.parse(row.data.Camera)
       })
     })
@@ -54,13 +54,13 @@ export function ProjectDetailsPage(props: Props) {
         Name: data.name,
         Task: data.task,
         Date: new Date().toDateString(),
-        Fragment: JSON.stringify(data.fragmentGuids),
+        Guids: JSON.stringify(data.ifcGuids),
         Camera: data.camera ? JSON.stringify(data.camera) : ""
       },
     }
 
     todoTable.data = [...todoTable.data, newData]
-    todoTable.hiddenColumns = ["Fragment", "Camera"];
+    todoTable.hiddenColumns = ["Guids", "Camera"];
   }
 
   const todoCreator = components.get(TodoCreator)

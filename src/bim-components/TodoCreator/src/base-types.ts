@@ -6,6 +6,6 @@ export interface TodoInput {
 export interface TodoData {
   name: string
   task: string
-  fragmentGuids: string[]
+  ifcGuids: string[]
   camera: {position: THREE.Vector3, target: THREE.Vector3}
 }

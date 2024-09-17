@@ -39,7 +39,7 @@ export class TodoCreator extends OBC.Component {
     const todoData: TodoData = {
       name: data.name,
       task: data.task,
-      fragmentGuids: guids,
+      ifcGuids: guids,
       camera: {
         position,
         target,
@@ -51,7 +51,7 @@ export class TodoCreator extends OBC.Component {
 
   async highlightTodo(todo: TodoData) {
     const fragments = this._components.get(OBC.FragmentsManager)
-    const fragmentIdMap = fragments.guidToFragmentIdMap(todo.fragmentGuids)
+    const fragmentIdMap = fragments.guidToFragmentIdMap(todo.ifcGuids)
     const highlighter = this._components.get(OBCF.Highlighter)
     await highlighter.highlightByID("select", fragmentIdMap, true, false)
 
