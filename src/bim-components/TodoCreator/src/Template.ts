@@ -33,7 +33,7 @@ export const todoTool = (state: TodoUIState) => {
                 const todoValue: TodoData = {
                   name: nameInput.value,
                   task: taskInput.value,
-                  fragmentGuids: guids
+                  ifcGuids: guids
                 }
                 if (!todoValue) {return}
                 todoCreator.addTodo(todoValue)

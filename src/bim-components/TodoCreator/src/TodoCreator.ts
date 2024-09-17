@@ -1,10 +1,9 @@
 import * as OBC from "@thatopen/components"
-import * as FRAGS from "@thatopen/fragments"
 
 export interface TodoData {
   name: string
   task: string
-  fragmentGuids: string[]
+  ifcGuids: string[]
 }
 
 export class TodoCreator extends OBC.Component {

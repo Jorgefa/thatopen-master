@@ -53,7 +53,7 @@ export function ProjectDetailsPage(props: Props) {
         Name: data.name,
         Task: data.task,
         Date: new Date().toDateString(),
-        Guids: JSON.stringify(data.fragmentGuids)
+        Guids: JSON.stringify(data.ifcGuids)
       },
     }
 
