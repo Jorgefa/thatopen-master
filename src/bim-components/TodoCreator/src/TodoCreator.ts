@@ -34,7 +34,7 @@ export class TodoCreator extends OBC.Component {
     if (value) {
       for (const todo of this._list) {
         const fragments = this._components.get(OBC.FragmentsManager)
-        const fragmentIdMap = fragments.guidToFragmentIdMap(todo.fragmentGuids)
+        const fragmentIdMap = fragments.guidToFragmentIdMap(todo.ifcGuids)
         highlighter.highlightByID(`${TodoCreator.uuid}-priority-${todo.priority}`, fragmentIdMap, false, false)
       }
     } else {
@@ -62,7 +62,7 @@ export class TodoCreator extends OBC.Component {
       name: data.name,
       task: data.task,
       priority: data.priority,
-      fragmentGuids: guids,
+      ifcGuids: guids,
       camera: {
         position,
         target,
@@ -75,17 +75,17 @@ export class TodoCreator extends OBC.Component {
 
   async highlightTodo(todo: TodoData) {
     const fragments = this._components.get(OBC.FragmentsManager)
-    const fragmentIdMap = fragments.guidToFragmentIdMap(todo.fragmentGuids)
+    const fragmentIdMap = fragments.guidToFragmentIdMap(todo.ifcGuids)
     const highlighter = this._components.get(OBCF.Highlighter)
-    await highlighter.highlightByID("select", fragmentIdMap, true, false)
+    highlighter.highlightByID("select", fragmentIdMap, true, false)
 
     if (!this._world) {
       throw new Error("No world found")
     }
 
     const camera = this._world.camera
-    if (!(camera instanceof OBC.OrthoPerspectiveCamera)) {
-      throw new Error("No camera found in the world")
+    if (!(camera.hasCameraControls())) {
+      throw new Error("The world camera doesn't have camera controls")
     }
 
     await camera.controls.setLookAt(

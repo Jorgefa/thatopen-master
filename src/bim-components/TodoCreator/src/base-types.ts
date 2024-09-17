@@ -10,6 +10,6 @@ export interface TodoData {
   name: string
   task: string
   priority: Priority
-  fragmentGuids: string[]
+  ifcGuids: string[]
   camera: {position: THREE.Vector3, target: THREE.Vector3}
 }
