@@ -19,9 +19,9 @@ export const todoTool = (state: TodoUIState) => {
   const priorityInput = BUI.Component.create<BUI.Dropdown>(() => {
     return BUI.html`
       <bim-dropdown label="Priority">
-        <bim-option value="Low" label="Low" checked></bim-option>
-        <bim-option value="Medium" label="Medium"></bim-option>
-        <bim-option value="High" label="High"></bim-option>
+        <bim-option label="Low" checked></bim-option>
+        <bim-option label="Medium"></bim-option>
+        <bim-option label="High"></bim-option>
       </bim-dropdown>
     `
   })
