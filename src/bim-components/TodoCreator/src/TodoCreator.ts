@@ -53,7 +53,7 @@ export class TodoCreator extends OBC.Component {
     const fragments = this._components.get(OBC.FragmentsManager)
     const fragmentIdMap = fragments.guidToFragmentIdMap(todo.ifcGuids)
     const highlighter = this._components.get(OBCF.Highlighter)
-    await highlighter.highlightByID("select", fragmentIdMap, true, false)
+    highlighter.highlightByID("select", fragmentIdMap, true, false)
 
     if (!this._world) {
       throw new Error("No world found")
