@@ -3,10 +3,11 @@ import * as OBCF from "@thatopen/components-front"
 import * as BUI from "@thatopen/ui"
 import { TodoCreator, TodoData } from "./TodoCreator"
 
-export interface todoUIState {
+export interface TodoUIState {
   components: OBC.Components
 }
-export const todoTool = (state: todoUIState) => {
+
+export const todoTool = (state: TodoUIState) => {
   const { components } = state
   const todoCreator = components.get(TodoCreator)
   
