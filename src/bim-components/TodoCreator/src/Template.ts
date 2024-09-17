@@ -3,11 +3,11 @@ import * as BUI from "@thatopen/ui"
 import { TodoCreator } from "./TodoCreator"
 import { Priority, TodoInput } from "./base-types"
 
-export interface todoUIState {
+export interface TodoUIState {
   components: OBC.Components
 }
 
-export const todoTool = (state: todoUIState) => {
+export const todoTool = (state: TodoUIState) => {
   const { components } = state
   const todoCreator = components.get(TodoCreator)
   
@@ -19,9 +19,9 @@ export const todoTool = (state: todoUIState) => {
   const priorityInput = BUI.Component.create<BUI.Dropdown>(() => {
     return BUI.html`
       <bim-dropdown label="Priority">
-        <bim-option value="Low" label="Low" checked></bim-option>
-        <bim-option value="Medium" label="Medium"></bim-option>
-        <bim-option value="High" label="High"></bim-option>
+        <bim-option label="Low" checked></bim-option>
+        <bim-option label="Medium"></bim-option>
+        <bim-option label="High"></bim-option>
       </bim-dropdown>
     `
   })
