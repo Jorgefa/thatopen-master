@@ -32,12 +32,12 @@ export function ProjectDetailsPage(props: Props) {
   const onRowCreated = (event) => {
     event.stopImmediatePropagation()
     const { row } = event.detail;
-    row.addEventListener("click", async () => {
+    row.addEventListener("click", () => {
       const fragments = components.get(OBC.FragmentsManager)
-      const fragmentMap = JSON.parse(row.data.Fragment)
-      const fragmentIdMap = fragments.guidToFragmentIdMap(fragmentMap)
+      const guids = JSON.parse(row.data.Guids)
+      const fragmentIdMap = fragments.guidToFragmentIdMap(guids)
       const highlighter = components.get(OBCF.Highlighter)
-      await highlighter.highlightByID("select", fragmentIdMap)
+      highlighter.highlightByID("select", fragmentIdMap)
     })
   }
   
@@ -53,12 +53,12 @@ export function ProjectDetailsPage(props: Props) {
         Name: data.name,
         Task: data.task,
         Date: new Date().toDateString(),
-        Fragment: JSON.stringify(data.fragmentGuids)
+        Guids: JSON.stringify(data.fragmentGuids)
       },
     }
 
     todoTable.data = [...todoTable.data, newData]
-    todoTable.hiddenColumns = ["Fragment"];
+    todoTable.hiddenColumns = ["Guids"];
   }
 
   const todoCreator = components.get(TodoCreator)
