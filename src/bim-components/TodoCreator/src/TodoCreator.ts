@@ -1,5 +1,6 @@
 import * as OBC from "@thatopen/components"
 import * as OBCF from "@thatopen/components-front"
+import * as BUI from "@thatopen/ui"
 import * as THREE from "three"
 import { TodoData, TodoInput } from "./base-types"
 
@@ -11,8 +12,7 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
   private _list: TodoData[] = []
   
   onTodoCreated = new OBC.Event<TodoData>()
-  // to dispose UI
-  onDisposed: OBC.Event<any> = new OBC.Event()
+  onDisposed = new OBC.Event<null>()
 
   constructor(components: OBC.Components) {
     super(components)
@@ -22,6 +22,7 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
 
   async dispose() {
     this.onDisposed.trigger()
+    this.enabled = false
     this._list = []
   }
 
@@ -50,6 +51,8 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
   }
 
   async addTodo(data: TodoInput) {
+    if (!this.enabled) return
+
     const fragments = this._components.get(OBC.FragmentsManager)
     const highlighter = this._components.get(OBCF.Highlighter)
     const guids = fragments.fragmentIdMapToGuids(highlighter.selection.select)
@@ -104,5 +107,25 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
       todo.camera.target.z,
       true
     )
+  }
+
+  async addTodoMarker(todo: TodoData) {
+    if (todo.fragmentGuids.length === 0) return
+    const fragments = this._components.get(OBC.FragmentsManager)
+    const fragmentIdMap = fragments.guidToFragmentIdMap(todo.fragmentGuids)
+    const boundingBoxer = this._components.get(OBC.BoundingBoxer)
+    boundingBoxer.addFragmentIdMap(fragmentIdMap)
+    const { center } = boundingBoxer.getSphere()
+
+    const label = BUI.Component.create(() => {
+      return BUI.html`
+        <bim-label
+          icon="jam:document-f"
+          style="background-color: var(--bim-ui_bg-contrast-100); cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 999px; pointer-events: auto;">
+        </bim-label>
+      `;
+    });
+    const marker = new OBCF.Mark(this._world, label)
+    marker.three.position.copy(center);
   }
 }

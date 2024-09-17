@@ -70,6 +70,12 @@ export function ProjectDetailsPage(props: Props) {
           <div>
             <bim-button icon="material-symbols:delete" style="background-color: red"></bim-button>
           </div>
+          <div>
+            <bim-button
+              icon="ion:navigate"
+              @click=${async() => await todoCreator.addTodoMarker(data)}
+            ></bim-button>
+          </div>
         `;
       }
     }
@@ -85,13 +91,10 @@ export function ProjectDetailsPage(props: Props) {
     todoContainer.current?.appendChild( todoPriorityButton )
 
     todoCreator.onDisposed.add(() => {
-      // your disposed being called
-      console.log("Disposed")
-      todoButton.remove()
-      todoPriorityButton.remove()
       todoTable.data = []
+      todoTable.remove()
     })
-  }, [])
+  }, [])  
   
   return (
     <div className="page" id="project-details">
