@@ -4,7 +4,6 @@ import { ProjectsManager } from "../classes/ProjectsManager";
 import { IFCViewer } from "./IFCViewer";
 import { deleteDocument } from "../firebase";
 import * as OBC from "@thatopen/components";
-import * as OBCF from "@thatopen/components-front";
 import * as BUI from "@thatopen/ui";
 import { TodoCreator, todoTool } from "../bim-components/TodoCreator/";
 import { TodoData } from "../bim-components/TodoCreator/src/base-types";
@@ -37,9 +36,9 @@ export function ProjectDetailsPage(props: Props) {
       todoCreator.highlightTodo({
         name: row.data.Name,
         task: row.data.Task,
-        fragmentGuids: JSON.parse(row.data.Fragment),
-        camera: JSON.parse(row.data.Camera),
-        priority: row.data.Priority
+        priority: row.data.Priority,
+        ifcGuids: JSON.parse(row.data.Guids),
+        camera: JSON.parse(row.data.Camera)
       })
     })
   }
@@ -48,8 +47,6 @@ export function ProjectDetailsPage(props: Props) {
     return BUI.html`
       <bim-table @rowcreated=${ onRowCreated }></bim-table>`
   })
-  todoTable.hiddenColumns = ["Fragment", "Camera"];
-  todoTable.columns = ["Name", "Task", "Date", { name: "Actions", width: "100px" }]
 
   const addTodo = (data: TodoData) => {
     const newData = {
@@ -57,7 +54,7 @@ export function ProjectDetailsPage(props: Props) {
         Name: data.name,
         Task: data.task,
         Date: new Date().toDateString(),
-        Fragment: JSON.stringify(data.fragmentGuids),
+        Guids: JSON.stringify(data.ifcGuids),
         Camera: data.camera ? JSON.stringify(data.camera) : "",
         Actions: "" 
       },
@@ -79,6 +76,7 @@ export function ProjectDetailsPage(props: Props) {
         `;
       }
     }
+    todoTable.hiddenColumns = ["Guids", "Camera"];
   }
 
   const todoCreator = components.get(TodoCreator)
