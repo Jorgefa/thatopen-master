@@ -110,9 +110,10 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
   }
 
   async addTodoMarker(todo: TodoData) {
-    if (todo.fragmentGuids.length === 0) return
+    if (todo.ifcGuids.length === 0) return
+
     const fragments = this._components.get(OBC.FragmentsManager)
-    const fragmentIdMap = fragments.guidToFragmentIdMap(todo.fragmentGuids)
+    const fragmentIdMap = fragments.guidToFragmentIdMap(todo.ifcGuids)
     const boundingBoxer = this._components.get(OBC.BoundingBoxer)
     boundingBoxer.addFragmentIdMap(fragmentIdMap)
     const { center } = boundingBoxer.getSphere()
@@ -120,8 +121,13 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
     const label = BUI.Component.create(() => {
       return BUI.html`
         <bim-label
-          icon="jam:document-f"
-          style="background-color: var(--bim-ui_bg-contrast-100); cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 999px; pointer-events: auto;">
+          @mouseover=${() => {
+            const highlighter = this._components.get(OBCF.Highlighter)
+            highlighter.highlightByID("hover", fragmentIdMap, true, false)
+          }}
+          icon="fa:map-marker"
+          style="background-color: var(--bim-ui_bg-contrast-100); cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 999px; pointer-events: auto;"
+          >
         </bim-label>
       `;
     });

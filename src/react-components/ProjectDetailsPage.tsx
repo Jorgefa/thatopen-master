@@ -65,13 +65,13 @@ export function ProjectDetailsPage(props: Props) {
       Actions: () => {
         return BUI.html`
           <div>
-            <bim-button icon="material-symbols:delete" style="background-color: red"></bim-button>
-          </div>
-          <div>
             <bim-button
               icon="ion:navigate"
               @click=${async() => await todoCreator.addTodoMarker(data)}
             ></bim-button>
+          </div>
+          <div>
+            <bim-button icon="material-symbols:delete" style="background-color: red"></bim-button>
           </div>
         `;
       }
