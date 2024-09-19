@@ -56,21 +56,20 @@ export function ProjectDetailsPage(props: Props) {
         Date: new Date().toDateString(),
         Guids: JSON.stringify(data.ifcGuids),
         Camera: data.camera ? JSON.stringify(data.camera) : "",
-        Actions: "" 
+        Actions: ""
       },
     }
     todoTable.data = [...todoTable.data, newData]
-    
     todoTable.dataTransform = {
       Actions: () => {
         return BUI.html`
           <div>
             <bim-button icon="material-symbols:delete" style="background-color: red"></bim-button>
           </div>
-        `;
+        `
       }
     }
-    todoTable.hiddenColumns = ["Guids", "Camera"];
+    todoTable.hiddenColumns = ["Guids", "Camera"]
   }
 
   const todoCreator = components.get(TodoCreator)
@@ -83,11 +82,10 @@ export function ProjectDetailsPage(props: Props) {
     todoContainer.current?.appendChild( todoPriorityButton )
 
     todoCreator.onDisposed.add(() => {
-      // your disposed being called
-      console.log("Disposed")
+      todoTable.data = []
+      todoTable.remove()
       todoButton.remove()
       todoPriorityButton.remove()
-      todoTable.data = []
     })
   }, [])
   

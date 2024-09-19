@@ -11,7 +11,6 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
   private _list: TodoData[] = []
   
   onTodoCreated = new OBC.Event<TodoData>()
-  // to dispose UI
   onDisposed: OBC.Event<any> = new OBC.Event()
 
   constructor(components: OBC.Components) {
@@ -21,8 +20,9 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
   }
 
   async dispose() {
-    this.onDisposed.trigger()
+    this.enabled = false
     this._list = []
+    this.onDisposed.trigger()
   }
 
   setup() {
@@ -37,7 +37,9 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
   }
 
   set enablePriorityHighlight(value: boolean) {
-    const highlighter = this._components.get(OBCF.Highlighter)
+    if (!this.enabled) return
+
+    const highlighter = this.components.get(OBCF.Highlighter)
     if (value) {
       for (const todo of this._list) {
         const fragments = this._components.get(OBC.FragmentsManager)
@@ -50,8 +52,10 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
   }
 
   async addTodo(data: TodoInput) {
-    const fragments = this._components.get(OBC.FragmentsManager)
-    const highlighter = this._components.get(OBCF.Highlighter)
+    if (!this.enabled) return
+
+    const fragments = this.components.get(OBC.FragmentsManager)
+    const highlighter = this.components.get(OBCF.Highlighter)
     const guids = fragments.fragmentIdMapToGuids(highlighter.selection.select)
 
     const camera = this._world.camera
@@ -80,8 +84,12 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
     this.onTodoCreated.trigger(todoData)
   }
 
+  deleteTodo() {}
+
   async highlightTodo(todo: TodoData) {
-    const fragments = this._components.get(OBC.FragmentsManager)
+    if (!this.enabled) return
+
+    const fragments = this.components.get(OBC.FragmentsManager)
     const fragmentIdMap = fragments.guidToFragmentIdMap(todo.ifcGuids)
     const highlighter = this._components.get(OBCF.Highlighter)
     highlighter.highlightByID("select", fragmentIdMap, true, false)

@@ -82,6 +82,13 @@ export const todoTool = (state: TodoUIState) => {
       ></bim-button>
     `
   })
+  
+
+  todoCreator.onDisposed.add(() => {
+    todoButton.remove()
+    todoPriorityButton.remove()
+    todoModal.remove()
+  })
 
   return [todoButton, todoPriorityButton]
 }
