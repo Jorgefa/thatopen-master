@@ -6,8 +6,7 @@ export class TodoCreator extends OBC.Component {
 
   constructor(components: OBC.Components) {
     super(components)
-    this.components = components
-    components.add(TodoCreator.uuid, this)
+    this.components.add(TodoCreator.uuid, this)
   }
 
   addTodo() {
