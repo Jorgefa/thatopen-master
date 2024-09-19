@@ -6,14 +6,12 @@ import { TodoData, TodoInput } from "./base-types"
 export class TodoCreator extends OBC.Component {
   static uuid = "f26555ec-4394-4349-986a-7409e4fd308e"
   enabled = true
-  private _components: OBC.Components
   private _world: OBC.World
   onTodoCreated = new OBC.Event<TodoData>()
 
   constructor(components: OBC.Components) {
     super(components)
-    this._components = components
-    components.add(TodoCreator.uuid, this)
+    this.components.add(TodoCreator.uuid, this)
   }
 
   set world(world: OBC.World) {
@@ -21,8 +19,8 @@ export class TodoCreator extends OBC.Component {
   }
 
   async addTodo(data: TodoInput) {
-    const fragments = this._components.get(OBC.FragmentsManager)
-    const highlighter = this._components.get(OBCF.Highlighter)
+    const fragments = this.components.get(OBC.FragmentsManager)
+    const highlighter = this.components.get(OBCF.Highlighter)
     const guids = fragments.fragmentIdMapToGuids(highlighter.selection.select)
 
     const camera = this._world.camera
@@ -50,9 +48,9 @@ export class TodoCreator extends OBC.Component {
   }
 
   async highlightTodo(todo: TodoData) {
-    const fragments = this._components.get(OBC.FragmentsManager)
+    const fragments = this.components.get(OBC.FragmentsManager)
     const fragmentIdMap = fragments.guidToFragmentIdMap(todo.ifcGuids)
-    const highlighter = this._components.get(OBCF.Highlighter)
+    const highlighter = this.components.get(OBCF.Highlighter)
     highlighter.highlightByID("select", fragmentIdMap, true, false)
 
     if (!this._world) {
