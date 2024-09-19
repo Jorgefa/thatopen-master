@@ -40,8 +40,6 @@ export function ProjectDetailsPage(props: Props) {
     tableRef.current.data = [...tableRef.current.data, newData];
   }
 
-  // perfect now let's add description task from the UI as well and not hard code it
-
   const todoCreator = components.get(TodoCreator)
   todoCreator.onTodoCreated.add((data) => addTodo(data))
 
