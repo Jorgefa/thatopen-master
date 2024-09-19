@@ -7,7 +7,6 @@ import { TodoData, TodoInput } from "./base-types"
 export class TodoCreator extends OBC.Component implements OBC.Disposable {
   static uuid = "f26555ec-4394-4349-986a-7409e4fd308e"
   enabled = true
-  private _components: OBC.Components
   private _world: OBC.World
   private _list: TodoData[] = []
   
@@ -16,18 +15,17 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
 
   constructor(components: OBC.Components) {
     super(components)
-    this._components = components
-    components.add(TodoCreator.uuid, this)
+    this.components.add(TodoCreator.uuid, this)
   }
 
   async dispose() {
-    this.onDisposed.trigger()
     this.enabled = false
     this._list = []
+    this.onDisposed.trigger()
   }
 
   setup() {
-    const highlighter = this._components.get(OBCF.Highlighter)
+    const highlighter = this.components.get(OBCF.Highlighter)
     highlighter.add(`${TodoCreator.uuid}-priority-Low`, new THREE.Color(0x59bc59))
     highlighter.add(`${TodoCreator.uuid}-priority-Medium`, new THREE.Color(0x597cff))
     highlighter.add(`${TodoCreator.uuid}-priority-High`, new THREE.Color(0xff7676))
@@ -38,10 +36,12 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
   }
 
   set enablePriorityHighlight(value: boolean) {
-    const highlighter = this._components.get(OBCF.Highlighter)
+    if (!this.enabled) return
+
+    const highlighter = this.components.get(OBCF.Highlighter)
     if (value) {
       for (const todo of this._list) {
-        const fragments = this._components.get(OBC.FragmentsManager)
+        const fragments = this.components.get(OBC.FragmentsManager)
         const fragmentIdMap = fragments.guidToFragmentIdMap(todo.ifcGuids)
         highlighter.highlightByID(`${TodoCreator.uuid}-priority-${todo.priority}`, fragmentIdMap, false, false)
       }
@@ -53,8 +53,8 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
   async addTodo(data: TodoInput) {
     if (!this.enabled) return
 
-    const fragments = this._components.get(OBC.FragmentsManager)
-    const highlighter = this._components.get(OBCF.Highlighter)
+    const fragments = this.components.get(OBC.FragmentsManager)
+    const highlighter = this.components.get(OBCF.Highlighter)
     const guids = fragments.fragmentIdMapToGuids(highlighter.selection.select)
 
     const camera = this._world.camera
@@ -84,9 +84,11 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
   }
 
   async highlightTodo(todo: TodoData) {
-    const fragments = this._components.get(OBC.FragmentsManager)
+    if (!this.enabled) return
+    
+    const fragments = this.components.get(OBC.FragmentsManager)
     const fragmentIdMap = fragments.guidToFragmentIdMap(todo.ifcGuids)
-    const highlighter = this._components.get(OBCF.Highlighter)
+    const highlighter = this.components.get(OBCF.Highlighter)
     highlighter.highlightByID("select", fragmentIdMap, true, false)
 
     if (!this._world) {
@@ -109,29 +111,31 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
     )
   }
 
-  async addTodoMarker(todo: TodoData) {
+  addTodoMarker(todo: TodoData) {
+    if (!this.enabled) return
+
     if (todo.ifcGuids.length === 0) return
 
-    const fragments = this._components.get(OBC.FragmentsManager)
+    const fragments = this.components.get(OBC.FragmentsManager)
     const fragmentIdMap = fragments.guidToFragmentIdMap(todo.ifcGuids)
-    const boundingBoxer = this._components.get(OBC.BoundingBoxer)
+    const boundingBoxer = this.components.get(OBC.BoundingBoxer)
     boundingBoxer.addFragmentIdMap(fragmentIdMap)
     const { center } = boundingBoxer.getSphere()
 
-    const label = BUI.Component.create(() => {
-      return BUI.html`
+    const label = BUI.Component.create<BUI.Label>(() => {
+      return BUI.html `
         <bim-label
           @mouseover=${() => {
-            const highlighter = this._components.get(OBCF.Highlighter)
+            const highlighter = this.components.get(OBCF.Highlighter)
             highlighter.highlightByID("hover", fragmentIdMap, true, false)
           }}
-          icon="fa:map-marker"
           style="background-color: var(--bim-ui_bg-contrast-100); cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 999px; pointer-events: auto;"
-          >
-        </bim-label>
-      `;
-    });
+          icon="fa:map-marker"
+        ></bim-label>
+      `
+    })
+
     const marker = new OBCF.Mark(this._world, label)
-    marker.three.position.copy(center);
+    marker.three.position.copy(center)
   }
 }
