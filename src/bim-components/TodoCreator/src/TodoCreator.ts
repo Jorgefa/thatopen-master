@@ -6,7 +6,6 @@ import { TodoData, TodoInput } from "./base-types"
 export class TodoCreator extends OBC.Component implements OBC.Disposable {
   static uuid = "f26555ec-4394-4349-986a-7409e4fd308e"
   enabled = true
-  private _components: OBC.Components
   private _world: OBC.World
   private _list: TodoData[] = []
   
@@ -15,8 +14,7 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
 
   constructor(components: OBC.Components) {
     super(components)
-    this._components = components
-    components.add(TodoCreator.uuid, this)
+    this.components.add(TodoCreator.uuid, this)
   }
 
   async dispose() {
@@ -26,7 +24,7 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
   }
 
   setup() {
-    const highlighter = this._components.get(OBCF.Highlighter)
+    const highlighter = this.components.get(OBCF.Highlighter)
     highlighter.add(`${TodoCreator.uuid}-priority-Low`, new THREE.Color(0x59bc59))
     highlighter.add(`${TodoCreator.uuid}-priority-Medium`, new THREE.Color(0x597cff))
     highlighter.add(`${TodoCreator.uuid}-priority-High`, new THREE.Color(0xff7676))
@@ -42,7 +40,7 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
     const highlighter = this.components.get(OBCF.Highlighter)
     if (value) {
       for (const todo of this._list) {
-        const fragments = this._components.get(OBC.FragmentsManager)
+        const fragments = this.components.get(OBC.FragmentsManager)
         const fragmentIdMap = fragments.guidToFragmentIdMap(todo.ifcGuids)
         highlighter.highlightByID(`${TodoCreator.uuid}-priority-${todo.priority}`, fragmentIdMap, false, false)
       }
@@ -91,7 +89,7 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
 
     const fragments = this.components.get(OBC.FragmentsManager)
     const fragmentIdMap = fragments.guidToFragmentIdMap(todo.ifcGuids)
-    const highlighter = this._components.get(OBCF.Highlighter)
+    const highlighter = this.components.get(OBCF.Highlighter)
     highlighter.highlightByID("select", fragmentIdMap, true, false)
 
     if (!this._world) {
