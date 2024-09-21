@@ -5,6 +5,7 @@ import * as BUI from "@thatopen/ui";
 import * as CUI from "@thatopen/ui-obc";
 import { FragmentsGroup } from "@thatopen/fragments";
 import { TodoCreator } from "../bim-components/TodoCreator";
+import { SimpleQTO } from "../bim-components/SimpleQTO";
 
 interface Props {
   components: OBC.Components
@@ -259,6 +260,9 @@ export function IFCViewer(props: Props) {
         floatingGrid.layout = "second"
         updatePropsTable({ fragmentIdMap })
         propsTable.expanded = false
+
+        const qtoTool = components.get(SimpleQTO)
+        qtoTool.sumQuantities(fragmentIdMap)
       })
 
       highlighter.events.select.onClear.add(() => {
