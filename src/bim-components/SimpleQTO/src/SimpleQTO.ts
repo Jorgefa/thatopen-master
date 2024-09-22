@@ -31,9 +31,16 @@ export class SimpleQTO extends OBC.Component implements OBC.Disposable {
           for (const expressId of psets) {
             const prop = await model.getProperties(expressId)
             // console.log(prop)
-            if(!prop) return
-            if(prop.type === WEBIFC.IFCELEMENTQUANTITY) {
+            if(prop && prop.type === WEBIFC.IFCELEMENTQUANTITY) {
               console.log(prop)
+              const data = await OBC.IfcPropertiesUtils.getQsetQuantities(
+                model,
+                expressId,
+                async (qtoId) => {
+                  const prop1 = await model.getProperties(qtoId)
+                  console.log(prop1)
+                }
+              )
             }
           }
         }
