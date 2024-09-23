@@ -87,6 +87,9 @@ export function IFCViewer(props: Props) {
     const todoCreator = components.get(TodoCreator)
     todoCreator.world = world
     todoCreator.setup()
+
+    const qtoTool = components.get(SimpleQTO)
+    qtoTool.setup()
   }
 
   const processModel = async (model: FragmentsGroup) => {
@@ -261,8 +264,8 @@ export function IFCViewer(props: Props) {
         updatePropsTable({ fragmentIdMap })
         propsTable.expanded = false
 
-        const qtoTool = components.get(SimpleQTO)
-        qtoTool.sumQuantities(fragmentIdMap)
+        // const qtoTool = components.get(SimpleQTO)
+        // qtoTool.sumQuantities(fragmentIdMap)
       })
 
       highlighter.events.select.onClear.add(() => {
