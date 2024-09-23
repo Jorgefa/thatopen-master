@@ -11,13 +11,5 @@ export class SimpleQTO extends OBC.Component implements OBC.Disposable {
     this.components.add(SimpleQTO.uuid, this)
   }
 
-  sumQuantities(fragmentIdMap: FragmentIdMap) {
-    const fragmentManager = this.components.get(OBC.FragmentsManager)
-    for (const fragmentID in fragmentIdMap) {
-      const fragment = fragmentManager.list.get(fragmentID)
-      console.log(fragment)
-    }
-  }
-
   async dispose() {}
 }

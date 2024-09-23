@@ -260,9 +260,6 @@ export function IFCViewer(props: Props) {
         floatingGrid.layout = "second"
         updatePropsTable({ fragmentIdMap })
         propsTable.expanded = false
-
-        const qtoTool = components.get(SimpleQTO)
-        qtoTool.sumQuantities(fragmentIdMap)
       })
 
       highlighter.events.select.onClear.add(() => {
