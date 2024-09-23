@@ -15,7 +15,7 @@ export class SimpleQTO extends OBC.Component implements OBC.Disposable {
 
   setup() {
     const highlighter = this.components.get(OBCF.Highlighter)
-    highlighter.events.selection.onHighlight.add(async (fragmentIdMap) => {
+    highlighter.events.select.onHighlight.add(async (fragmentIdMap) => {
       await this.sumQuantities(fragmentIdMap)
     })
   }
@@ -27,7 +27,7 @@ export class SimpleQTO extends OBC.Component implements OBC.Disposable {
       // console.log(fragment)
       const model = fragment?.mesh.parent
       if (!(model instanceof FRAGS.FragmentsGroup && model.hasProperties)) { continue }
-      console.log(model.getLocalProperties)
+      console.log(model.getLocalProperties())
     }
   }
 
