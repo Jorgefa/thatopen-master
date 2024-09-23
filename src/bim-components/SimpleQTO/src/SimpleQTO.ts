@@ -1,6 +1,7 @@
 import * as WEBIFC from "web-ifc"
 import * as OBC from "@thatopen/components"
-import { FragmentIdMap, FragmentsGroup } from "@thatopen/fragments"
+import * as OBCF from "@thatopen/components-front"
+import * as FRAGS from "@thatopen/fragments"
 
 export class SimpleQTO extends OBC.Component implements OBC.Disposable {
   static uuid = "3b5e8cea-9983-4bf6-b120-51152985b22d"
@@ -13,30 +14,20 @@ export class SimpleQTO extends OBC.Component implements OBC.Disposable {
   }
 
   setup() {
-
+    const highlighter = this.components.get(OBCF.Highlighter)
+    highlighter.events.selection.onHighlight.add(async (fragmentIdMap) => {
+      await this.sumQuantities(fragmentIdMap)
+    })
   }
 
-  async sumQuantities(fragmentIdMap: FragmentIdMap) {
+  async sumQuantities(fragmentIdMap: FRAGS.FragmentIdMap) {
     const fragmentManager = this.components.get(OBC.FragmentsManager)
-    const indexer = this.components.get(OBC.IfcRelationsIndexer)
     for (const fragmentID in fragmentIdMap) {
       const fragment = fragmentManager.list.get(fragmentID)
+      // console.log(fragment)
       const model = fragment?.mesh.parent
-      if (!(model instanceof FragmentsGroup && model.hasProperties)) { continue }
-      const expressIDs = fragmentIdMap[fragmentID]
-      console.log(expressIDs)
-      for (const id of expressIDs) {
-        const psets = indexer.getEntityRelations(model, id, "IsDefinedBy")
-        if (psets) {
-          for (const expressId of psets) {
-            const prop = await model.getProperties(expressId)
-            // console.log(prop)
-            if(prop && prop.type === WEBIFC.IFCELEMENTQUANTITY) {
-              console.log(prop)
-            }
-          }
-        }
-      }
+      if (!(model instanceof FRAGS.FragmentsGroup && model.hasProperties)) { continue }
+      console.log(model.getLocalProperties)
     }
   }
 
