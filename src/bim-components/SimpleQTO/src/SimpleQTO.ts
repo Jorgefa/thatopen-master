@@ -1,6 +1,7 @@
 import * as WEBIFC from "web-ifc"
 import * as OBC from "@thatopen/components"
-import { FragmentIdMap, FragmentsGroup } from "@thatopen/fragments"
+import * as OBCF from "@thatopen/components-front"
+import * as FRAGS from "@thatopen/fragments"
 
 type QtoResult = {[setName: string]: {[qtoName: string]: number}}
 
@@ -22,41 +23,45 @@ export class SimpleQTO extends OBC.Component implements OBC.Disposable {
     this.components.add(SimpleQTO.uuid, this)
   }
 
-  async sumQuantities(fragmentIdMap: FragmentIdMap) {
+  setup() {
+    const highlighter = this.components.get(OBCF.Highlighter)
+    highlighter.events.select.onHighlight.add(async (fragmentIdMap) => {
+      await this.sumQuantities(fragmentIdMap)
+    })
+  }
+
+  async sumQuantities(fragmentIdMap: FRAGS.FragmentIdMap) {
     const fragmentManager = this.components.get(OBC.FragmentsManager)
-    const indexer = this.components.get(OBC.IfcRelationsIndexer)
     for (const fragmentID in fragmentIdMap) {
       const fragment = fragmentManager.list.get(fragmentID)
       const model = fragment?.mesh.parent
-      if (!(model instanceof FragmentsGroup && model.hasProperties)) { continue }
-      const expressIDs = fragmentIdMap[fragmentID]
-      console.log(expressIDs)
-      for (const id of expressIDs) {
-        const psets = indexer.getEntityRelations(model, id, "IsDefinedBy")
-        if (psets) {
-          for (const expressId of psets) {
-            const prop = await model.getProperties(expressId)
-            // console.log(prop)
-            const { name: setName } = await OBC.IfcPropertiesUtils.getEntityName(model, expressId)
-            if(prop && prop.type === WEBIFC.IFCELEMENTQUANTITY && setName) {
-              if (!(setName in this._qtoResult)) { this._qtoResult[setName] = {} }
-              console.log(prop)
-              // const { name: setName } = await OBC.IfcPropertiesUtils.getEntityName(model, expressId)
-              const data = await OBC.IfcPropertiesUtils.getQsetQuantities(
-                model,
-                expressId,
-                async (qtoId) => {
-                  const prop1 = await model.getProperties(qtoId)
-                  // console.log(prop1)
-                  const { name: qtoName } = await OBC.IfcPropertiesUtils.getEntityName(model, qtoId)
-                  if (!qtoName) { return }
-                  if (!(qtoName in this._qtoResult[setName])) { this._qtoResult[setName][qtoName] = 0 }
-                }
-              )
+      if (!(model instanceof FRAGS.FragmentsGroup && model.hasProperties)) { continue }
+      await OBC.IfcPropertiesUtils.getRelationMap(
+        model,
+        WEBIFC.IFCRELDEFINESBYPROPERTIES,
+        async (setID, relatedIDs) => {
+          const set = await model.getProperties(setID)
+          const expressIDs = fragmentIdMap[fragmentID]
+          const workingIDs = relatedIDs.filter(id => expressIDs.has(id))
+          const { name: setName } = await OBC.IfcPropertiesUtils.getEntityName(model, setID)
+          if (set?.type !== WEBIFC.IFCELEMENTQUANTITY || workingIDs.length === 0 || !setName) {return}
+          // const expressIDs = fragmentIdMap[fragmentID]
+          // const workingIDs = relatedIDs.filter(id => expressIDs.has(id))
+          // if (workingIDs.length === 0) {return}
+          // const { name: setName } = await OBC.IfcPropertiesUtils.getEntityName(model, setID)
+          if (!(setName in this._qtoResult)) { this._qtoResult[setName] = {} }
+          await OBC.IfcPropertiesUtils.getQsetQuantities(
+            model,
+            setID,
+            async (qtoID) => {
+              // console.log(await model.getProperties(qtoID))
+              const { name: qtoName } = await OBC.IfcPropertiesUtils.getEntityName(model, qtoID)
+              if (!qtoName) { return }
+              if (!(qtoName in this._qtoResult[setName])) { this._qtoResult[setName][qtoName] = 0 }
             }
-          }
+          )
         }
-      }
+      )
     }
 
     console.log(this._qtoResult)
