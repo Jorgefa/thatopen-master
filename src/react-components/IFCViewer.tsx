@@ -89,7 +89,7 @@ export function IFCViewer(props: Props) {
     todoCreator.setup()
 
     const simpleQto = components.get(SimpleQTO)
-    simpleQto.setup()
+    simpleQto.setup() 
   }
 
   const processModel = async (model: FragmentsGroup) => {
