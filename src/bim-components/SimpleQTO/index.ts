@@ -1,3 +1,4 @@
+import * as WEBIFC from "web-ifc"
 import * as OBC from "@thatopen/components"
 import * as FRAGS from "@thatopen/fragments"
 
@@ -11,7 +12,7 @@ export class SimpleQTO extends OBC.Component implements OBC.Disposable {
     this.components.add(SimpleQTO.uuid, this)
   }
 
-  sumQuantities(fragmentIdMap: FRAGS.FragmentIdMap) {
+  async sumQuantities(fragmentIdMap: FRAGS.FragmentIdMap) {
     const fragmentManager = this.components.get(OBC.FragmentsManager)
     const modelIdMap = fragmentManager.getModelIdMap(fragmentIdMap)
     for (const modelId in modelIdMap) {
@@ -19,7 +20,18 @@ export class SimpleQTO extends OBC.Component implements OBC.Disposable {
       if (!model) continue
 
       if (!model.hasProperties) { return }
-      console.log(model.getLocalProperties())
+
+      await OBC.IfcPropertiesUtils.getRelationMap(
+        model,
+        WEBIFC.IFCRELDEFINESBYPROPERTIES,
+        async (setID, relatedIDs) => {
+          // console.log(setID)
+          // console.log(await model.getProperties(setID))
+          const set = await model.getProperties(setID)
+          if (set?.type !== WEBIFC.IFCELEMENTQUANTITY) { return }
+          console.log(set)
+        }
+      )
     }
   }
 

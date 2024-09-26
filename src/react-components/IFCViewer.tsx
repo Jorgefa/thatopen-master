@@ -255,14 +255,14 @@ export function IFCViewer(props: Props) {
         fragmentIdMap: {}
       })
       const highlighter = components.get(OBCF.Highlighter)
-      highlighter.events.select.onHighlight.add((fragmentIdMap) => {
+      highlighter.events.select.onHighlight.add(async (fragmentIdMap) => {
         if (!floatingGrid) return
         floatingGrid.layout = "second"
         updatePropsTable({ fragmentIdMap })
         propsTable.expanded = false
 
         const simpleQto = components.get(SimpleQTO)
-        simpleQto.sumQuantities(fragmentIdMap)
+        await simpleQto.sumQuantities(fragmentIdMap)
       })
 
       highlighter.events.select.onClear.add(() => {
