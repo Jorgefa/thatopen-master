@@ -87,9 +87,6 @@ export function IFCViewer(props: Props) {
     const todoCreator = components.get(TodoCreator)
     todoCreator.world = world
     todoCreator.setup()
-
-    const simpleQto = components.get(SimpleQTO)
-    simpleQto.setup() 
   }
 
   const processModel = async (model: FragmentsGroup) => {
@@ -258,11 +255,14 @@ export function IFCViewer(props: Props) {
         fragmentIdMap: {}
       })
       const highlighter = components.get(OBCF.Highlighter)
-      highlighter.events.select.onHighlight.add((fragmentIdMap) => {
+      highlighter.events.select.onHighlight.add(async (fragmentIdMap) => {
         if (!floatingGrid) return
         floatingGrid.layout = "second"
         updatePropsTable({ fragmentIdMap })
         propsTable.expanded = false
+
+        const simpleQto = components.get(SimpleQTO)
+        await simpleQto.sumQuantities(fragmentIdMap)
       })
 
       highlighter.events.select.onClear.add(() => {
