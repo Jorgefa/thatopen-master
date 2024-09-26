@@ -263,6 +263,7 @@ export function IFCViewer(props: Props) {
         updatePropsTable({ fragmentIdMap })
         propsTable.expanded = false
         await simpleQto.sumQuantities(fragmentIdMap)
+        await simpleQto.sumQuantitiesV2(fragmentIdMap)
       })
 
       highlighter.events.select.onClear.add(() => {
