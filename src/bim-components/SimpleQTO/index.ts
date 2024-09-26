@@ -12,5 +12,3 @@ export class SimpleQTO extends OBC.Component implements OBC.Disposable {
 
   async dispose() {}
 }
-
-export * from "./src"
