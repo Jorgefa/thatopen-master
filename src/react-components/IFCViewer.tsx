@@ -5,7 +5,6 @@ import * as BUI from "@thatopen/ui";
 import * as CUI from "@thatopen/ui-obc";
 import { FragmentsGroup } from "@thatopen/fragments";
 import { TodoCreator } from "../bim-components/TodoCreator";
-import { SimpleQTO } from "../bim-components/SimpleQTO";
 
 interface Props {
   components: OBC.Components
