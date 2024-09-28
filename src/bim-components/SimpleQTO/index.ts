@@ -25,8 +25,6 @@ export class SimpleQTO extends OBC.Component implements OBC.Disposable {
         model,
         WEBIFC.IFCRELDEFINESBYPROPERTIES,
         async (setID, relatedIDs) => {
-          // console.log(setID)
-          // console.log(await model.getProperties(setID))
           const set = await model.getProperties(setID)
           if (set?.type !== WEBIFC.IFCELEMENTQUANTITY) { return }
           console.log(set)
