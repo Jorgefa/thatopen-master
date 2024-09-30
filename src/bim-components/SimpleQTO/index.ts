@@ -4,13 +4,6 @@ import * as FRAGS from "@thatopen/fragments"
 
 type QtoResult = {[setName: string]: {[qtoName: string]: number}}
 
-// const sum = {
-//   Qto_WallBaseQuantities: {
-//     volume: 20,
-//     area: 30
-//   }
-// }
-
 export class SimpleQTO extends OBC.Component implements OBC.Disposable {
   static uuid = "3b5e8cea-9983-4bf6-b120-51152985b22d"
   enabled = true
@@ -52,7 +45,6 @@ export class SimpleQTO extends OBC.Component implements OBC.Disposable {
               const { value } = await OBC.IfcPropertiesUtils.getQuantityValue(model, qtoID)
               if (!qtoName || !value) { return }
               if (!(qtoName in this._qtoResult[setName])) { this._qtoResult[setName][qtoName] = 0 }
-              // const { value } = await OBC.IfcPropertiesUtils.getQuantityValue(model, qtoID)
               this._qtoResult[setName][qtoName] += value
             }
           )
