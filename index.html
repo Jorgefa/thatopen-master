@@ -16,7 +16,7 @@
     </ul>
   </aside>
   <main id="content">
-    <div class="page" id="projects-page" style="display: flex;">
+    <div class="page" id="projects-page" style="display: none;">
       <dialog id="new-project-modal">
         <form id="new-project-form">
           <h2>New Project</h2>
@@ -70,7 +70,7 @@
       </header>
       <div id="projects-list"></div>
     </div>
-    <div class="page" id="project-details" style="display: none">
+    <div class="page" id="project-details" style="display: flex">
       <header>
         <div>
           <h2 data-project-info="name">Hospital Center</h2>
@@ -136,7 +136,7 @@
             </div>
           </div>
         </div>
-        <div id="viewer-container" class="dashboard-card"></div>
+        <div id="viewer-container" class="dashboard-card" style="min-width: 0;"></div>
       </div>
     </div>
   </main>
