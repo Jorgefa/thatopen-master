@@ -1,9 +1,12 @@
 import * as React from 'react';
-import { IProject, ProjectStatus, UserRole } from '../classes/Project';
+import { IProject, Project, ProjectStatus, UserRole } from '../classes/Project';
 import { ProjectsManager } from '../classes/ProjectsManager';
+import {ProjectCard} from "./ProjectCard"
 
 export function ProjectsPage() {
-  const projectsManager = new ProjectsManager();
+
+  const projectsManager = new ProjectsManager()
+  const [projects, setProjects] = React.useState<Project[]>(projectsManager.list)
 
   const onNewProjectClick = () => {
     const modal = document.getElementById("new-project-modal")
@@ -148,7 +151,9 @@ export function ProjectsPage() {
           </button>
         </div>
       </header>
-      <div id="projects-list" />
+      <div id="projects-list">
+        <ProjectCard />
+      </div>
     </div>
   )
 }
