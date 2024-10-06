@@ -10,6 +10,11 @@ export function ProjectsPage() {
   projectsManager.onProjectCreated = () => {setProjects([...projectsManager.list])}
   projectsManager.onProjectDeleted = () => {setProjects([...projectsManager.list])}
 
+  const projectCards = projects.map((project) => {
+    return <ProjectCard project={project} key={project.id}/>
+
+  })
+
   React.useEffect(() => {
     console.log("Projects state updated", projects)
   }, [projects])
@@ -156,9 +161,7 @@ export function ProjectsPage() {
           </button>
         </div>
       </header>
-      <div id="projects-list">
-        <ProjectCard />
-      </div>
+      <div id="projects-list"> { projectCards} </div>
     </div>
   )
 }
