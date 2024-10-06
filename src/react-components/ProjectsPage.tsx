@@ -5,8 +5,14 @@ import {ProjectCard} from "./ProjectCard"
 
 export function ProjectsPage() {
 
-  const projectsManager = new ProjectsManager()
+  const [projectsManager] = React.useState(new ProjectsManager())
   const [projects, setProjects] = React.useState<Project[]>(projectsManager.list)
+  projectsManager.onProjectCreated = () => {setProjects([...projectsManager.list])}
+  projectsManager.onProjectDeleted = () => {setProjects([...projectsManager.list])}
+
+  React.useEffect(() => {
+    console.log("Projects state updated", projects)
+  }, [projects])
 
   const onNewProjectClick = () => {
     const modal = document.getElementById("new-project-modal")
@@ -28,7 +34,6 @@ export function ProjectsPage() {
     }
     try {
       const project = projectsManager.newProject(projectData)
-      console.log(project)
       projectForm.reset()
       const modal = document.getElementById("new-project-modal")
       if (!(modal && modal instanceof HTMLDialogElement)) {return}
