@@ -2,10 +2,8 @@ import { IProject, Project } from "./Project"
 
 export class ProjectsManager {
   list: Project[] = []
-  ui: HTMLElement
 
-  constructor(container: HTMLElement) {
-    this.ui = container
+  constructor() {
     const project = this.newProject({
       name: "Default Project",
       description: "This is just a default app project",
@@ -33,7 +31,6 @@ export class ProjectsManager {
       detailsPage.style.display = "flex"
       this.setDetailsPage(project)
     })
-    this.ui.append(project.ui)
     this.list.push(project)	
     return project
   }
