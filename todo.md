@@ -1,4 +1,6 @@
 L?
 -
-L3.8
--Each project card send you to project details
+L3.10
+- Project details. Convert elements to react components
+    - Edit btn
+    - Plus todo btn
