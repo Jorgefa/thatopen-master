@@ -1,18 +1,26 @@
 import * as React from 'react';
+import * as Router from 'react-router-dom';
 import { IProject, Project, ProjectStatus, UserRole } from '../classes/Project';
 import { ProjectsManager } from '../classes/ProjectsManager';
 import {ProjectCard} from "./ProjectCard"
 
-export function ProjectsPage() {
+interface Props {
+  projectsManager: ProjectsManager
+}
 
-  const [projectsManager] = React.useState(new ProjectsManager())
-  const [projects, setProjects] = React.useState<Project[]>(projectsManager.list)
-  projectsManager.onProjectCreated = () => {setProjects([...projectsManager.list])}
-  projectsManager.onProjectDeleted = () => {setProjects([...projectsManager.list])}
+export function ProjectsPage(props: Props) {
+
+  const [projects, setProjects] = React.useState<Project[]>(props.projectsManager.list)
+  props.projectsManager.onProjectCreated = () => {setProjects([...props.projectsManager.list])}
+  props.projectsManager.onProjectDeleted = () => {setProjects([...props.projectsManager.list])}
 
   const projectCards = projects.map((project) => {
-    return <ProjectCard project={project} key={project.id}/>
+    return (
+    <Router.Link to={`/project/${project.id}`} key={project.id}>
+      <ProjectCard project={project}/>
+    </Router.Link>
 
+    )
   })
 
   React.useEffect(() => {
@@ -38,7 +46,7 @@ export function ProjectsPage() {
       finishDate: new Date(formData.get("finishDate") as string)
     }
     try {
-      const project = projectsManager.newProject(projectData)
+      const project = props.projectsManager.newProject(projectData)
       projectForm.reset()
       const modal = document.getElementById("new-project-modal")
       if (!(modal && modal instanceof HTMLDialogElement)) {return}
@@ -49,11 +57,11 @@ export function ProjectsPage() {
   }
 
   const onExportProject = () => {
-    projectsManager.exportToJSON()
+    props.projectsManager.exportToJSON()
   }
 
   const onImportProject = () => {
-    projectsManager.importFromJSON()
+    props.projectsManager.importFromJSON()
   }
 
   return (

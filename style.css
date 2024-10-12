@@ -108,6 +108,11 @@ button:hover {
   column-gap: 10px;
 }
 
+#nav-buttons a{
+  color: white;
+  text-decoration: none;
+}
+
 #nav-buttons li:hover {
   background-color: var(--primary);
 }
@@ -161,6 +166,11 @@ header {
   padding: 20px 40px;
   gap: 30px;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+}
+
+#projects-list a {
+  color: white;
+  text-decoration: none;
 }
 
 .action-icon {
