@@ -2,7 +2,8 @@ import * as React from 'react';
 import * as Router from 'react-router-dom';
 import { IProject, Project, ProjectStatus, UserRole } from '../classes/Project';
 import { ProjectsManager } from '../classes/ProjectsManager';
-import {ProjectCard} from "./ProjectCard"
+import { ProjectCard } from "./ProjectCard"
+import { SearchBox } from './SearchBox';
 
 interface Props {
   projectsManager: ProjectsManager
@@ -62,6 +63,11 @@ export function ProjectsPage(props: Props) {
 
   const onImportProject = () => {
     props.projectsManager.importFromJSON()
+  }
+
+  const onProjectSearch = (value: string) => {
+    const filteredProjects = props.projectsManager.filterProjects(value)
+    setProjects(filteredProjects)
   }
 
   return (
@@ -149,6 +155,7 @@ export function ProjectsPage(props: Props) {
       </dialog>
       <header>
         <h2>Projects</h2>
+        <SearchBox onChange={(value) => onProjectSearch(value)}/>
         <div style={{ display: "flex", alignItems: "center", columnGap: 15 }}>
           <span
             id="import-projects-btn"
@@ -169,7 +176,10 @@ export function ProjectsPage(props: Props) {
           </button>
         </div>
       </header>
-      <div id="projects-list"> { projectCards} </div>
+      {
+        projects.length > 0 ? <div id="projects-list"> { projectCards} </div> : <p>There is no projects to display.</p>
+
+      }
     </div>
   )
 }
