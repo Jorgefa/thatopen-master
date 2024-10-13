@@ -7,51 +7,64 @@ import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader.js"
 import { MTLLoader } from "three/examples/jsm/loaders/MTLLoader.js"
 
 export function ThreeViewer() {
-  React.useEffect(() => {
+  let scene: THREE.Scene | null
+  let mesh: THREE.Object3D | null
+  let renderer: THREE.WebGLRenderer | null
+  let cameraControls: OrbitControls | null
+  let camera: THREE.PerspectiveCamera | null
+  let axes: THREE.AxesHelper | null
+  let grid: THREE.GridHelper | null
+  let directionalLight: THREE.DirectionalLight | null
+  let ambientLight: THREE.AmbientLight | null
+  let mtlLoader: MTLLoader | null
+  let objLoader: OBJLoader | null 
 
-    const scene = new THREE.Scene()
 
+
+  const setViewer = () => {
+    scene = new THREE.Scene()
+  
     const viewerContainer = document.getElementById("viewer-container") as HTMLElement
   
-    const camera = new THREE.PerspectiveCamera(75)
+    camera = new THREE.PerspectiveCamera(75)
     camera.position.z = 5
   
-    const renderer = new THREE.WebGLRenderer({alpha: true, antialias: true})
+    renderer = new THREE.WebGLRenderer({alpha: true, antialias: true})
     viewerContainer.append(renderer.domElement)
   
     function resizeViewer() {
-    const containerDimensions = viewerContainer.getBoundingClientRect()
-    renderer.setSize(containerDimensions.width, containerDimensions.height)
-    const aspectRatio = containerDimensions.width / containerDimensions.height
-    camera.aspect = aspectRatio
-    camera.updateProjectionMatrix()
+      if(!renderer) return
+      const containerDimensions = viewerContainer.getBoundingClientRect()
+      renderer.setSize(containerDimensions.width, containerDimensions.height)
+      const aspectRatio = containerDimensions.width / containerDimensions.height
+      if(!camera) return
+      camera.aspect = aspectRatio
+      camera.updateProjectionMatrix()
     }
   
     window.addEventListener("resize", resizeViewer)
   
     resizeViewer()
   
-    const boxGeometry = new THREE.BoxGeometry()
-    const material = new THREE.MeshStandardMaterial()
-    const cube = new THREE.Mesh(boxGeometry, material)
   
-    const directionalLight = new THREE.DirectionalLight()
-    const ambientLight = new THREE.AmbientLight()
+    directionalLight = new THREE.DirectionalLight()
+    ambientLight = new THREE.AmbientLight()
     ambientLight.intensity = 0.4
   
     scene.add(directionalLight, ambientLight)
   
-    const cameraControls = new OrbitControls(camera, viewerContainer)
+    cameraControls = new OrbitControls(camera, viewerContainer)
   
     function renderScene() {
-    renderer.render(scene, camera)
-    requestAnimationFrame(renderScene)
+      if(!renderer || !scene || !camera) return
+      renderer.render(scene, camera)
+      requestAnimationFrame(renderScene)
     }
   
     renderScene()
   
-    const axes = new THREE.AxesHelper()
-    const grid = new THREE.GridHelper()
+    axes = new THREE.AxesHelper()
+    grid = new THREE.GridHelper()
     grid.material.transparent = true
     grid.material.opacity = 0.4
     grid.material.color = new THREE.Color("#808080")
@@ -60,24 +73,35 @@ export function ThreeViewer() {
   
     const gui = new GUI()
   
-    const cubeControls = gui.addFolder("Cube")
-  
-    cubeControls.add(cube.position, "x", -10, 10, 1)
-    cubeControls.add(cube.position, "y", -10, 10, 1)
-    cubeControls.add(cube.position, "z", -10, 10, 1)
-    cubeControls.add(cube, "visible")
-    cubeControls.addColor(cube.material, "color")
-  
-    const objLoader = new OBJLoader()
-    const mtlLoader = new MTLLoader()
+    objLoader = new OBJLoader()
+    mtlLoader = new MTLLoader()
   
     mtlLoader.load("../assets/Gear/Gear1.mtl", (materials) => {
-    materials.preload()
-    objLoader.setMaterials(materials)
-    objLoader.load("../assets/Gear/Gear1.obj", (mesh) => {
-        scene.add(mesh)
+      materials.preload()
+      if(!objLoader) return
+      objLoader.setMaterials(materials)
+      objLoader.load("../assets/Gear/Gear1.obj", (object) => {
+        if(!scene) return
+        scene.add(object)
+        mesh = object
       })
     })
+  }
+
+  React.useEffect(() => {
+    setViewer()
+    return() =>{
+      mesh?.removeFromParent()
+      mesh?.traverse((child) => {
+        if(child instanceof THREE.Mesh) {
+          child.geometry.dispose()
+          child.material.dispose()
+        }
+      })
+      mesh = null
+
+    }
+
   }, [])
 
   return (
