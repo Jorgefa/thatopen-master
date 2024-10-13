@@ -70,9 +70,7 @@ export function ThreeViewer() {
     grid.material.color = new THREE.Color("#808080")
   
     scene.add(axes, grid)
-  
-    const gui = new GUI()
-  
+    
     objLoader = new OBJLoader()
     mtlLoader = new MTLLoader()
   

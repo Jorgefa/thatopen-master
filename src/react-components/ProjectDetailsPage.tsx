@@ -3,7 +3,7 @@ import * as Router from 'react-router-dom';
 import { ProjectsManager } from "../classes/ProjectsManager";
 import { ThreeViewer } from "./ThreeViewer"
 import { deleteDocument } from "../firebase"
-
+import { Message } from "./Message";
 
 interface Props {
     projectsManager: ProjectsManager
@@ -11,9 +11,9 @@ interface Props {
 
 export function ProjectDetailsPage(props: Props) {
     const routeParams = Router.useParams<{id: string}>()
-    if(!routeParams.id) {return(<p>Project ID is needed to see this page.</p>)}
+    if(!routeParams.id) {return(<Message title={"Project not found"} message={"Project ID is needed to see this page."}/>)}
     const project = props.projectsManager.getProject(routeParams.id)
-    if(!project) {return(<p>The project with ID {routeParams.id} wasn't found.</p>)}
+    if(!project) {return(<Message title={"Project not found"} message={`The project with ID ${routeParams.id} wasn't found`}/>)}
 
     const navigateTo = Router.useNavigate()
 
