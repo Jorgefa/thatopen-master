@@ -7,7 +7,7 @@ C3.10
     - Plus todo btn
     - Todo cards
     - Todo search bar
-    - Warning messages (projects not found)
+    - Warning messages (projects not found) - DONE
 
 C3.11
 - Improve warning "thre is no projects to display" when the searching box doesnt gound anyhting
