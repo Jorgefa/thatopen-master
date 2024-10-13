@@ -5,11 +5,13 @@ import { IProject, Project, ProjectStatus, UserRole } from '../classes/Project';
 import { ProjectsManager } from '../classes/ProjectsManager';
 import { ProjectCard } from "./ProjectCard"
 import { SearchBox } from './SearchBox';
-import { firebaseDB } from "../firebase"
+import { getCollection } from "../firebase"
 
 interface Props {
   projectsManager: ProjectsManager
 }
+
+const projectsCollection = getCollection<IProject>("/projects")
 
 export function ProjectsPage(props: Props) {
 
@@ -18,7 +20,6 @@ export function ProjectsPage(props: Props) {
   props.projectsManager.onProjectDeleted = () => {setProjects([...props.projectsManager.list])}
 
   const getFirestoreProjects = async () => {
-    const projectsCollection = Firestore.collection(firebaseDB, "/projects") as Firestore.CollectionReference<IProject>
     const firebaseCProjects = await Firestore.getDocs(projectsCollection)
     for (const doc of firebaseCProjects.docs) {
       const data = doc.data()
@@ -75,6 +76,7 @@ export function ProjectsPage(props: Props) {
       finishDate: new Date(formData.get("finishDate") as string)
     }
     try {
+      Firestore.addDoc(projectsCollection, projectData)
       const project = props.projectsManager.newProject(projectData)
       projectForm.reset()
       const modal = document.getElementById("new-project-modal")

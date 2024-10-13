@@ -1,11 +1,6 @@
-import { getFirestore } from 'firebase/firestore';
-// Import the functions you need from the SDKs you need
+import * as Firestore from "firebase/firestore"
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAbPtivRBx4mLYHgiIzeISsTfRc303LKfo",
   authDomain: "thatopenmaster.firebaseapp.com",
@@ -15,6 +10,9 @@ const firebaseConfig = {
   appId: "1:301123543503:web:b8fea09da1a2b5d15a72ba"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const firebaseDB = getFirestore()
+export const firebaseDB = Firestore.getFirestore()
+
+export function getCollection<T>(path: string) {
+  return Firestore.collection(firebaseDB, path) as Firestore.CollectionReference<T>
+}
