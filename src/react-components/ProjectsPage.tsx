@@ -17,7 +17,6 @@ export function ProjectsPage(props: Props) {
 
   const [projects, setProjects] = React.useState<Project[]>(props.projectsManager.list)
   props.projectsManager.onProjectCreated = () => {setProjects([...props.projectsManager.list])}
-  props.projectsManager.onProjectDeleted = () => {setProjects([...props.projectsManager.list])}
 
   const getFirestoreProjects = async () => {
     const firebaseCProjects = await Firestore.getDocs(projectsCollection)
