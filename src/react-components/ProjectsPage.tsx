@@ -62,6 +62,12 @@ export function ProjectsPage(props: Props) {
     modal.showModal()
   }
 
+  const onFormCancel = () => {
+    const modal = document.getElementById("new-project-modal")
+    if (!(modal && modal instanceof HTMLDialogElement)) {return}
+    modal.close()
+  }
+
   const onFormSubmit = (e: React.FormEvent) => {
     const projectForm = document.getElementById("new-project-form")
     if (!(projectForm && projectForm instanceof HTMLFormElement)) {return}
@@ -172,7 +178,7 @@ export function ProjectsPage(props: Props) {
                 columnGap: 10
               }}
             >
-              <button type="button" style={{ backgroundColor: "transparent" }}>
+              <button type="button" style={{ backgroundColor: "transparent" }} onClick={onFormCancel}>
                 Cancel
               </button>
               <button type="submit" style={{ backgroundColor: "rgb(18, 145, 18)" }}>

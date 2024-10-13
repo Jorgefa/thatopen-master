@@ -29,7 +29,7 @@ export function ProjectDetailsPage(props: Props) {
         <h2 data-project-info="name">{project.name}</h2>
         <p style={{ color: "#969696" }}>{project.description}</p>
         </div>
-        <button onClick={() => {props.projectsManager.deleteProject(project.id)}} style={{background: "red"}}>Delete project</button>
+        <button onClick={() => {props.projectsManager.deleteProject(project.id)}} style={{background: "gray"}}>Delete project</button>
     </header>
     <div className="main-page-content">
         <div style={{ display: "flex", flexDirection: "column", rowGap: 30 }}>
