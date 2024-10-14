@@ -3,7 +3,8 @@ C3.4 - DONE
 
 C3.10
 - Project details. Convert elements to react components
-    - Edit btn
+    - New projecr form as react component - DONE
+    - Edit btn working. NEED TO UPDATE THE PROEJC TIN THE DATABASE
     - Plus todo btn
     - Todo cards
     - Todo search bar

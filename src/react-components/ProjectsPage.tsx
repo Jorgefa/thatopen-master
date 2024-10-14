@@ -17,8 +17,7 @@ const projectsCollection = getCollection<IProject>("/projects")
 export function ProjectsPage(props: Props) {
 
   const [projects, setProjects] = React.useState<Project[]>(props.projectsManager.list)
-  const [isFormVisible, setFormVisible] = React.useState(false)
-
+  const [isFormVisible, setFormVisible] = React.useState<boolean>(false)
 
   props.projectsManager.onProjectCreated = () => {setProjects([...props.projectsManager.list])}
 
@@ -35,13 +34,14 @@ export function ProjectsPage(props: Props) {
         
       } catch (error) {
         //TODO
+        console.error("Error adding project: ", error);
+        
       }
     }
   }
 
   React.useEffect(() => {
     getFirestoreProjects()
-
   }, [])
   
   React.useEffect(() => {
@@ -85,6 +85,7 @@ export function ProjectsPage(props: Props) {
     <div className="page" id="projects-page" style={{ display: "flex" }}>
       <ProjectForm
         projectsManager = {props.projectsManager}
+        project = {null}
         isVisible = {isFormVisible}
         onClose = {closeProjectForm}
         />

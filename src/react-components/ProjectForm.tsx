@@ -6,6 +6,7 @@ import { ProjectsManager } from "../classes/ProjectsManager";
 
 interface Props {
   projectsManager: ProjectsManager,
+  project: IProject | null,
   isVisible: boolean,
   onClose(): void
 }
@@ -15,6 +16,14 @@ const projectsCollection = getCollection<IProject>("/projects")
 export function ProjectForm(props: Props) {
 
   const modalRef = React.useRef<HTMLDialogElement | null>(null)
+
+  const [name, setName] = React.useState<string>(props.project?.name || "");
+  const [description, setDescription] = React.useState<string>(props.project?.description || "");
+  const [status, setStatus] = React.useState<ProjectStatus>(props.project?.status || "pending");
+  const [userRole, setUserRole] = React.useState<UserRole>(props.project?.userRole || "developer");
+  const [finishDate, setFinishDate] = React.useState<string>(
+    props.project?.finishDate ? props.project.finishDate.toISOString().substring(0, 10) : ""
+  );
 
   React.useEffect(() => {
     const modal = modalRef.current
@@ -26,29 +35,34 @@ export function ProjectForm(props: Props) {
   }, [props.isVisible])
 
     
-  const onFormSubmit = (e: React.FormEvent) => {
-    const projectForm = document.getElementById("new-project-form")
-    if (!(projectForm && projectForm instanceof HTMLFormElement)) {return}
-    e.preventDefault()
-    const formData = new FormData(projectForm)
+  const onFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
     const projectData: IProject = {
-      name: formData.get("name") as string,
-      description: formData.get("description") as string,
-      status: formData.get("status") as ProjectStatus,
-      userRole: formData.get("userRole") as UserRole,
-      finishDate: new Date(formData.get("finishDate") as string)
-    }
+      name,
+      description,
+      status,
+      userRole,
+      finishDate: new Date(finishDate),
+    };
+
     try {
-      Firestore.addDoc(projectsCollection, projectData)
-      const project = props.projectsManager.newProject(projectData)
-      projectForm.reset()
-      const modal = document.getElementById("new-project-modal")
-      if (!(modal && modal instanceof HTMLDialogElement)) {return}
-      modal.close()
+      if (props.project) {
+        // Update existing project
+        console.log("updating")
+        // await Firestore.updateDoc(Firestore.doc(projectsCollection, props.project.id), projectData);
+        // props.projectsManager.updateProject(props.project.id, projectData);
+      } else {
+        // Add a new project
+        await Firestore.addDoc(projectsCollection, projectData);
+        props.projectsManager.newProject(projectData);
+      }
+
+      props.onClose();
     } catch (err) {
-      alert(err)
+      alert("Error submitting project: " + err);
     }
-  }
+  };
 
   const onFormCancel = () => {
     if (modalRef.current) {
@@ -59,85 +73,61 @@ export function ProjectForm(props: Props) {
 
   return (
     <dialog id="new-project-modal" ref={modalRef}>
-      <form onSubmit={(e) => onFormSubmit(e)} id="new-project-form">
-        <h2>New Project</h2>
-        <div className="input-list">
-          <div className="form-field-container">
-            <label>
-              <span className="material-icons-round">apartment</span>Name
-            </label>
-            <input
-              name="name"
-              type="text"
-              placeholder="What's the name of your project?"
-            />
-            <p
-              style={{
-                color: "gray",
-                fontSize: "var(--font-sm)",
-                marginTop: 5,
-                fontStyle: "italic"
-              }}
-            >
-              TIP: Give it a short name
-            </p>
-          </div>
-          <div className="form-field-container">
-            <label>
-              <span className="material-icons-round">subject</span>Description
-            </label>
-            <textarea
-              name="description"
-              cols={30}
-              rows={5}
-              placeholder="Give your project a nice description! So people is jealous about it."
-              defaultValue={""}
-            />
-          </div>
-          <div className="form-field-container">
-            <label>
-              <span className="material-icons-round">person</span>Role
-            </label>
-            <select name="userRole">
-              <option>Architect</option>
-              <option>Engineer</option>
-              <option>Developer</option>
-            </select>
-          </div>
-          <div className="form-field-container">
-            <label>
-              <span className="material-icons-round">not_listed_location</span>
-              Status
-            </label>
-            <select name="status">
-              <option>Pending</option>
-              <option>Active</option>
-              <option>Finished</option>
-            </select>
-          </div>
-          <div className="form-field-container">
-            <label htmlFor="finishDate">
-              <span className="material-icons-round">calendar_month</span>
-              Finish Date
-            </label>
-            <input name="finishDate" type="date" />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              margin: "10px 0px 10px auto",
-              columnGap: 10
-            }}
-          >
-            <button type="button" style={{ backgroundColor: "transparent" }} onClick={onFormCancel}>
-              Cancel
-            </button>
-            <button type="submit" style={{ backgroundColor: "rgb(18, 145, 18)" }}>
-              Accept
-            </button>
-          </div>
+    <form onSubmit={onFormSubmit} id="new-project-form">
+      <h2>{props.project ? "Edit Project" : "New Project"}</h2>
+      <div className="input-list">
+        <div className="form-field-container">
+          <label>Name</label>
+          <input
+            name="name"
+            type="text"
+            placeholder="What's the name of your project?"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
-      </form>
-    </dialog>
+        <div className="form-field-container">
+          <label>Description</label>
+          <textarea
+            name="description"
+            cols={30}
+            rows={5}
+            placeholder="Describe your project"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+        <div className="form-field-container">
+          <label>Role</label>
+          <select name="userRole" value={userRole} onChange={(e) => setUserRole(e.target.value as UserRole)}>
+            <option>Architect</option>
+            <option>Engineer</option>
+            <option>Developer</option>
+          </select>
+        </div>
+        <div className="form-field-container">
+          <label>Status</label>
+          <select name="status" value={status} onChange={(e) => setStatus(e.target.value as ProjectStatus)}>
+            <option>Pending</option>
+            <option>Active</option>
+            <option>Finished</option>
+          </select>
+        </div>
+        <div className="form-field-container">
+          <label>Finish Date</label>
+          <input
+            name="finishDate"
+            type="date"
+            value={finishDate}
+            onChange={(e) => setFinishDate(e.target.value)}
+          />
+        </div>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+          <button type="button" onClick={onFormCancel}>Cancel</button>
+          <button type="submit">{props.project ? "Update" : "Create"}</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
   )
 }
