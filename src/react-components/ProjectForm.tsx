@@ -1,8 +1,12 @@
 import * as React from "react";
+import * as Router from "react-router-dom";
 import * as Firestore from "firebase/firestore";
 import { IProject, ProjectStatus, UserRole } from "../classes/Project";
 import { getCollection } from "../firebase";
 import { ProjectsManager } from "../classes/ProjectsManager";
+import { Message } from "./Message";
+import { updateDocument } from "../firebase";
+
 
 interface Props {
   projectsManager: ProjectsManager,
@@ -24,6 +28,21 @@ export function ProjectForm(props: Props) {
   const [finishDate, setFinishDate] = React.useState<string>(
     props.project?.finishDate ? props.project.finishDate.toISOString().substring(0, 10) : ""
   );
+
+  let projectId : string | null
+
+  if(props.project) {
+    const routeParams = Router.useParams<{ id: string }>();
+    if (!routeParams.id) {
+      return (
+        <Message
+          title={"Project not found"}
+          message={"Project ID is needed to see this page."}
+        />
+      );
+    }
+    projectId = routeParams.id
+  }
 
   React.useEffect(() => {
     const modal = modalRef.current
@@ -49,9 +68,9 @@ export function ProjectForm(props: Props) {
     try {
       if (props.project) {
         // Update existing project
-        console.log("updating")
-        // await Firestore.updateDoc(Firestore.doc(projectsCollection, props.project.id), projectData);
-        // props.projectsManager.updateProject(props.project.id, projectData);
+        if(!projectId) return
+        await updateDocument("/projects", projectId, projectData);
+        props.projectsManager.updateProjects(projectData, projectId)
       } else {
         // Add a new project
         await Firestore.addDoc(projectsCollection, projectData);

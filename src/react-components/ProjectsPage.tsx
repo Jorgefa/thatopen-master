@@ -79,8 +79,6 @@ export function ProjectsPage(props: Props) {
     setProjects(filteredProjects)
   }
 
-  console.log(isFormVisible)
-
   return (
     <div className="page" id="projects-page" style={{ display: "flex" }}>
       <ProjectForm

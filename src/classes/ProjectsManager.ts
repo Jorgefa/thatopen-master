@@ -42,6 +42,14 @@ export class ProjectsManager {
     this.list = remaining
     this.onProjectDeleted(id)
   }
+
+  updateProjects(data: IProject, id: string) {
+    const project = this.getProject(id)
+    const index = this.list.findIndex((project) => project.id === id);
+    if (index !== -1) {
+      this.list[index] = { ...this.list[index], ...data };
+    }
+  }
   
   exportToJSON(fileName: string = "projects") {
     const json = JSON.stringify(this.list, null, 2)
