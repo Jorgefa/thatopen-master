@@ -41,6 +41,10 @@ export function ProjectCard(props: Props) {
             <p style={{ color: "#969696" }}>Estimated Progress</p>
             <p>{props.project.progress * 100}</p>
             </div>
+            <div className="card-property">
+            <p style={{ color: "#969696" }}>Tasks</p>
+            <p>{props.project.taskList.length}</p>
+            </div>
         </div>
         </div>
   )

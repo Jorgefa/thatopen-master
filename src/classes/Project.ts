@@ -1,5 +1,8 @@
 import { v4 as uuidv4 } from 'uuid'
-import { Task } from './Task'
+import { ITask, Task } from './Task'
+import * as Firestore from "firebase/firestore";
+import { getCollection } from "../firebase"
+
 
 export type ProjectStatus = "pending" | "active" | "finished"
 export type UserRole = "architect" | "engineer" | "developer"
@@ -10,9 +13,14 @@ export interface IProject {
 	status: ProjectStatus
 	userRole: UserRole
 	finishDate: Date
+  taskList: Task[]
+
 }
 
+const tasksCollection = getCollection<ITask>("/tasks")
+
 export class Project implements IProject {
+
 	//To satisfy IProject
   name: string
 	description: string
@@ -33,6 +41,32 @@ export class Project implements IProject {
       this[key] = data[key]
     }
     this.id = id
-    this.taskList = [new Task({ project: this, description: "First task", priority: "P1", taskStatus: "todo" })]
+    this.taskList = []
   }
+
+  newTask(project: ITask, id: string) {
+    const task = new Task(project, id)
+    this.taskList.push(task)
+  }
+
+  getFirestoreTask = async () => {
+    const firebaseCTasks = await Firestore.getDocs(tasksCollection)
+    for (const doc of firebaseCTasks.docs) {
+      const data = doc.data()
+      const task: ITask = {
+        ...data,
+      }
+      console.log(task.project.id)
+      if (task.project.id === this.id) {
+        try {
+          this.newTask(task, doc.id)
+          console.log("Task added")
+        } catch (error) {
+          //TODO
+          console.error("Error adding task: ", error);   
+        }
+      }
+    }
+  }
+
 }

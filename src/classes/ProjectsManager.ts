@@ -12,7 +12,7 @@ export class ProjectsManager {
     return filteredProjects
   }
 
-  newProject(data: IProject, id?: string ) {
+  async newProject(data: IProject, id?: string ) {
     const projectNames = this.list.map((project) => {
       return project.name
     })
@@ -21,6 +21,7 @@ export class ProjectsManager {
       throw new Error(`A project with the name "${data.name}" already exists`)
     }
     const project = new Project(data, id)
+    await project.getFirestoreTask()
     this.list.push(project)	
     this.onProjectCreated(project)
     return project

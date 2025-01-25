@@ -46,7 +46,7 @@ TODO
 - Create a todo class in project class - DONE
 - Add todoList to project class - DONE
 - Add sample todos and print them - DONE
-- Get tasks from Firebase
+- Get tasks from Firebase - DONE
 - Populate tasks from project in todolist
 - Edit tasks in Firebase
     - create in hardcoding
