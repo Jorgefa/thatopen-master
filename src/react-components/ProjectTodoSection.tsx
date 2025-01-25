@@ -5,7 +5,7 @@ interface Props {
     project: Project
 }
 
-export function ProjectToDoList(props: Props) {
+export function ProjectTodoSection(props: Props) {
   return (
               <div className="dashboard-card" style={{ flexGrow: 1 }}>
                 <div

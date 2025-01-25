@@ -39,3 +39,22 @@ Create a Todo Form Component and make it work so it can create ToDos and update 
 
 Store ToDos in Firebase
 Make sure to store the ToDos created in Firestore. Obviously, the goal is not only to store them, but also to retrieve them when the project enters a project.
+
+
+TODO
+
+- Create a todo class in project class - DONE
+- Add todoList to project class - DONE
+- Add sample todos and print them - DONE
+- Get tasks from Firebase
+- Populate tasks from project in todolist
+- Edit tasks in Firebase
+    - create in hardcoding
+    - delete in hardocoding
+    - update in hardcoding
+- Create form to edit task
+    - new task
+    - delete task
+    - edit task
+- Color tasks by priority
+- Format task and colorize from status

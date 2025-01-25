@@ -5,7 +5,7 @@ import { ThreeViewer } from "./ThreeViewer";
 import { deleteDocument } from "../firebase";
 import { Message } from "./Message";
 import { ProjectForm } from "./ProjectForm";
-import { ProjectToDoList } from "./ProjectToDoList";
+import { ProjectTodoSection } from "./ProjectTodoSection";
 
 interface Props {
   projectsManager: ProjectsManager;
@@ -155,7 +155,7 @@ export function ProjectDetailsPage(props: Props) {
               </div>
             </div>
           </div>
-          <ProjectToDoList project={project} />
+          <ProjectTodoSection project={project} />
         </div>
         <ThreeViewer />
       </div>

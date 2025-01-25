@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
+import { Task } from './Task'
 
 export type ProjectStatus = "pending" | "active" | "finished"
 export type UserRole = "architect" | "engineer" | "developer"
@@ -15,9 +16,12 @@ export class Project implements IProject {
 	//To satisfy IProject
   name: string
 	description: string
-	status: "pending" | "active" | "finished"
+	status: "pending" | "active" | "finished" 
 	userRole: "architect" | "engineer" | "developer"
   finishDate: Date
+
+  //Tasks
+  taskList: Task[]
   
   //Class internals
   cost: number = 0
@@ -29,5 +33,6 @@ export class Project implements IProject {
       this[key] = data[key]
     }
     this.id = id
+    this.taskList = [new Task({ project: this, description: "First task", priority: "P1", taskStatus: "todo" })]
   }
 }
