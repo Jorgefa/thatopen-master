@@ -48,6 +48,8 @@ TODO
 - Add sample todos and print them - DONE
 - Get tasks from Firebase - DONE
 - Populate tasks from project in todolist
+    - Create task component - DONE
+    - populate tasks inside tasks list - WIP
 - Edit tasks in Firebase
     - create in hardcoding
     - delete in hardocoding

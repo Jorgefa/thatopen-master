@@ -1,23 +1,45 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import './ProjectTodoCard.css';
+import { Task } from '../classes/Task';
 
-const ProjectTodoCard = ({ title, description, dueDate, status }) => {
+interface Props {
+    task: Task
+}
+
+export function ProjectTodoCard (props: Props) {
     return (
-        <div className="project-todo-card">
-            <h3>{title}</h3>
-            <p>{description}</p>
-            <p>Due Date: {dueDate}</p>
-            <p>Status: {status}</p>
+        <div className="todo-item">
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              columnGap: 15,
+              alignItems: "center",
+            }}
+          >
+            <span
+              className="material-icons-round"
+              style={{
+                padding: 10,
+                backgroundColor: "#686868",
+                borderRadius: 10,
+              }}
+            >
+              construction
+            </span>
+            <p>
+              {props.task.description}.
+            </p>
+          </div>
+          <p style={{ textWrap: "nowrap", marginLeft: 10 }}>
+            {props.task.dueDate ? new Date(props.task.dueDate).toDateString() : "No Due Date"}
+          </p>
         </div>
+      </div>
     );
 };
-
-ProjectTodoCard.propTypes = {
-    title: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    dueDate: PropTypes.string.isRequired,
-    status: PropTypes.string.isRequired,
-};
-
-export default ProjectTodoCard;

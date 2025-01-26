@@ -9,6 +9,7 @@ export interface ITask {
     description: string;
     priority: Priority
     taskStatus: taskStatus;
+    dueDate: Date;
 }
 
 export class Task {
@@ -17,6 +18,7 @@ export class Task {
     description: string;
     priority: "P1" | "P2" | "P3";
     taskStatus: "todo" | "done";
+    dueDate: Date;
 
     //Internals
     id: string;
