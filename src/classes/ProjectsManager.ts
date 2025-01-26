@@ -44,11 +44,12 @@ export class ProjectsManager {
     this.onProjectDeleted(id)
   }
 
-  updateProjects(data: IProject, id: string) {
+  updateProject(data: IProject, id: string) {
     const project = this.getProject(id)
     const index = this.list.findIndex((project) => project.id === id);
     if (index !== -1) {
-      this.list[index] = { ...this.list[index], ...data };
+      const existingProject = this.list[index];
+      Object.assign(existingProject, data);
     }
   }
   

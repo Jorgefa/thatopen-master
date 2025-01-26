@@ -22,8 +22,8 @@ export function ProjectsPage(props: Props) {
   props.projectsManager.onProjectCreated = () => {setProjects([...props.projectsManager.list])}
 
   const getFirestoreProjects = async () => {
-    const firebaseCProjects = await Firestore.getDocs(projectsCollection)
-    for (const doc of firebaseCProjects.docs) {
+    const firebaseProjects = await Firestore.getDocs(projectsCollection)
+    for (const doc of firebaseProjects.docs) {
       const data = doc.data()
       const project: IProject = {
         ...data,

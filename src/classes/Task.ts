@@ -5,22 +5,24 @@ export type Priority = "P1" | "P2" | "P3";
 export type taskStatus = "todo" | "done";
 
 export interface ITask {
-    project: Project;
-    description: string;
+    project: Project
+    name: string
+    description: string
     priority: Priority
-    taskStatus: taskStatus;
-    dueDate: Date;
+    status: taskStatus
+    dueDate: Date
 }
 
-export class Task {
-    // ITask
+export class Task implements ITask {
+    //ITask
     project: Project;
+    name: string
     description: string;
     priority: "P1" | "P2" | "P3";
-    taskStatus: "todo" | "done";
+    status: "todo" | "done";
     dueDate: Date;
 
-    //Internals
+    //Class internals
     id: string;
     
     constructor(data: ITask, id = uuidv4()) {
@@ -29,5 +31,4 @@ export class Task {
         }
         this.id = id
     }
-
 }

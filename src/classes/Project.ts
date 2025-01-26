@@ -50,17 +50,16 @@ export class Project implements IProject {
   }
 
   getFirestoreTask = async () => {
-    const firebaseCTasks = await Firestore.getDocs(tasksCollection)
-    for (const doc of firebaseCTasks.docs) {
+    const firebaseTasks = await Firestore.getDocs(tasksCollection)
+    for (const doc of firebaseTasks.docs) {
       const data = doc.data()
       const task: ITask = {
         ...data,
+        dueDate: (data.dueDate as unknown as Firestore.Timestamp).toDate()
       }
-      console.log(task.project.id)
       if (task.project.id === this.id) {
         try {
           this.newTask(task, doc.id)
-          console.log("Task added")
         } catch (error) {
           //TODO
           console.error("Error adding task: ", error);   
@@ -68,5 +67,4 @@ export class Project implements IProject {
       }
     }
   }
-
 }

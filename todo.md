@@ -49,7 +49,7 @@ TODO
 - Get tasks from Firebase - DONE
 - Populate tasks from project in todolist
     - Create task component - DONE
-    - populate tasks inside tasks list - WIP
+    - populate tasks inside tasks list - DONE
 - Edit tasks in Firebase
     - create in hardcoding
     - delete in hardocoding

@@ -6,8 +6,29 @@ interface Props {
 }
 
 export function ProjectTodoCard (props: Props) {
+    const getBackgroundColor = (priority: string): string => {
+        switch (priority) {
+            case "P1":
+                return "#e57373"; // High Priority - Red
+            case "P2":
+                return "#ffb74d"; // Medium Priority - Orange
+            case "P3":
+                return "#f5f5f5"; // Low Priority - Grey
+            default:
+                return "#f5f5f5"; // Default - White
+        }
+    }
+
+    const backgroundColor = getBackgroundColor(props.task.priority);
+
+
     return (
-        <div className="todo-item">
+    <div
+        className="todo-item"
+        style={{
+            padding: "10px",
+            borderRadius: "8px",
+            }}>
         <div
           style={{
             display: "flex",
@@ -26,20 +47,25 @@ export function ProjectTodoCard (props: Props) {
               className="material-icons-round"
               style={{
                 padding: 10,
-                backgroundColor: "#686868",
+                backgroundColor,
                 borderRadius: 10,
               }}
             >
               construction
             </span>
-            <p>
-              {props.task.description}.
-            </p>
-          </div>
-          <p style={{ textWrap: "nowrap", marginLeft: 10 }}>
-            {props.task.dueDate ? new Date(props.task.dueDate).toDateString() : "No Due Date"}
-          </p>
+            <div style={{ marginLeft: 10, textAlign: "left" }}>
+                    <div>
+                        <h5>{props.task.name}</h5>
+                        <p>{props.task.status}</p>
+                    </div>
+                </div>
         </div>
-      </div>
+          </div>
+          <div style={{ marginLeft: 10, textAlign: "right" }}>
+                    <div>
+                        <p>{props.task.dueDate.toLocaleDateString("es-ES")}</p>
+                    </div>
+                </div>
+        </div>
     );
 };

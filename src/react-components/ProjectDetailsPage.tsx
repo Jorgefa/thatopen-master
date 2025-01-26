@@ -132,7 +132,7 @@ export function ProjectDetailsPage(props: Props) {
                   <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
                     Finish Date
                   </p>
-                  <p>{project.finishDate.toDateString()}</p>
+                  <p>{project.finishDate.toLocaleDateString("es-ES")}</p>
                 </div>
               </div>
               <div
