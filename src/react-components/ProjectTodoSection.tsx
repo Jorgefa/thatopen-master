@@ -1,12 +1,33 @@
 import * as React from "react";
 import { Project } from "../classes/Project";
 import { ProjectTodoCard } from "./ProjectTodoCard";
+import { Task } from "../classes/Task";
+import { Router } from "react-router-dom";
+import { SearchBox } from "./SearchBox";
 
 interface Props {
     project: Project
 }
 
 export function ProjectTodoSection(props: Props) {
+
+  const [tasks, setTasks] = React.useState<Task[]>(props.project.taskList)
+  
+  React.useEffect(() => {
+    console.log("tasks state updated", tasks)
+  }, [tasks])
+
+  const projectTodoCards = tasks.map((task) => {
+    return (
+    <ProjectTodoCard task={task}/>
+    )
+  })
+
+  const onTodoSearch = (value: string) => {
+    const filteredTasks = props.project.filterTasks(value)
+    setTasks(filteredTasks)
+  }
+
   return (
               <div className="dashboard-card" style={{ flexGrow: 1 }}>
                 <div
@@ -34,11 +55,7 @@ export function ProjectTodoSection(props: Props) {
                       }}
                     >
                       <span className="material-icons-round">search</span>
-                      <input
-                        type="text"
-                        placeholder="Search To-Do's by name"
-                        style={{ width: "100%" }}
-                      />
+                      <SearchBox onChange={(value) => onTodoSearch(value)}/>
                     </div>
                     <span className="material-icons-round">add</span>
                   </div>
@@ -51,8 +68,7 @@ export function ProjectTodoSection(props: Props) {
                     rowGap: 20,
                   }}
                 >
-                  <ProjectTodoCard task={props.project.taskList[0]} />
-                  <ProjectTodoCard task={props.project.taskList[1]} />
+                  {projectTodoCards}
                 </div>
               </div>
     

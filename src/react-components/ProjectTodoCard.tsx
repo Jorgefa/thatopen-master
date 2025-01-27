@@ -6,6 +6,7 @@ interface Props {
 }
 
 export function ProjectTodoCard (props: Props) {
+
     const getBackgroundColor = (priority: string): string => {
         switch (priority) {
             case "P1":
@@ -19,7 +20,7 @@ export function ProjectTodoCard (props: Props) {
         }
     }
 
-    const backgroundColor = getBackgroundColor(props.task.priority);
+    const backgroundColor = getBackgroundColor(props.task.priority)? getBackgroundColor(props.task.priority): "#f5f5f5";
 
 
     return (

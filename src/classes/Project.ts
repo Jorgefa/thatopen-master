@@ -49,6 +49,13 @@ export class Project implements IProject {
     this.taskList.push(task)
   }
 
+  filterTasks(value: string){
+    const filteredTasks = this.taskList.filter((task) => {
+      return task.name.includes(value)
+    })
+    return filteredTasks
+  }
+
   getFirestoreTask = async () => {
     const firebaseTasks = await Firestore.getDocs(tasksCollection)
     for (const doc of firebaseTasks.docs) {

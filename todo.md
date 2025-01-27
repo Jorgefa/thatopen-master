@@ -58,5 +58,4 @@ TODO
     - new task
     - delete task
     - edit task
-- Color tasks by priority
-- Format task and colorize from status
+- Color tasks by priority - DONE
