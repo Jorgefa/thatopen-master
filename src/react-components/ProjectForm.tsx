@@ -70,7 +70,7 @@ export function ProjectForm(props: Props) {
         // Update existing project
         if(!projectId) return
         await updateDocument("/projects", projectId, projectData);
-        props.projectsManager.updateProjects(projectData, projectId)
+        props.projectsManager.updateProject(projectData, projectId)
       } else {
         // Add a new project
         await Firestore.addDoc(projectsCollection, projectData);

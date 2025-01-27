@@ -6,6 +6,7 @@ import { deleteDocument } from "../firebase";
 import { Message } from "./Message";
 import { ProjectForm } from "./ProjectForm";
 import { ProjectTodoSection } from "./ProjectTodoSection";
+import { ProjectTodoForm } from "./ProjectTodoForm";
 
 interface Props {
   projectsManager: ProjectsManager;
@@ -14,6 +15,8 @@ interface Props {
 export function ProjectDetailsPage(props: Props) {
 
   const [isFormVisible, setFormVisible] = React.useState<boolean>(false)
+  const [isTaskFormVisible, setTaskFormVisible] = React.useState<boolean>(false)
+
 
   const routeParams = Router.useParams<{ id: string }>();
   if (!routeParams.id) {
@@ -47,6 +50,13 @@ export function ProjectDetailsPage(props: Props) {
   const closeProjectForm = () => {
     setFormVisible(false)
   };
+  const onNewTaskClick = () => {
+    setTaskFormVisible(true)
+    console.log("New task added")
+  }
+  const closeTaskForm = () => {
+    setTaskFormVisible(false)
+  };
 
   return (
     <div className="page" id="project-details">
@@ -56,10 +66,15 @@ export function ProjectDetailsPage(props: Props) {
         isVisible={isFormVisible}
         onClose={closeProjectForm}
       />
+      <ProjectTodoForm
+        project={project}
+        task={null}
+        isVisible={isTaskFormVisible}
+        onClose={closeTaskForm}
+      />
       <header>
         <div>
           <h2 data-project-info="name">{project.name}</h2>
-          <p style={{ color: "#969696" }}>{project.description}</p>
         </div>
         <button
           onClick={() => {
@@ -99,7 +114,7 @@ export function ProjectDetailsPage(props: Props) {
             </div>
             <div style={{ padding: "0 30px" }}>
               <div>
-                <h5>{project.name}r</h5>
+                <h5>{project.name}</h5>
                 <p>{project.description}</p>
               </div>
               <div
@@ -144,18 +159,18 @@ export function ProjectDetailsPage(props: Props) {
               >
                 <div
                   style={{
-                    width: `${project.progress * 100}%`,
+                    width: `${project.progress+0.3 * 100}%`,
                     backgroundColor: "green",
                     padding: "4px 0",
                     textAlign: "center",
                   }}
                 >
-                  {project.progress * 100}%
+                  {project.progress+0.3 * 100}%
                 </div>
               </div>
             </div>
           </div>
-          <ProjectTodoSection project={project} />
+          <ProjectTodoSection project={project} onNewTaskClick={onNewTaskClick} />
         </div>
         <ThreeViewer />
       </div>

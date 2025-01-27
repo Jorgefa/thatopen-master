@@ -7,6 +7,8 @@ import { SearchBox } from "./SearchBox";
 
 interface Props {
     project: Project
+    onNewTaskClick: () => void
+    onTaskEditClick: (task: Task) => void
 }
 
 export function ProjectTodoSection(props: Props) {
@@ -54,10 +56,11 @@ export function ProjectTodoSection(props: Props) {
                         columnGap: 10,
                       }}
                     >
-                      <span className="material-icons-round">search</span>
                       <SearchBox onChange={(value) => onTodoSearch(value)}/>
                     </div>
-                    <span className="material-icons-round">add</span>
+                    <button onClick={props.onNewTaskClick} id="new-task-btn">
+                      <span className="material-icons-round">add</span>
+                    </button>
                   </div>
                 </div>
                 <div

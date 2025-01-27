@@ -7,6 +7,7 @@ import { ProjectCard } from "./ProjectCard"
 import { SearchBox } from './SearchBox';
 import { getCollection } from "../firebase"
 import { ProjectForm } from './ProjectForm';
+import { Message } from './Message';
 
 interface Props {
   projectsManager: ProjectsManager
@@ -111,7 +112,9 @@ export function ProjectsPage(props: Props) {
         </div>
       </header>
       {
-        projects.length > 0 ? <div id="projects-list"> { projectCards} </div> : <p>There is no projects to display.</p>
+        projects.length > 0 ?
+        <div id="projects-list"> { projectCards} </div> :
+        <Message title={"No projects found"} message={"Try again with another search."} />
 
       }
     </div>
