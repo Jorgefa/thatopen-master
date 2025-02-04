@@ -21,6 +21,10 @@ const tasksCollection = getCollection<ITask>("/tasks")
 
 export class Project implements IProject {
 
+  onTaskCreated = (task: Task) => {}
+  onTaskDeleted = (id: string) => {}
+
+
 	//To satisfy IProject
   name: string
 	description: string
@@ -44,9 +48,11 @@ export class Project implements IProject {
     this.taskList = []
   }
 
-  newTask(project: ITask, id: string) {
-    const task = new Task(project, id)
+  newTask(data: ITask, id?: string) {
+    const task = new Task(data, id)
     this.taskList.push(task)
+    this.onTaskCreated(task)
+    return task
   }
 
   filterTasks(value: string){

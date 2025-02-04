@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Task, ITask, taskStatus, Priority } from '../classes/Task';
+import { Task, ITask, TaskStatus, Priority } from '../classes/Task';
 import { ProjectsManager } from "../classes/ProjectsManager";
 import { Project } from '../classes/Project';
 import { getCollection } from '../firebase';
+import * as Firestore from "firebase/firestore";
 
 interface Props {
     project: Project;
@@ -19,14 +20,12 @@ export function ProjectTodoForm(props: Props) {
     
     const [name, setName] = React.useState<string>(props.task?.name || "");
     const [description, setDescription] = React.useState<string>(props.task?.description || "");
-    const [status, setStatus] = React.useState<taskStatus>(props.task?.status || "todo");
+    const [status, setStatus] = React.useState<TaskStatus>(props.task?.status || "todo");
     const [priority, setPriority] = React.useState<Priority>(props.task?.priority || "P3");
     const [dueDate, setDueDate] = React.useState<string>(
         props.task?.dueDate ? props.task.dueDate.toISOString().substring(0, 10) : ""
     )
     
-
-    let taskId : string | null
 
     React.useEffect(() => {
     const modal = modalRef.current
@@ -38,7 +37,31 @@ export function ProjectTodoForm(props: Props) {
     }, [props.isVisible])
 
     const onFormSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
         console.log(e)
+
+        const taskData: ITask = {
+            name,
+            description,
+            status,
+            priority,
+            dueDate: new Date(dueDate),
+            project: `/projects/${props.project.id}`
+        }
+            try {
+              if (props.task) {
+                // Update existing task
+                console.log("Updating task")
+              } else {
+                // Add a new task
+                console.log("Adding new task")
+                await Firestore.addDoc(tasksCollection, taskData);
+                props.project.newTask(taskData);
+              }
+              props.onClose();
+            } catch (err) {
+              alert("Error submitting task: " + err);
+            }
     }
 
     const onFormCancel = () => {
@@ -76,8 +99,16 @@ export function ProjectTodoForm(props: Props) {
                     />
                     </div>
                     <div className="form-field-container">
+                    <label>Priority</label>
+                    <select name="priority" value={priority} onChange={(e) => setPriority(e.target.value as Priority)}>
+                        <option>P1</option>
+                        <option>P2</option>
+                        <option>P3</option>
+                    </select>
+                    </div>
+                    <div className="form-field-container">
                     <label>Status</label>
-                    <select name="status" value={status} onChange={(e) => setStatus(e.target.value as ProjectStatus)}>
+                    <select name="status" value={status} onChange={(e) => setStatus(e.target.value as TaskStatus)}>
                         <option>todo</option>
                         <option>done</option>
                     </select>

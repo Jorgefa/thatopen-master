@@ -2,20 +2,20 @@ import { v4 as uuidv4 } from 'uuid'
 import { Project } from "./Project";
 
 export type Priority = "P1" | "P2" | "P3";
-export type taskStatus = "todo" | "done";
+export type TaskStatus = "todo" | "done";
 
 export interface ITask {
-    project: Project
+    project: string
     name: string
     description: string
     priority: Priority
-    status: taskStatus
+    status: TaskStatus
     dueDate: Date
 }
 
 export class Task implements ITask {
     //ITask
-    project: Project;
+    project: string;
     name: string
     description: string;
     priority: "P1" | "P2" | "P3";
