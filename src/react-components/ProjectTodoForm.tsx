@@ -26,7 +26,6 @@ export function ProjectTodoForm(props: Props) {
     )
     
 
-
     let taskId : string | null
 
     React.useEffect(() => {
@@ -38,9 +37,66 @@ export function ProjectTodoForm(props: Props) {
     }
     }, [props.isVisible])
 
+    const onFormSubmit = async (e: React.FormEvent) => {
+        console.log(e)
+    }
+
+    const onFormCancel = () => {
+        if (modalRef.current) {
+          modalRef.current.close()
+        }
+        props.onClose()
+      }
+
+
     return (
         <dialog id="new-todo-modal" ref={modalRef}>
-            <p>Task</p>
+            <form onSubmit={onFormSubmit} id="new-todo-form">
+                <h2>{props.task ? "Edit todo" : "New todo"}</h2>
+                <div className="input-list">
+                    <div className="form-field-container">
+                    <label>Name</label>
+                    <input
+                        name="name"
+                        type="text"
+                        placeholder="What's the name of your task?"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
+                    </div>
+                    <div className="form-field-container">
+                    <label>Description</label>
+                    <textarea
+                        name="description"
+                        cols={30}
+                        rows={5}
+                        placeholder="Describe your project"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                    />
+                    </div>
+                    <div className="form-field-container">
+                    <label>Status</label>
+                    <select name="status" value={status} onChange={(e) => setStatus(e.target.value as ProjectStatus)}>
+                        <option>todo</option>
+                        <option>done</option>
+                    </select>
+                    </div>
+                    <div className="form-field-container">
+                    <label>Due Date</label>
+                    <input
+                        name="finishDate"
+                        type="date"
+                        value={dueDate}
+                        onChange={(e) => setDueDate(e.target.value)}
+                    />
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+                    <button type="button" onClick={onFormCancel}>Cancel</button>
+                    <button type="submit">{props.task ? "Update" : "Create"}</button>
+                    </div>
+                </div>
+                </form>
         </dialog>
     );
 };
