@@ -46,6 +46,6 @@ export function ProjectCard(props: Props) {
             <p>{props.project.taskList.length}</p>
             </div>
         </div>
-        </div>
+    </div>
   )
 }

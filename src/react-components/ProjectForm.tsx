@@ -23,8 +23,8 @@ export function ProjectForm(props: Props) {
 
   const [name, setName] = React.useState<string>(props.project?.name || "");
   const [description, setDescription] = React.useState<string>(props.project?.description || "");
-  const [status, setStatus] = React.useState<ProjectStatus>(props.project?.status || "pending");
-  const [userRole, setUserRole] = React.useState<UserRole>(props.project?.userRole || "developer");
+  const [status, setStatus] = React.useState<ProjectStatus>(props.project?.status || "Pending");
+  const [userRole, setUserRole] = React.useState<UserRole>(props.project?.userRole || "Developer");
   const [finishDate, setFinishDate] = React.useState<string>(
     props.project?.finishDate ? props.project.finishDate.toISOString().substring(0, 10) : ""
   );

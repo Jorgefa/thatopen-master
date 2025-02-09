@@ -3,6 +3,7 @@ import { Task } from '../classes/Task';
 
 interface Props {
     task: Task
+    onClick: () => void
 }
 
 export function ProjectTodoCard (props: Props) {
@@ -22,6 +23,10 @@ export function ProjectTodoCard (props: Props) {
 
     const backgroundColor = getBackgroundColor(props.task.priority)? getBackgroundColor(props.task.priority): "#f5f5f5";
 
+    const handleClick = () => {
+      console.log("Card clicked:", props.task); // Add console.log for debugging
+      props.onClick();
+  };
 
     return (
     <div
@@ -29,7 +34,9 @@ export function ProjectTodoCard (props: Props) {
         style={{
             padding: "10px",
             borderRadius: "8px",
-            }}>
+            cursor: "pointer"
+            }}
+            onClick={handleClick}>
         <div
           style={{
             display: "flex",

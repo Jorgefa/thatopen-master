@@ -4,8 +4,8 @@ import * as Firestore from "firebase/firestore";
 import { getCollection } from "../firebase"
 
 
-export type ProjectStatus = "pending" | "active" | "finished"
-export type UserRole = "architect" | "engineer" | "developer"
+export type ProjectStatus = "Pending" | "Active" | "Finished"
+export type UserRole = "Architect" | "Engineer" | "Developer"
 
 export interface IProject {
   name: string
@@ -28,8 +28,8 @@ export class Project implements IProject {
 	//To satisfy IProject
   name: string
 	description: string
-	status: "pending" | "active" | "finished" 
-	userRole: "architect" | "engineer" | "developer"
+	status: "Pending" | "Active" | "Finished" 
+	userRole: "Architect" | "Engineer" | "Developer"
   finishDate: Date
 
   //Tasks
@@ -63,21 +63,28 @@ export class Project implements IProject {
   }
 
   getFirestoreTask = async () => {
-    const firebaseTasks = await Firestore.getDocs(tasksCollection)
-    for (const doc of firebaseTasks.docs) {
-      const data = doc.data()
-      const task: ITask = {
-        ...data,
-        dueDate: (data.dueDate as unknown as Firestore.Timestamp).toDate()
-      }
-      if (task.project.id === this.id) {
-        try {
-          this.newTask(task, doc.id)
-        } catch (error) {
-          //TODO
-          console.error("Error adding task: ", error);   
+    try {
+      const firebaseTasks = await Firestore.getDocs(tasksCollection);
+      for (const doc of firebaseTasks.docs) {
+        const data = doc.data();
+        const task: ITask = {
+          ...data,
+          dueDate: (data.dueDate as unknown as Firestore.Timestamp).toDate(),
+        };
+        console.log("Task from Firestore:", task);
+        const taskProjectId = task.projectPath?.split("/")[2]; // Add optional chaining
+        console.log("Task project ID:", taskProjectId);
+        if (taskProjectId === this.id) {
+          try {
+            this.newTask(task, doc.id);
+            console.log("Task added:", task);
+          } catch (error) {
+            console.error("Error adding task:", error);
+          }
         }
       }
+    } catch (error) {
+      console.error("Error fetching tasks from Firestore:", error);
     }
   }
 }

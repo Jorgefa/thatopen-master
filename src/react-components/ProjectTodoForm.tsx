@@ -46,7 +46,7 @@ export function ProjectTodoForm(props: Props) {
             status,
             priority,
             dueDate: new Date(dueDate),
-            project: `/projects/${props.project.id}`
+            projectPath: `/projects/${props.project.id}`
         }
             try {
               if (props.task) {
@@ -109,8 +109,8 @@ export function ProjectTodoForm(props: Props) {
                     <div className="form-field-container">
                     <label>Status</label>
                     <select name="status" value={status} onChange={(e) => setStatus(e.target.value as TaskStatus)}>
-                        <option>todo</option>
-                        <option>done</option>
+                        <option>Todo</option>
+                        <option>Done</option>
                     </select>
                     </div>
                     <div className="form-field-container">

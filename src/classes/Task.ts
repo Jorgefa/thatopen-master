@@ -2,10 +2,10 @@ import { v4 as uuidv4 } from 'uuid'
 import { Project } from "./Project";
 
 export type Priority = "P1" | "P2" | "P3";
-export type TaskStatus = "todo" | "done";
+export type TaskStatus = "Todo" | "Done";
 
 export interface ITask {
-    project: string
+    projectPath: string
     name: string
     description: string
     priority: Priority
@@ -15,11 +15,11 @@ export interface ITask {
 
 export class Task implements ITask {
     //ITask
-    project: string;
+    projectPath: string;
     name: string
     description: string;
     priority: "P1" | "P2" | "P3";
-    status: "todo" | "done";
+    status: "Todo" | "Done";
     dueDate: Date;
 
     //Class internals

@@ -7,6 +7,7 @@ import { Message } from "./Message";
 import { ProjectForm } from "./ProjectForm";
 import { ProjectTodoSection } from "./ProjectTodoSection";
 import { ProjectTodoForm } from "./ProjectTodoForm";
+import { Task } from "../classes/Task";
 
 interface Props {
   projectsManager: ProjectsManager;
@@ -15,8 +16,26 @@ interface Props {
 export function ProjectDetailsPage(props: Props) {
 
   const [isFormVisible, setFormVisible] = React.useState<boolean>(false)
+  const [selectedTask, setSelectedTask] = React.useState<Task | null>(null);
   const [isTaskFormVisible, setTaskFormVisible] = React.useState<boolean>(false)
 
+  const handleNewTaskClick = () => {
+    setSelectedTask(null);
+    setTaskFormVisible(true);
+  };
+
+  const handleTaskEditClick = (task: Task) => {
+      setSelectedTask(task);
+      setTaskFormVisible(true);
+  };
+  const handleCloseTaskForm = () => {
+    setTaskFormVisible(false);
+    setSelectedTask(null);
+};
+  const handleCloseForm = () => {
+      setFormVisible(false);
+      setSelectedTask(null);
+  };
 
   const routeParams = Router.useParams<{ id: string }>();
   if (!routeParams.id) {
@@ -68,7 +87,7 @@ export function ProjectDetailsPage(props: Props) {
       />
       <ProjectTodoForm
         project={project}
-        task={null}
+        task={selectedTask}
         isVisible={isTaskFormVisible}
         onClose={closeTaskForm}
       />
@@ -170,7 +189,11 @@ export function ProjectDetailsPage(props: Props) {
               </div>
             </div>
           </div>
-          <ProjectTodoSection project={project} onNewTaskClick={onNewTaskClick} />
+          <ProjectTodoSection
+          project={project}
+          onNewTaskClick={onNewTaskClick}
+          onTaskEditClick={handleTaskEditClick}
+          />
         </div>
         <ThreeViewer />
       </div>

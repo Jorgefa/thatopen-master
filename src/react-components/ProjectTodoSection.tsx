@@ -19,9 +19,16 @@ export function ProjectTodoSection(props: Props) {
     console.log("tasks state updated", tasks)
   }, [tasks])
 
+  const handleCardClick = (task: Task) => {
+    props.onTaskEditClick(task);
+
+};
+
   const projectTodoCards = tasks.map((task) => {
     return (
-    <ProjectTodoCard task={task}/>
+    <ProjectTodoCard
+    task={task}
+    onClick={() => handleCardClick(task)}/>
     )
   })
 
