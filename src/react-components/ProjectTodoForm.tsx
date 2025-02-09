@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Task, ITask, TaskStatus, Priority } from '../classes/Task';
 import { ProjectsManager } from "../classes/ProjectsManager";
 import { Project } from '../classes/Project';
-import { getCollection } from '../firebase';
+import { getCollection, updateDocument } from '../firebase';
 import * as Firestore from "firebase/firestore";
 
 interface Props {
     project: Project;
-    task: ITask | null;
+    task: Task | null;
     isVisible: boolean,
     onClose(): void;
 }
@@ -20,7 +20,7 @@ export function ProjectTodoForm(props: Props) {
     
     const [name, setName] = React.useState<string>(props.task?.name || "");
     const [description, setDescription] = React.useState<string>(props.task?.description || "");
-    const [status, setStatus] = React.useState<TaskStatus>(props.task?.status || "todo");
+    const [status, setStatus] = React.useState<TaskStatus>(props.task?.status || "Todo");
     const [priority, setPriority] = React.useState<Priority>(props.task?.priority || "P3");
     const [dueDate, setDueDate] = React.useState<string>(
         props.task?.dueDate ? props.task.dueDate.toISOString().substring(0, 10) : ""
@@ -36,6 +36,22 @@ export function ProjectTodoForm(props: Props) {
     }
     }, [props.isVisible])
 
+    React.useEffect(() => {
+        if (props.task) {
+            setName(props.task.name);
+            setDescription(props.task.description);
+            setStatus(props.task.status);
+            setPriority(props.task.priority);
+            setDueDate(props.task.dueDate ? props.task.dueDate.toISOString().substring(0, 10) : "");
+        } else {
+            setName("");
+            setDescription("");
+            setStatus("Todo");
+            setPriority("P3");
+            setDueDate("");
+        }
+    }, [props.task]);
+
     const onFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         console.log(e)
@@ -50,10 +66,9 @@ export function ProjectTodoForm(props: Props) {
         }
             try {
               if (props.task) {
-                // Update existing task
-                console.log("Updating task")
+                await updateDocument("/tasks", props.task.id, taskData);
+                props.project.updateTask(props.task.id, taskData)
               } else {
-                // Add a new task
                 console.log("Adding new task")
                 await Firestore.addDoc(tasksCollection, taskData);
                 props.project.newTask(taskData);

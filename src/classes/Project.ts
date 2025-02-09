@@ -55,6 +55,15 @@ export class Project implements IProject {
     return task
   }
 
+  updateTask(id: string, data: ITask) {
+    const task = this.taskList.find((task) => task.id === id)
+    if (task) {
+      for (const key in data) {
+        task[key] = data[key]
+      }
+    }
+  }
+
   filterTasks(value: string){
     const filteredTasks = this.taskList.filter((task) => {
       return task.name.includes(value)
