@@ -26,10 +26,12 @@ export function ProjectTodoForm(props: Props) {
         props.task?.dueDate ? props.task.dueDate.toISOString().substring(0, 10) : ""
     )
     
+    let taskId : string | null = props.task ? props.task.id : null;
 
     React.useEffect(() => {
     const modal = modalRef.current
     if (props.isVisible && modal) {
+        if (props.task == null) {resetFormFields()}
         modal.showModal()
     } else if (modal) {
         modal.close()
@@ -44,13 +46,17 @@ export function ProjectTodoForm(props: Props) {
             setPriority(props.task.priority);
             setDueDate(props.task.dueDate ? props.task.dueDate.toISOString().substring(0, 10) : "");
         } else {
-            setName("");
-            setDescription("");
-            setStatus("Todo");
-            setPriority("P3");
-            setDueDate("");
+            resetFormFields()
         }
     }, [props.task]);
+
+    const resetFormFields = () => {
+        setName("");
+        setDescription("");
+        setStatus("Todo");
+        setPriority("P3");
+        setDueDate("");
+      };
 
     const onFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -64,19 +70,21 @@ export function ProjectTodoForm(props: Props) {
             dueDate: new Date(dueDate),
             projectPath: `/projects/${props.project.id}`
         }
-            try {
-              if (props.task) {
-                await updateDocument("/tasks", props.task.id, taskData);
-                props.project.updateTask(props.task.id, taskData)
-              } else {
-                console.log("Adding new task")
-                await Firestore.addDoc(tasksCollection, taskData);
-                props.project.newTask(taskData);
-              }
-              props.onClose();
-            } catch (err) {
-              alert("Error submitting task: " + err);
+    
+        try {
+            if (props.task) {
+            await updateDocument("/tasks", taskId, taskData);
+            props.project.updateTask(taskId, taskData)
+            } else {
+            console.log("Adding new task")
+            const docRef = await Firestore.addDoc(tasksCollection, taskData);
+            taskId = docRef.id;
+            props.project.newTask(taskData, taskId);
             }
+            props.onClose();
+        } catch (err) {
+            alert("Error submitting task: " + err);
+        }
     }
 
     const onFormCancel = () => {

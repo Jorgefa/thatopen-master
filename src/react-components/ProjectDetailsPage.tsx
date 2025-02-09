@@ -20,14 +20,15 @@ export function ProjectDetailsPage(props: Props) {
   const [isTaskFormVisible, setTaskFormVisible] = React.useState<boolean>(false)
 
   const handleNewTaskClick = () => {
-    setSelectedTask(null);
-    setTaskFormVisible(true);
+    setSelectedTask(null);      // Clear any selected task
+    setTaskFormVisible(true);   // Open the task form
   };
 
   const handleTaskEditClick = (task: Task) => {
-      setSelectedTask(task);
-      setTaskFormVisible(true);
+    setSelectedTask(task);        // Set the task to be edited
+    setTaskFormVisible(true);     // Open the task form
   };
+
   const handleCloseTaskForm = () => {
     setTaskFormVisible(false);
     setSelectedTask(null);
@@ -69,10 +70,6 @@ export function ProjectDetailsPage(props: Props) {
   const closeProjectForm = () => {
     setFormVisible(false)
   };
-  const onNewTaskClick = () => {
-    setTaskFormVisible(true)
-    console.log("New task added")
-  }
   const closeTaskForm = () => {
     setTaskFormVisible(false)
   };
@@ -190,10 +187,10 @@ export function ProjectDetailsPage(props: Props) {
             </div>
           </div>
           <ProjectTodoSection
-          project={project}
-          onNewTaskClick={onNewTaskClick}
-          onTaskEditClick={handleTaskEditClick}
-          />
+            project={project}
+            onNewTaskClick={handleNewTaskClick}
+            onTaskEditClick={handleTaskEditClick}
+            selectedTask={null}          />
         </div>
         <ThreeViewer />
       </div>

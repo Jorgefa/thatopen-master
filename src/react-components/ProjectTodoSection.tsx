@@ -7,6 +7,7 @@ import { SearchBox } from "./SearchBox";
 
 interface Props {
     project: Project
+    selectedTask: Task | null
     onNewTaskClick: () => void
     onTaskEditClick: (task: Task) => void
 }
@@ -22,7 +23,12 @@ export function ProjectTodoSection(props: Props) {
   const handleCardClick = (task: Task) => {
     props.onTaskEditClick(task);
 
-};
+  };
+
+  const handleNewTaskClick = () => {
+    console.log("New Task button clicked");
+    props.onNewTaskClick();
+  };
 
   const projectTodoCards = tasks.map((task) => {
     return (
@@ -65,7 +71,7 @@ export function ProjectTodoSection(props: Props) {
                     >
                       <SearchBox onChange={(value) => onTodoSearch(value)}/>
                     </div>
-                    <button onClick={props.onNewTaskClick} id="new-task-btn">
+                    <button onClick={handleNewTaskClick} id="new-task-btn">
                       <span className="material-icons-round">add</span>
                     </button>
                   </div>

@@ -80,13 +80,10 @@ export class Project implements IProject {
           ...data,
           dueDate: (data.dueDate as unknown as Firestore.Timestamp).toDate(),
         };
-        console.log("Task from Firestore:", task);
         const taskProjectId = task.projectPath?.split("/")[2]; // Add optional chaining
-        console.log("Task project ID:", taskProjectId);
         if (taskProjectId === this.id) {
           try {
             this.newTask(task, doc.id);
-            console.log("Task added:", task);
           } catch (error) {
             console.error("Error adding task:", error);
           }

@@ -47,13 +47,34 @@ export function ProjectForm(props: Props) {
   React.useEffect(() => {
     const modal = modalRef.current
     if (props.isVisible && modal) {
+      if (!props.project) {
+        resetFormFields()
+      }
       modal.showModal()
     } else if (modal) {
       modal.close()
     }
-  }, [props.isVisible])
+  }, [props.isVisible, props.project])
 
-    
+  React.useEffect(() => {
+    if (props.project) {
+      setName(props.project.name);
+      setDescription(props.project.description);
+      setStatus(props.project.status);
+      setUserRole(props.project.userRole);
+      setFinishDate(props.project.finishDate ? props.project.finishDate.toISOString().substring(0, 10) : "");
+    } else {
+      resetFormFields()
+    }
+  }, [props.project]);
+
+  const resetFormFields = () => {
+    setName("");
+    setDescription("");
+    setStatus("Pending");
+    setUserRole("Developer");
+    setFinishDate("");}
+
   const onFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -67,14 +88,15 @@ export function ProjectForm(props: Props) {
 
     try {
       if (props.project) {
-        // Update existing project
         if(!projectId) return
         await updateDocument("/projects", projectId, projectData);
         props.projectsManager.updateProject(projectData, projectId)
+        console.log("Project updated", projectId)
       } else {
-        // Add a new project
-        await Firestore.addDoc(projectsCollection, projectData);
-        props.projectsManager.newProject(projectData);
+        const docRef = await Firestore.addDoc(projectsCollection, projectData);
+        projectId = docRef.id;
+        props.projectsManager.newProject(projectData, projectId);
+        console.log("Project added", projectId)
       }
 
       props.onClose();
