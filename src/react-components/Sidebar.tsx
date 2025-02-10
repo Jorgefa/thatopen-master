@@ -9,7 +9,7 @@ export function Sidebar() {
         <Router.Link to="/">
           <li><span className="material-icons-round">apartment</span>Projects</li>
         </Router.Link>
-        <Router.Link to="/project">
+        <Router.Link to="/users">
           <li><span className="material-icons-round">people</span>Users</li>
         </Router.Link>
       </ul>
