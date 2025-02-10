@@ -89,26 +89,22 @@ export function ProjectsPage(props: Props) {
         onClose = {closeProjectForm}
         />
       <header>
-        <h2>Projects</h2>
+        <bim-label>Projects</bim-label>
         <SearchBox onChange={(value) => onProjectSearch(value)}/>
         <div style={{ display: "flex", alignItems: "center", columnGap: 15 }}>
-          <span
+          <bim-button
             id="import-projects-btn"
-            className="material-icons-round action-icon"
+            icon="iconoir:import"
             onClick={onImportProject}
-          >
-            file_upload
-          </span>
-          <span
+          />
+          <bim-button
             id="export-projects-btn"
-            className="material-icons-round action-icon"
+            icon="ph:export"
             onClick={onExportProject}
-          >
-            file_download
-          </span>
-          <button onClick={onNewProjectClick} id="new-project-btn">
-            <span className="material-icons-round">add</span>New Project
-          </button>
+          />
+          <bim-button onClick={onNewProjectClick} id="new-project-btn"
+          label="New Project"
+          icon="fluent:add-20-regular"/>
         </div>
       </header>
       {

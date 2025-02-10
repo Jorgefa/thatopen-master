@@ -2,14 +2,6 @@ import React from "react"
 import * as BUI from "@thatopen/ui"
 import { element } from "three/examples/jsm/nodes/Nodes.js"
 
-declare global {
-    namespace JSX {
-        interface IntrinsicElements {
-            "bim-grid": any
-        }
-    }
-}
-
 export function UsersPage() {
     const userTable = BUI.Component.create<BUI.Table>(() => {
         const onTableCreated = (element?: Element) => {
@@ -81,6 +73,14 @@ export function UsersPage() {
         `
     })
 
+    const footer = BUI.Component.create<BUI.Component>(() => {
+        return BUI.html `
+        <div style="display: flex; justify-content: center">
+            <bim-label>Copyright of Noname</bim-label>
+        </div>
+        `
+    })
+
     const gridLayout: BUI.Layouts = {
         primary: {
             template: `
@@ -91,17 +91,22 @@ export function UsersPage() {
             `,
             elements: {
                 header: (() => {
-                    const header = document.createElement("div");
-                    header.style.backgroundColor = "lightblue";
-                    return header;
+                    const inputBox = BUI.Component.create<BUI.TextInput>(() => {
+                        return BUI.html `
+                        <bim-text-input style="padding: 8px" placeholder="Search users">
+                        </bim-text-input>
+                        `
+                    });
+
+                    inputBox.addEventListener("input", (event) => {
+                        userTable.queryString = inputBox.value
+                    })
+
+                    return inputBox
                 })(),
                 sidebar,
                 content,
-                footer: (() => {
-                    const footer = document.createElement("div");
-                    footer.style.backgroundColor = "gray";
-                    return footer;
-                })(),
+                footer,
             }
         }
     }

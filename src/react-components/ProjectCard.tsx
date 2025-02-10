@@ -20,30 +20,36 @@ export function ProjectCard(props: Props) {
             HC
             </p>
             <div>
-            <h5>{props.project.name}</h5>
-            <p>{props.project.description}</p>
+                <bim-label
+                style={{
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                    color: "#000"
+                }}
+                >{props.project.name}</bim-label>
+                <bim-label style={{color: "#969696"}}>{props.project.description}</bim-label>
             </div>
         </div>
         <div className="card-content">
             <div className="card-property">
-            <p style={{ color: "#969696" }}>Status</p>
-            <p>{props.project.status}</p>
+                <bim-label style={{color: "#969696"}}>Status</bim-label>
+                <bim-label style={{color: "#000"}}>{props.project.status}</bim-label>
             </div>
             <div className="card-property">
-            <p style={{ color: "#969696" }}>Role</p>
-            <p>{props.project.userRole}</p>
+                <bim-label style={{color: "#969696"}}>Role</bim-label>
+                <bim-label style={{color: "#000"}}>{props.project.userRole}</bim-label>
             </div>
             <div className="card-property">
-            <p style={{ color: "#969696" }}>Cost</p>
-            <p>{props.project.cost}</p>
+                <bim-label style={{color: "#969696"}}>Cost</bim-label>
+                <bim-label style={{color: "#000"}}>{props.project.cost}</bim-label>
             </div>
             <div className="card-property">
-            <p style={{ color: "#969696" }}>Estimated Progress</p>
-            <p>{props.project.progress * 100}</p>
+                <bim-label style={{color: "#969696"}}>Estimated Progress</bim-label>
+                <bim-label style={{color: "#000"}}>{props.project.progress * 100}</bim-label>
             </div>
             <div className="card-property">
-            <p style={{ color: "#969696" }}>Tasks</p>
-            <p>{props.project.taskList.length}</p>
+                <bim-label style={{color: "#969696"}}>Tasks</bim-label>
+                <bim-label style={{color: "#000"}}>{props.project.taskList.length}</bim-label>
             </div>
         </div>
     </div>
