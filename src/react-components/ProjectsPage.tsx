@@ -8,6 +8,7 @@ import { SearchBox } from './SearchBox';
 import { getCollection } from "../firebase"
 import { ProjectForm } from './ProjectForm';
 import { Message } from './Message';
+import * as BUI from "@thatopen/ui"
 
 interface Props {
   projectsManager: ProjectsManager
@@ -80,6 +81,45 @@ export function ProjectsPage(props: Props) {
     setProjects(filteredProjects)
   }
 
+  const importBtn = BUI.Component.create<BUI.Button>(() => {
+    return BUI.html`
+      <bim-button
+        id="import-projects-btn"
+        icon="iconoir:import"
+        @click=${onImportProject}
+      />
+      `
+  })
+
+  const exportBtn = BUI.Component.create<BUI.Button>(() => {
+    return BUI.html`
+      <bim-button
+        id="export-projects-btn"
+        icon="ph:export"
+        @click=${onExportProject}
+      />
+      `
+  })
+
+  const newProjectBtn = BUI.Component.create<BUI.Button>(() => {
+    return BUI.html`
+      <bim-button
+        id="import-projects-btn"
+        label="new Project"
+        icon="fluent:add-20-regular"
+        @click=${onNewProjectClick}
+      />
+      `
+  })
+
+  React.useEffect(() => {
+    const projectControls = document.getElementById("projects-page-controls")
+    projectControls?.appendChild(importBtn)
+    projectControls?.appendChild(exportBtn)
+    projectControls?.appendChild(newProjectBtn)
+
+  })
+
   return (
     <div className="page" id="projects-page" style={{ display: "flex" }}>
       <ProjectForm
@@ -91,20 +131,9 @@ export function ProjectsPage(props: Props) {
       <header>
         <bim-label>Projects</bim-label>
         <SearchBox onChange={(value) => onProjectSearch(value)}/>
-        <div style={{ display: "flex", alignItems: "center", columnGap: 15 }}>
-          <bim-button
-            id="import-projects-btn"
-            icon="iconoir:import"
-            onClick={onImportProject}
-          />
-          <bim-button
-            id="export-projects-btn"
-            icon="ph:export"
-            onClick={onExportProject}
-          />
-          <bim-button onClick={onNewProjectClick} id="new-project-btn"
-          label="New Project"
-          icon="fluent:add-20-regular"/>
+        <div
+          style={{ display: "flex", alignItems: "center", columnGap: 15 }}
+          id="projects-page-controls">
         </div>
       </header>
       {

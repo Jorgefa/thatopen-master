@@ -8,6 +8,8 @@ import { ProjectForm } from "./ProjectForm";
 import { ProjectTodoSection } from "./ProjectTodoSection";
 import { ProjectTodoForm } from "./ProjectTodoForm";
 import { Task } from "../classes/Task";
+import { color } from "three/examples/jsm/nodes/Nodes.js";
+import * as BUI from "@thatopen/ui"
 
 interface Props {
   projectsManager: ProjectsManager;
@@ -90,16 +92,17 @@ export function ProjectDetailsPage(props: Props) {
       />
       <header>
         <div>
-          <h2 data-project-info="name">{project.name}</h2>
+          <bim-label style={{ color: "#000", fontsize: "var(--font-xl)"}} data-project-info="name">{project.name}</bim-label>
         </div>
-        <button
-          onClick={() => {
-            props.projectsManager.deleteProject(project.id);
-          }}
-          style={{ background: "gray" }}
-        >
-          Delete project
-        </button>
+        <div>
+          <bim-button
+            label="Delete"
+            icon="material-symbols:delete"
+            onClick={() => 
+              props.projectsManager.deleteProject(project.id)}
+            style={{ background: "gray" }}
+          />
+        </div>
       </header>
       <div className="main-page-content" >
         <div style={{ display: "flex", flexDirection: "column", rowGap: 30 }}>
@@ -124,14 +127,17 @@ export function ProjectDetailsPage(props: Props) {
               >
                 HC
               </p>
-              <button className="btn-secondary" onClick={onEditProjectClick}>
-                <p style={{ width: "100%" }}>Edit</p>
-              </button>
+              <bim-button
+                label="Edit"
+                icon="material-symbols:edit"
+                onClick={onEditProjectClick}
+                style={{ background: "white" }}
+              />
             </div>
             <div style={{ padding: "0 30px" }}>
               <div>
-                <h5>{project.name}</h5>
-                <p>{project.description}</p>
+                <bim-label style={{ color: "#000", fontsize: "var(--font-xl)"}}>{project.name}</bim-label>
+                <bim-label >{project.description}</bim-label>
               </div>
               <div
                 style={{
@@ -142,28 +148,28 @@ export function ProjectDetailsPage(props: Props) {
                 }}
               >
                 <div>
-                  <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
+                  <bim-label style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
                     Status
-                  </p>
-                  <p>{project.status}</p>
+                  </bim-label>
+                  <bim-label style={{ color: "#000"}}>{project.status}</bim-label>
                 </div>
                 <div>
-                  <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
+                  <bim-label style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
                     Cost
-                  </p>
-                  <p>{project.cost}</p>
+                  </bim-label>
+                  <bim-label style={{ color: "#000"}}>{project.cost}</bim-label>
                 </div>
                 <div>
-                  <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
+                  <bim-label style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
                     Role
-                  </p>
-                  <p>{project.userRole}</p>
+                  </bim-label>
+                  <bim-label style={{ color: "#000"}}>{project.userRole}</bim-label>
                 </div>
                 <div>
-                  <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
+                  <bim-label style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
                     Finish Date
-                  </p>
-                  <p>{project.finishDate.toLocaleDateString("es-ES")}</p>
+                  </bim-label>
+                  <bim-label style={{ color: "#000"}}>{project.finishDate.toLocaleDateString("es-ES")}</bim-label>
                 </div>
               </div>
               <div
