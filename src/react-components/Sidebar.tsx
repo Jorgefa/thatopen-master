@@ -7,10 +7,14 @@ export function Sidebar() {
       <img id="company-logo" src="./assets/company-logo.svg" alt="Construction Company" />
       <ul id="nav-buttons">
         <Router.Link to="/">
-          <li><span className="material-icons-round">apartment</span>Projects</li>
+          <li>
+            <bim-label style={{ color: "#fff" }} icon="material-symbols:apartment">Projects</bim-label>
+          </li>
         </Router.Link>
         <Router.Link to="/users">
-          <li><span className="material-icons-round">people</span>Users</li>
+          <li>
+            <bim-label style={{ color: "#fff" }} icon="mdi:users">Users</bim-label>
+          </li>
         </Router.Link>
       </ul>
     </aside>

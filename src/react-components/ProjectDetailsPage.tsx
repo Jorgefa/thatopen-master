@@ -3,6 +3,7 @@ import * as Router from "react-router-dom";
 import { ProjectsManager } from "../classes/ProjectsManager";
 import { ThreeViewer } from "./ThreeViewer";
 import { deleteDocument } from "../firebase";
+import * as BUI from "@thatopen/ui";
 
 interface Props {
   projectsManager: ProjectsManager
@@ -19,14 +20,30 @@ export function ProjectDetailsPage(props: Props) {
     await deleteDocument("/projects", id)
     navigateTo("/")
   }
+
+  const onTableCreated = (element?: Element) => {
+    if (!element) return;
+    const toDoTable = element as BUI.Table;
+    toDoTable.data = [
+      {
+        data: {
+          Task: "Do Rebar for Column",
+          Date: "Fri 20th Sept"
+        }
+      }
+    ]
+  }
+
   return (
     <div className="page" id="project-details">
       <header>
         <div>
-          <h2 data-project-info="name">{project.name}</h2>
-          <p style={{ color: "#969696" }}>{project.description}</p>
+          <bim-label style={{ color: "#fff", fontSize: "var(--font-xl)" }} data-project-info="name">{project.name}</bim-label>
+          <bim-label style={{ color: "#969696" }}>{project.description}</bim-label>
         </div>
-        <button onClick={() => props.projectsManager.deleteProject(project.id)} style={{backgroundColor: "red"}}>Delete Project</button>
+        <div>
+          <bim-button label="Delete" icon="material-symbols:delete" onClick={() => props.projectsManager.deleteProject(project.id)} style={{backgroundColor: "red"}}></bim-button>
+        </div>
       </header>
       <div className="main-page-content">
         <div style={{ display: "flex", flexDirection: "column", rowGap: 30 }}>
@@ -41,24 +58,24 @@ export function ProjectDetailsPage(props: Props) {
               }}
             >
               <p
-                style={{
-                  fontSize: 20,
-                  backgroundColor: "#ca8134",
-                  aspectRatio: 1,
-                  borderRadius: "100%",
-                  padding: 12
-                }}
-              >
-                HC
+                  style={{
+                    fontSize: 20,
+                    backgroundColor: "#ca8134",
+                    aspectRatio: 1,
+                    borderRadius: "100%",
+                    padding: 12
+                  }}
+                >
+                  HC
               </p>
-              <button className="btn-secondary">
-                <p style={{ width: "100%" }}>Edit</p>
-              </button>
+              <div>
+                <bim-button style={{color: "white"}} icon="material-symbols:edit" label="edit"></bim-button>
+              </div>
             </div>
             <div style={{ padding: "0 30px" }}>
               <div>
-                <h5>{project.name}</h5>
-                <p>{project.description}</p>
+                <bim-label style={{ color: "#fff", fontSize: "var(--font-xl)"}}>{project.name}</bim-label>
+                <bim-label>{project.description}</bim-label>
               </div>
               <div
                 style={{
@@ -69,28 +86,28 @@ export function ProjectDetailsPage(props: Props) {
                 }}
               >
                 <div>
-                  <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
+                  <bim-label style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
                     Status
-                  </p>
-                  <p>{project.status}</p>
+                  </bim-label>
+                  <bim-label style={{ color: "#fff" }}>{project.status}</bim-label>
                 </div>
                 <div>
-                  <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
+                  <bim-label style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
                     Cost
-                  </p>
-                  <p>$ {project.cost}</p>
+                  </bim-label>
+                  <bim-label style={{ color: "#fff" }}>$ {project.cost}</bim-label>
                 </div>
                 <div>
-                  <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
+                  <bim-label style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
                     Role
-                  </p>
-                  <p>{project.userRole}</p>
+                  </bim-label>
+                  <bim-label style={{ color: "#fff" }}>{project.userRole}</bim-label>
                 </div>
                 <div>
-                  <p style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
+                  <bim-label style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
                     Finish Date
-                  </p>
-                  <p>{project.finishDate.toDateString()}</p>
+                  </bim-label>
+                  <bim-label style={{ color: "#fff" }}>{project.finishDate.toDateString()}</bim-label>
                 </div>
               </div>
               <div
@@ -122,7 +139,7 @@ export function ProjectDetailsPage(props: Props) {
                 justifyContent: "space-between"
               }}
             >
-              <h4>To-Do</h4>
+              <bim-label style={{fontSize: "var(--font-lg", color: "#fff"}}>To-Do</bim-label>
               <div
                 style={{
                   display: "flex",
@@ -134,51 +151,13 @@ export function ProjectDetailsPage(props: Props) {
                 <div
                   style={{ display: "flex", alignItems: "center", columnGap: 10 }}
                 >
-                  <span className="material-icons-round">search</span>
-                  <input
-                    type="text"
-                    placeholder="Search To-Do's by name"
-                    style={{ width: "100%" }}
-                  />
+                  <bim-label icon="material-symbols:search" style={{ color: "#fff" }}></bim-label>
+                  <bim-text-input placeholder="Search To-Do's by name"></bim-text-input>
                 </div>
-                <span className="material-icons-round">add</span>
+                <bim-label icon="material-symbols:add" style={{ color: "#fff" }}></bim-label>
               </div>
             </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                padding: "10px 30px",
-                rowGap: 20
-              }}
-            >
-              <div className="todo-item">
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center"
-                  }}
-                >
-                  <div
-                    style={{ display: "flex", columnGap: 15, alignItems: "center" }}
-                  >
-                    <span
-                      className="material-icons-round"
-                      style={{
-                        padding: 10,
-                        backgroundColor: "#686868",
-                        borderRadius: 10
-                      }}
-                    >
-                      construction
-                    </span>
-                    <p>Make anything here as you want, even something longer.</p>
-                  </div>
-                  <p style={{ marginLeft: 10 }}>Fri, 20 sep</p>
-                </div>
-              </div>
-            </div>
+            <bim-table id="todo-table" ref={onTableCreated}></bim-table>
           </div>
         </div>
         <ThreeViewer />
