@@ -2,12 +2,12 @@ import * as Firestore from "firebase/firestore";
 import { initializeApp } from "firebase/app"
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBO-OD8DK0jMga9Wa4RMKX0UUrDYDdP9UY",
-  authDomain: "bim-project-39d6b.firebaseapp.com",
-  projectId: "bim-project-39d6b",
-  storageBucket: "bim-project-39d6b.appspot.com",
-  messagingSenderId: "875385188876",
-  appId: "1:875385188876:web:c69fc4e4910a642279b429"
+  apiKey: "AIzaSyAbPtivRBx4mLYHgiIzeISsTfRc303LKfo",
+  authDomain: "thatopenmaster.firebaseapp.com",
+  projectId: "thatopenmaster",
+  storageBucket: "thatopenmaster.appspot.com",
+  messagingSenderId: "301123543503",
+  appId: "1:301123543503:web:b8fea09da1a2b5d15a72ba"
 };
 
 const app = initializeApp(firebaseConfig);
