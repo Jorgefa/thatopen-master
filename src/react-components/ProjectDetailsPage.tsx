@@ -4,6 +4,8 @@ import { ProjectsManager } from "../classes/ProjectsManager";
 import { IFCViewer } from "./IFCViewer";
 import { deleteDocument } from "../firebase";
 import * as BUI from "@thatopen/ui";
+import * as OBC from "@thatopen/components";
+import { todoTool } from "../bim-components/TodoCreator/";
 
 interface Props {
   projectsManager: ProjectsManager
@@ -15,6 +17,9 @@ export function ProjectDetailsPage(props: Props) {
   const project = props.projectsManager.getProject(routeParams.id)
   if (!project) {return (<p>The project with ID {routeParams.id} wasn't found.</p>)}
 
+  const components: OBC.Components = new OBC.Components()
+  const todoContainer = React.useRef<HTMLDivElement>(null)
+  
   const navigateTo = Router.useNavigate()
   props.projectsManager.OnProjectDeleted = async (id) => {
     await deleteDocument("/projects", id)
@@ -34,6 +39,11 @@ export function ProjectDetailsPage(props: Props) {
     ]
   }
 
+  React.useEffect(() => {
+    const todoButton = todoTool({ components })
+    todoContainer.current?.appendChild( todoButton )
+  }, [])
+  
   return (
     <div className="page" id="project-details">
       <header>
@@ -147,6 +157,7 @@ export function ProjectDetailsPage(props: Props) {
                   justifyContent: "end",
                   columnGap: 20
                 }}
+                ref={todoContainer}
               >
                 <div
                   style={{ display: "flex", alignItems: "center", columnGap: 10 }}
@@ -154,13 +165,12 @@ export function ProjectDetailsPage(props: Props) {
                   <bim-label icon="material-symbols:search" style={{ color: "#fff" }}></bim-label>
                   <bim-text-input placeholder="Search To-Do's by name"></bim-text-input>
                 </div>
-                <bim-label icon="material-symbols:add" style={{ color: "#fff" }}></bim-label>
               </div>
             </div>
             <bim-table id="todo-table" ref={onTableCreated}></bim-table>
           </div>
         </div>
-        <IFCViewer />
+        <IFCViewer components={components}/>
       </div>
     </div>
   );
