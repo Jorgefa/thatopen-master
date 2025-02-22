@@ -3,9 +3,10 @@ import * as Router from "react-router-dom";
 import { ProjectsManager } from "../classes/ProjectsManager";
 import { IFCViewer } from "./IFCViewer";
 import { deleteDocument } from "../firebase";
-import * as BUI from "@thatopen/ui";
 import * as OBC from "@thatopen/components";
-import { todoTool } from "../bim-components/TodoCreator/";
+import * as BUI from "@thatopen/ui";
+import { TodoCreator, todoTool } from "../bim-components/TodoCreator/";
+import { TodoData } from "../bim-components/TodoCreator/src/base-types";
 
 interface Props {
   projectsManager: ProjectsManager
@@ -18,6 +19,8 @@ export function ProjectDetailsPage(props: Props) {
   if (!project) {return (<p>The project with ID {routeParams.id} wasn't found.</p>)}
 
   const components: OBC.Components = new OBC.Components()
+
+  const dashboard = React.useRef<HTMLDivElement>(null)
   const todoContainer = React.useRef<HTMLDivElement>(null)
   
   const navigateTo = Router.useNavigate()
@@ -26,23 +29,70 @@ export function ProjectDetailsPage(props: Props) {
     navigateTo("/")
   }
 
-  const onTableCreated = (element?: Element) => {
-    if (!element) return;
-    const toDoTable = element as BUI.Table;
-    toDoTable.data = [
-      {
-        data: {
-          Task: "Do Rebar for Column",
-          Date: "Fri 20th Sept"
-        }
+  const onRowCreated = (event) => {
+    event.stopImmediatePropagation()
+    const { row } = event.detail;
+    row.addEventListener("click", async () => {
+      todoCreator.highlightTodo({
+        name: row.data.Name,
+        task: row.data.Task,
+        priority: row.data.Priority,
+        ifcGuids: JSON.parse(row.data.Guids),
+        camera: JSON.parse(row.data.Camera)
+      })
+    })
+  }
+  
+  const todoTable = BUI.Component.create<BUI.Table>(() => {
+    return BUI.html`
+      <bim-table @rowcreated=${ onRowCreated }></bim-table>`
+  })
+
+  const addTodo = (data: TodoData) => {
+    const newData = {
+      data: {
+        Name: data.name,
+        Task: data.task,
+        Date: new Date().toDateString(),
+        Guids: JSON.stringify(data.ifcGuids),
+        Camera: data.camera ? JSON.stringify(data.camera) : "",
+        Actions: "" 
+      },
+    }
+    todoTable.data = [...todoTable.data, newData]
+    
+    todoTable.dataTransform = {
+      Actions: () => {
+        return BUI.html`
+          <div>
+            <bim-button icon="material-symbols:delete" style="background-color: red"></bim-button>
+          </div>
+          <div>
+            <bim-button
+              icon="ion:navigate"
+              @click=${() => todoCreator.addTodoMarker(data)}
+            ></bim-button>
+          </div>
+        `
       }
-    ]
+    }
+    todoTable.hiddenColumns = ["Guids", "Camera"];
   }
 
+  const todoCreator = components.get(TodoCreator)
+  todoCreator.onTodoCreated.add((data) => addTodo(data))
+
   React.useEffect(() => {
-    const todoButton = todoTool({ components })
+    dashboard.current?.appendChild(todoTable)
+    const [todoButton, todoPriorityButton] = todoTool({ components })
     todoContainer.current?.appendChild( todoButton )
-  }, [])
+    todoContainer.current?.appendChild( todoPriorityButton )
+
+    todoCreator.onDisposed.add(() => {
+      todoTable.data = []
+      todoTable.remove()
+    })
+  }, [])  
   
   return (
     <div className="page" id="project-details">
@@ -140,7 +190,7 @@ export function ProjectDetailsPage(props: Props) {
               </div>
             </div>
           </div>
-          <div className="dashboard-card" style={{ flexGrow: 1 }}>
+          <div className="dashboard-card" style={{ flexGrow: 1 }} ref={dashboard}>
             <div
               style={{
                 padding: "20px 30px",
@@ -149,7 +199,7 @@ export function ProjectDetailsPage(props: Props) {
                 justifyContent: "space-between"
               }}
             >
-              <bim-label style={{fontSize: "var(--font-lg", color: "#fff"}}>To-Do</bim-label>
+              <bim-label style={{ fontSize: "var(--font-lg", color: "#fff" }}>To-Do</bim-label>
               <div
                 style={{
                   display: "flex",
@@ -167,10 +217,9 @@ export function ProjectDetailsPage(props: Props) {
                 </div>
               </div>
             </div>
-            <bim-table id="todo-table" ref={onTableCreated}></bim-table>
           </div>
         </div>
-        <IFCViewer components={components}/>
+        <IFCViewer components={ components }/>
       </div>
     </div>
   );

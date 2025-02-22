@@ -4,6 +4,7 @@ import * as OBCF from "@thatopen/components-front";
 import * as BUI from "@thatopen/ui";
 import * as CUI from "@thatopen/ui-obc";
 import { FragmentsGroup } from "@thatopen/fragments";
+import { TodoCreator } from "../bim-components/TodoCreator";
 
 interface Props {
   components: OBC.Components
@@ -81,6 +82,10 @@ export function IFCViewer(props: Props) {
     world.camera.controls.addEventListener("controlend", () => {
       culler.needsUpdate = true
     })
+
+    const todoCreator = components.get(TodoCreator)
+    todoCreator.world = world
+    todoCreator.setup()
   }
 
   const processModel = async (model: FragmentsGroup) => {
@@ -334,7 +339,7 @@ export function IFCViewer(props: Props) {
         </bim-panel>
       `;
     })
-
+    
     const toolbar = BUI.Component.create<BUI.Toolbar>(() => {
       const [loadIfcBtn] = CUI.buttons.loadIfc({ components: components })
       loadIfcBtn.tooltipTitle = "Load IFC"
@@ -409,7 +414,7 @@ export function IFCViewer(props: Props) {
 	            icon="tabler:eye-filled"
               @click=${onClassifier}
             ></bim-button>
-          </bim-toolbar-section
+          </bim-toolbar-section>
         </bim-toolbar>
       `
     })
@@ -458,7 +463,6 @@ export function IFCViewer(props: Props) {
       },
     }
     floatingGrid.layout = "main"
-
     viewerContainer.appendChild(floatingGrid)
   }
 
