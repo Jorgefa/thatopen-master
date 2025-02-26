@@ -93,53 +93,6 @@ export function ProjectsPage(props: Props) {
     setProjects(props.projectsManager.filterProjects(value))
   }
 
-  const importBtn = BUI.Component.create<BUI.Button>(() => {
-    return BUI.html `
-      <bim-button
-        id="import-projects-btn"
-        icon="iconoir:import"
-        @click=${onImportProject}
-      >
-      </bim-button>
-    `;
-  })
-
-  const exportBtn = BUI.Component.create<BUI.Button>(() => {
-    return BUI.html `
-      <bim-button
-        id="export-projects-btn"
-        icon="ph:export"
-        @click=${onExportProject}
-      >
-      </bim-button>
-    `;
-  })
-
-  const newProjectBtn = BUI.Component.create<BUI.Button>(() => {
-    return BUI.html `
-      <bim-button id="new-project-btn"
-        label="New Project"
-        icon="fluent:add-20-regular"
-        @click=${onNewProjectClick}
-      >
-      </bim-button>
-    `;
-  })
-
-  React.useEffect(() => {
-    const projectControls = document.getElementById("project-page-controls")
-    projectControls?.appendChild(importBtn)
-    projectControls?.appendChild(exportBtn)
-    projectControls?.appendChild(newProjectBtn)
-
-    const cancelBtn = document.getElementById("cancel-btn")
-    cancelBtn?.addEventListener("click", () => {
-      const modal = document.getElementById("new-project-modal")
-      if (!(modal && modal instanceof HTMLDialogElement)) {return}
-      modal.close()
-    })
-  }, [])
-  
   return (
     <div className="page" id="projects-page" style={{ display: "flex" }}>
       <dialog id="new-project-modal">
@@ -202,10 +155,12 @@ export function ProjectsPage(props: Props) {
                 columnGap: 10
               }}
             >
-              <bim-button 
-                type="button" 
-                label="Cancel"
-                id="cancel-btn"
+              <bim-button type="button" label="Cancel" 
+                onClick={() => { 
+                  const modal = document.getElementById("new-project-modal")
+                  if (!(modal && modal instanceof HTMLDialogElement)) {return}
+                  modal.close()
+                }}
               ></bim-button>
               <bim-button type="submit" name="submit" label="Accept" style={{ backgroundColor: "rgb(18, 145, 18)" }}></bim-button>
             </div>
@@ -215,10 +170,23 @@ export function ProjectsPage(props: Props) {
       <header>
         <bim-label>Projects</bim-label>
         <SearchBox onChange={(value) => onProjectSearch(value)}/>
-        <div 
-          style={{ display: "flex", alignItems: "center", columnGap: 15 }}
-          id="project-page-controls"
-        >
+        <div style={{ display: "flex", alignItems: "center", columnGap: 15 }}>
+          <bim-button 
+            id="upload-btn" 
+            icon="ic:round-upload"
+            onClick={onImportProject}
+          ></bim-button>
+          <bim-button 
+            id="download-btn" 
+            icon="ic:round-download"
+            onClick={onExportProject}
+          ></bim-button>
+          <bim-button 
+            id="new-project-btn" 
+            label="New Project" 
+            icon="fluent:add-20-regular" 
+            onClick={onNewProjectClick}
+          ></bim-button>
         </div>
       </header>
       {
