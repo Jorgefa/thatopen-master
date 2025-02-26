@@ -254,17 +254,22 @@ export function IFCViewer(props: Props) {
         fragmentIdMap: {}
       })
       const highlighter = components.get(OBCF.Highlighter)
-      highlighter.events.select.onHighlight.add((fragmentIdMap) => {
+      const simpleQto = components.get(SimpleQTO)
+
+      highlighter.events.select.onHighlight.add(async (fragmentIdMap) => {
         if (!floatingGrid) return
         floatingGrid.layout = "second"
         updatePropsTable({ fragmentIdMap })
         propsTable.expanded = false
+        await simpleQto.sumQuantities(fragmentIdMap)
+        await simpleQto.sumQuantitiesV2(fragmentIdMap)
       })
 
       highlighter.events.select.onClear.add(() => {
         updatePropsTable({ fragmentIdMap: {} })
         if (!floatingGrid) return
         floatingGrid.layout = "main"
+        simpleQto.resetQuantities()
       })
 
       const search = (e: Event) => {
