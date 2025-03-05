@@ -98,7 +98,7 @@ export function ProjectDetailsPage(props: Props) {
     <div className="page" id="project-details">
       <header>
         <div>
-          <bim-label style={{ color: "#fff", fontSize: "var(--font-xl)" }} data-project-info="name">{project.name}</bim-label>
+          <bim-label style={{ fontSize: "var(--font-xl)" }} data-project-info="name">{project.name}</bim-label>
           <bim-label style={{ color: "#969696" }}>{project.description}</bim-label>
         </div>
         <div>
@@ -134,7 +134,7 @@ export function ProjectDetailsPage(props: Props) {
             </div>
             <div style={{ padding: "0 30px" }}>
               <div>
-                <bim-label style={{ color: "#fff", fontSize: "var(--font-xl)"}}>{project.name}</bim-label>
+                <bim-label style={{ fontSize: "var(--font-xl)"}}>{project.name}</bim-label>
                 <bim-label>{project.description}</bim-label>
               </div>
               <div
@@ -149,25 +149,25 @@ export function ProjectDetailsPage(props: Props) {
                   <bim-label style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
                     Status
                   </bim-label>
-                  <bim-label style={{ color: "#fff" }}>{project.status}</bim-label>
+                  <bim-label>{project.status}</bim-label>
                 </div>
                 <div>
                   <bim-label style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
                     Cost
                   </bim-label>
-                  <bim-label style={{ color: "#fff" }}>$ {project.cost}</bim-label>
+                  <bim-label>$ {project.cost}</bim-label>
                 </div>
                 <div>
                   <bim-label style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
                     Role
                   </bim-label>
-                  <bim-label style={{ color: "#fff" }}>{project.userRole}</bim-label>
+                  <bim-label>{project.userRole}</bim-label>
                 </div>
                 <div>
                   <bim-label style={{ color: "#969696", fontSize: "var(--font-sm)" }}>
                     Finish Date
                   </bim-label>
-                  <bim-label style={{ color: "#fff" }}>{project.finishDate.toDateString()}</bim-label>
+                  <bim-label>{project.finishDate.toDateString()}</bim-label>
                 </div>
               </div>
               <div
@@ -199,7 +199,7 @@ export function ProjectDetailsPage(props: Props) {
                 justifyContent: "space-between"
               }}
             >
-              <bim-label style={{ fontSize: "var(--font-lg", color: "#fff" }}>To-Do</bim-label>
+              <bim-label style={{ fontSize: "var(--font-lg"}}>To-Do</bim-label>
               <div
                 style={{
                   display: "flex",
@@ -212,7 +212,7 @@ export function ProjectDetailsPage(props: Props) {
                 <div
                   style={{ display: "flex", alignItems: "center", columnGap: 10 }}
                 >
-                  <bim-label icon="material-symbols:search" style={{ color: "#fff" }}></bim-label>
+                  <bim-label icon="material-symbols:search" ></bim-label>
                   <bim-text-input placeholder="Search To-Do's by name"></bim-text-input>
                 </div>
               </div>

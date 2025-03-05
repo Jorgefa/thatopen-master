@@ -20,26 +20,26 @@ export function ProjectCard(props: Props) {
           HC
         </p>
         <div>
-          <bim-label style={{ fontSize: "16px", color: "#fff", fontWeight: "bold" }}>{ props.project.name }</bim-label>
-          <bim-label style={{ color: "#fff" }}>{ props.project.description }</bim-label>
+          <bim-label style={{ fontSize: "16px", fontWeight: "bold" }}>{ props.project.name }</bim-label>
+          <bim-label>{ props.project.description }</bim-label>
         </div>
       </div>
       <div className="card-content">
         <div className="card-property">
           <bim-label>Status</bim-label>
-          <bim-label style={{ color: "#fff"}}>{ props.project.status }</bim-label>
+          <bim-label>{ props.project.status }</bim-label>
         </div>
         <div className="card-property">
           <bim-label>Role</bim-label>
-          <bim-label style={{ color: "#fff"}}>{ props.project.userRole }</bim-label>
+          <bim-label>{ props.project.userRole }</bim-label>
         </div>
         <div className="card-property">
           <bim-label>Cost</bim-label>
-          <bim-label style={{ color: "#fff"}}>$ { props.project.cost }</bim-label>
+          <bim-label>$ { props.project.cost }</bim-label>
         </div>
         <div className="card-property">
           <bim-label>Estimated Progress</bim-label>
-          <bim-label style={{ color: "#fff"}}>{ props.project.progress } %</bim-label>
+          <bim-label>{ props.project.progress } %</bim-label>
         </div>
       </div>
     </div>
