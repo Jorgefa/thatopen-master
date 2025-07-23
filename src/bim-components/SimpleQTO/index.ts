@@ -8,6 +8,7 @@ export class SimpleQTO extends OBC.Component implements OBC.Disposable {
   static uuid = "3b5e8cea-9983-4bf6-b120-51152985b22d"
   enabled = true
   onDisposed: OBC.Event<any>
+  onQuantitiesUpdated = new OBC.Event<QtoResult>()
   private _qtoResult: QtoResult = {}
 
   constructor(components: OBC.Components) {
@@ -17,6 +18,22 @@ export class SimpleQTO extends OBC.Component implements OBC.Disposable {
 
   resetQuantities() {
     this._qtoResult = {}
+    this.onQuantitiesUpdated.trigger(this._qtoResult)
+  }
+
+  get currentResults(): QtoResult {
+    return this._qtoResult
+  }
+
+  exportToJSON(fileName: string = "quantities") {
+    const json = JSON.stringify(this._qtoResult, null, 2)
+    const blob = new Blob([json], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${fileName}.json`
+    a.click()
+    URL.revokeObjectURL(url)
   }
 
   async sumQuantities(fragmentIdMap: FRAGS.FragmentIdMap) {
@@ -53,6 +70,7 @@ export class SimpleQTO extends OBC.Component implements OBC.Disposable {
     }
     console.log(this._qtoResult)
     console.timeEnd("QTO")
+    this.onQuantitiesUpdated.trigger(this._qtoResult)
   }
 
   async sumQuantitiesV2(fragmentIdMap: FRAGS.FragmentIdMap) {
@@ -91,6 +109,7 @@ export class SimpleQTO extends OBC.Component implements OBC.Disposable {
     }
     console.log(this._qtoResult)
     console.timeEnd("QTO V2")
+    this.onQuantitiesUpdated.trigger(this._qtoResult)
   }
 
   async dispose() {

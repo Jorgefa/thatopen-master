@@ -6,6 +6,7 @@ import * as CUI from "@thatopen/ui-obc";
 import { FragmentsGroup } from "@thatopen/fragments";
 import { TodoCreator } from "../bim-components/TodoCreator";
 import { SimpleQTO } from "../bim-components/SimpleQTO";
+import { createQTOPanel } from "../bim-components/SimpleQTO/src/QTOTemplate";
 
 interface Props {
   components: OBC.Components
@@ -257,6 +258,14 @@ export function IFCViewer(props: Props) {
       const highlighter = components.get(OBCF.Highlighter)
       const simpleQto = components.get(SimpleQTO)
 
+      // Create QTO panel
+      const qtoUI = createQTOPanel({ components })
+      
+      // Listen for QTO updates
+      simpleQto.onQuantitiesUpdated.add((qtoResult) => {
+        qtoUI.updateDisplay(qtoResult)
+      })
+
       highlighter.events.select.onHighlight.add(async (fragmentIdMap) => {
         if (!floatingGrid) return
         floatingGrid.layout = "second"
@@ -288,6 +297,14 @@ export function IFCViewer(props: Props) {
           >
             <bim-text-input @input=${search} placeholder="Search..."></bim-text-input>
             ${propsTable}  
+          </bim-panel-section>
+          <bim-panel-section
+            name="qto"
+            label="Quantity Take-Off"
+            icon="material-symbols:analytics"
+            fixed
+          >
+            ${qtoUI.panel}
           </bim-panel-section>
         </bim-panel>
       `;
