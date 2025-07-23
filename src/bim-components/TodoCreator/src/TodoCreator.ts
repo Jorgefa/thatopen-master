@@ -3,14 +3,18 @@ import * as OBCF from "@thatopen/components-front"
 import * as BUI from "@thatopen/ui"
 import * as THREE from "three"
 import { TodoData, TodoInput } from "./base-types"
+import { Todo } from "./Todo"
 
 export class TodoCreator extends OBC.Component implements OBC.Disposable {
   static uuid = "f26555ec-4394-4349-986a-7409e4fd308e"
   enabled = true
   private _world: OBC.World
-  private _list: TodoData[] = []
+  private _cameraControls: any
+  private _list: Map<string, Todo> = new Map()
   
-  onTodoCreated = new OBC.Event<TodoData>()
+  onTodoCreated = new OBC.Event<Todo>()
+  onTodoUpdated = new OBC.Event<Todo>()
+  onTodoDeleted = new OBC.Event<string>()
   onDisposed = new OBC.Event<null>()
 
   constructor(components: OBC.Components) {
@@ -20,7 +24,7 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
 
   async dispose() {
     this.enabled = false
-    this._list = []
+    this._list.clear()
     this.onDisposed.trigger()
   }
 
@@ -33,6 +37,18 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
 
   set world(world: OBC.World) {
     this._world = world
+    // Store camera controls for easier access
+    if (world.camera && world.camera.hasCameraControls()) {
+      this._cameraControls = world.camera.controls
+    }
+  }
+
+  get todos(): Todo[] {
+    return Array.from(this._list.values())
+  }
+
+  getTodoById(id: string): Todo | undefined {
+    return this._list.get(id)
   }
 
   set enablePriorityHighlight(value: boolean) {
@@ -40,7 +56,7 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
 
     const highlighter = this.components.get(OBCF.Highlighter)
     if (value) {
-      for (const todo of this._list) {
+      for (const todo of this._list.values()) {
         const fragments = this.components.get(OBC.FragmentsManager)
         const fragmentIdMap = fragments.guidToFragmentIdMap(todo.ifcGuids)
         highlighter.highlightByID(`${TodoCreator.uuid}-priority-${todo.priority}`, fragmentIdMap, false, false)
@@ -50,8 +66,8 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
     }
   }
 
-  async addTodo(data: TodoInput) {
-    if (!this.enabled) return
+  async addTodo(data: TodoInput, projectId?: string): Promise<Todo> {
+    if (!this.enabled) throw new Error("TodoCreator is not enabled")
 
     const fragments = this.components.get(OBC.FragmentsManager)
     const highlighter = this.components.get(OBCF.Highlighter)
@@ -68,7 +84,7 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
     const target = new THREE.Vector3()
     camera.controls.getTarget(target)
 
-    const todoData: TodoData = {
+    const todo = new Todo({
       name: data.name,
       task: data.task,
       priority: data.priority,
@@ -76,14 +92,33 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
       camera: {
         position,
         target,
-      }
-    }
+      },
+      projectId
+    })
 
-    this._list.push(todoData)
-    this.onTodoCreated.trigger(todoData)
+    this._list.set(todo.id, todo)
+    this.onTodoCreated.trigger(todo)
+    return todo
   }
 
-  async highlightTodo(todo: TodoData) {
+  updateTodo(id: string, updates: Partial<Pick<Todo, 'name' | 'task' | 'priority' | 'ifcGuids' | 'camera' | 'projectId'>>): Todo | null {
+    const todo = this._list.get(id)
+    if (!todo) return null
+    
+    todo.update(updates)
+    this.onTodoUpdated.trigger(todo)
+    return todo
+  }
+
+  deleteTodo(id: string): boolean {
+    const success = this._list.delete(id)
+    if (success) {
+      this.onTodoDeleted.trigger(id)
+    }
+    return success
+  }
+
+  async highlightTodo(todo: Todo) {
     if (!this.enabled) return
     
     const fragments = this.components.get(OBC.FragmentsManager)
@@ -111,7 +146,7 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
     )
   }
 
-  addTodoMarker(todo: TodoData) {
+  addTodoMarker(todo: Todo) {
     if (!this.enabled) return
 
     if (todo.ifcGuids.length === 0) return

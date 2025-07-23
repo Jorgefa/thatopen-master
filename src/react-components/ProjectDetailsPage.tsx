@@ -5,7 +5,7 @@ import { IFCViewer } from "./IFCViewer";
 import { deleteDocument } from "../firebase";
 import * as OBC from "@thatopen/components";
 import * as BUI from "@thatopen/ui";
-import { TodoCreator, todoTool } from "../bim-components/TodoCreator/";
+import { TodoCreator, todoTool, Todo } from "../bim-components/TodoCreator/";
 import { TodoData } from "../bim-components/TodoCreator/src/base-types";
 
 interface Props {
@@ -33,13 +33,12 @@ export function ProjectDetailsPage(props: Props) {
     event.stopImmediatePropagation()
     const { row } = event.detail;
     row.addEventListener("click", async () => {
-      todoCreator.highlightTodo({
-        name: row.data.Name,
-        task: row.data.Task,
-        priority: row.data.Priority,
-        ifcGuids: JSON.parse(row.data.Guids),
-        camera: JSON.parse(row.data.Camera)
-      })
+      // Use the TodoId stored in the row to get the Todo instance
+      const todoId = row.data.TodoId
+      const todo = todoCreator.getTodoById(todoId)
+      if (todo) {
+        await todoCreator.highlightTodo(todo)
+      }
     })
   }
   
@@ -48,14 +47,15 @@ export function ProjectDetailsPage(props: Props) {
       <bim-table @rowcreated=${ onRowCreated }></bim-table>`
   })
 
-  const addTodo = (data: TodoData) => {
+  const addTodo = (todo: Todo) => {
     const newData = {
       data: {
-        Name: data.name,
-        Task: data.task,
-        Date: new Date().toDateString(),
-        Guids: JSON.stringify(data.ifcGuids),
-        Camera: data.camera ? JSON.stringify(data.camera) : "",
+        TodoId: todo.id,
+        Name: todo.name,
+        Task: todo.task,
+        Priority: todo.priority,
+        "Elements Count": todo.getElementCount(),
+        Date: todo.createdAt.toDateString(),
         Actions: "" 
       },
     }
@@ -64,29 +64,50 @@ export function ProjectDetailsPage(props: Props) {
     todoTable.dataTransform = {
       Actions: () => {
         return BUI.html`
-          <div>
-            <bim-button icon="material-symbols:delete" style="background-color: red"></bim-button>
-          </div>
-          <div>
+          <div style="display: flex; gap: 5px;">
+            <bim-button 
+              icon="material-symbols:delete" 
+              style="background-color: red"
+              @click=${() => {
+                if (confirm('Are you sure you want to delete this todo?')) {
+                  todoCreator.deleteTodo(todo.id)
+                  // Remove from table
+                  todoTable.data = todoTable.data.filter(item => item.data.TodoId !== todo.id)
+                }
+              }}
+            ></bim-button>
             <bim-button
               icon="ion:navigate"
-              @click=${() => todoCreator.addTodoMarker(data)}
+              @click=${() => todoCreator.addTodoMarker(todo)}
             ></bim-button>
           </div>
         `
       }
     }
-    todoTable.hiddenColumns = ["Guids", "Camera"];
+    todoTable.hiddenColumns = ["TodoId"];
   }
 
   const todoCreator = components.get(TodoCreator)
-  todoCreator.onTodoCreated.add((data) => addTodo(data))
+  todoCreator.onTodoCreated.add((todo) => addTodo(todo))
+
+  // Add search functionality
+  const setupSearchFilter = () => {
+    const searchInput = document.querySelector('bim-text-input[placeholder="Search To-Do\'s by name"]') as any
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        todoTable.queryString = searchInput.value
+      })
+    }
+  }
 
   React.useEffect(() => {
     dashboard.current?.appendChild(todoTable)
     const [todoButton, todoPriorityButton] = todoTool({ components })
     todoContainer.current?.appendChild( todoButton )
     todoContainer.current?.appendChild( todoPriorityButton )
+
+    // Setup search functionality after components are rendered
+    setTimeout(setupSearchFilter, 100)
 
     todoCreator.onDisposed.add(() => {
       todoTable.data = []

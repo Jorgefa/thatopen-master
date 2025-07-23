@@ -7,9 +7,13 @@ export interface TodoInput {
 }
 
 export interface TodoData {
+  id?: string
   name: string
   task: string
   priority: Priority
   ifcGuids: string[]
   camera: {position: THREE.Vector3, target: THREE.Vector3}
+  projectId?: string
+  createdAt?: Date
+  updatedAt?: Date
 }
