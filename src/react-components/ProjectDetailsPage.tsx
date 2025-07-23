@@ -5,7 +5,7 @@ import { IFCViewer } from "./IFCViewer";
 import { deleteDocument } from "../firebase";
 import * as OBC from "@thatopen/components";
 import * as BUI from "@thatopen/ui";
-import { TodoCreator, todoTool, Todo } from "../bim-components/TodoCreator/";
+import { TodoCreator, todoTool, Todo, createEditTodoModal } from "../bim-components/TodoCreator/";
 import { TodoData } from "../bim-components/TodoCreator/src/base-types";
 
 interface Props {
@@ -66,13 +66,26 @@ export function ProjectDetailsPage(props: Props) {
         return BUI.html`
           <div style="display: flex; gap: 5px;">
             <bim-button 
+              icon="material-symbols:edit" 
+              style="background-color: var(--bim-ui_accent-base)"
+              @click=${() => {
+                const editModal = createEditTodoModal(todo, todoCreator)
+                editModal.showModal()
+              }}
+            ></bim-button>
+            <bim-button 
               icon="material-symbols:delete" 
               style="background-color: red"
-              @click=${() => {
+              @click=${async () => {
                 if (confirm('Are you sure you want to delete this todo?')) {
-                  todoCreator.deleteTodo(todo.id)
-                  // Remove from table
-                  todoTable.data = todoTable.data.filter(item => item.data.TodoId !== todo.id)
+                  try {
+                    await todoCreator.deleteTodo(todo.id)
+                    // Remove from table
+                    todoTable.data = todoTable.data.filter(item => item.data.TodoId !== todo.id)
+                  } catch (error) {
+                    console.error("Failed to delete todo:", error)
+                    alert("Failed to delete todo. Please try again.")
+                  }
                 }
               }}
             ></bim-button>
@@ -89,6 +102,44 @@ export function ProjectDetailsPage(props: Props) {
 
   const todoCreator = components.get(TodoCreator)
   todoCreator.onTodoCreated.add((todo) => addTodo(todo))
+  
+  // Listen for todo updates to refresh the table
+  todoCreator.onTodoUpdated.add((updatedTodo) => {
+    // Find and update the row in the table
+    todoTable.data = todoTable.data.map(item => {
+      if (item.data.TodoId === updatedTodo.id) {
+        return {
+          data: {
+            TodoId: updatedTodo.id,
+            Name: updatedTodo.name,
+            Task: updatedTodo.task,
+            Priority: updatedTodo.priority,
+            "Elements Count": updatedTodo.getElementCount(),
+            Date: updatedTodo.createdAt.toDateString(),
+            Actions: ""
+          }
+        }
+      }
+      return item
+    })
+  })
+
+  // Initialize todos from Firebase
+  React.useEffect(() => {
+    const initializeTodos = async () => {
+      try {
+        await todoCreator.initializeFromFirebase(project.id)
+        // Add existing todos to the table
+        for (const todo of todoCreator.todos) {
+          addTodo(todo)
+        }
+      } catch (error) {
+        console.error("Failed to initialize todos:", error)
+      }
+    }
+    
+    initializeTodos()
+  }, [project.id])
 
   // Add search functionality
   const setupSearchFilter = () => {
@@ -102,7 +153,7 @@ export function ProjectDetailsPage(props: Props) {
 
   React.useEffect(() => {
     dashboard.current?.appendChild(todoTable)
-    const [todoButton, todoPriorityButton] = todoTool({ components })
+    const [todoButton, todoPriorityButton] = todoTool({ components, projectId: project.id })
     todoContainer.current?.appendChild( todoButton )
     todoContainer.current?.appendChild( todoPriorityButton )
 

@@ -4,6 +4,7 @@ import * as BUI from "@thatopen/ui"
 import * as THREE from "three"
 import { TodoData, TodoInput } from "./base-types"
 import { Todo } from "./Todo"
+import { createTodo, getTodos, updateTodo as updateTodoInFirebase, deleteTodo as deleteTodoFromFirebase, firebaseDataToTodoData, todoToFirebaseData } from "../../../firebase"
 
 export class TodoCreator extends OBC.Component implements OBC.Disposable {
   static uuid = "f26555ec-4394-4349-986a-7409e4fd308e"
@@ -20,6 +21,20 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
   constructor(components: OBC.Components) {
     super(components)
     this.components.add(TodoCreator.uuid, this)
+  }
+
+  async initializeFromFirebase(projectId?: string): Promise<void> {
+    try {
+      const firebaseTodos = await getTodos(projectId)
+      for (const firebaseData of firebaseTodos) {
+        const todoData = firebaseDataToTodoData(firebaseData)
+        const todo = Todo.fromJSON(todoData)
+        this._list.set(todo.id, todo)
+      }
+      console.log(`Loaded ${firebaseTodos.length} todos from Firebase`)
+    } catch (error) {
+      console.error("Failed to load todos from Firebase:", error)
+    }
   }
 
   async dispose() {
@@ -96,26 +111,71 @@ export class TodoCreator extends OBC.Component implements OBC.Disposable {
       projectId
     })
 
-    this._list.set(todo.id, todo)
-    this.onTodoCreated.trigger(todo)
-    return todo
+    // Save to Firebase first, then add to local state
+    try {
+      await createTodo(todo.toJSON())
+      this._list.set(todo.id, todo)
+      this.onTodoCreated.trigger(todo)
+      console.log("Todo created and saved to Firebase:", todo.id)
+      return todo
+    } catch (error) {
+      console.error("Failed to save todo to Firebase:", error)
+      throw error
+    }
   }
 
-  updateTodo(id: string, updates: Partial<Pick<Todo, 'name' | 'task' | 'priority' | 'ifcGuids' | 'camera' | 'projectId'>>): Todo | null {
+  async updateTodo(id: string, updates: Partial<Pick<Todo, 'name' | 'task' | 'priority' | 'ifcGuids' | 'camera' | 'projectId'>>): Promise<Todo | null> {
     const todo = this._list.get(id)
     if (!todo) return null
     
-    todo.update(updates)
-    this.onTodoUpdated.trigger(todo)
-    return todo
+    try {
+      // Update local todo
+      todo.update(updates)
+      
+      // Convert updates to Firebase format
+      const firebaseUpdates: any = { ...updates }
+      if (updates.camera) {
+        firebaseUpdates.camera = {
+          position: {
+            x: updates.camera.position.x,
+            y: updates.camera.position.y,
+            z: updates.camera.position.z
+          },
+          target: {
+            x: updates.camera.target.x,
+            y: updates.camera.target.y,
+            z: updates.camera.target.z
+          }
+        }
+      }
+      
+      // Save to Firebase
+      await updateTodoInFirebase(id, firebaseUpdates)
+      this.onTodoUpdated.trigger(todo)
+      console.log("Todo updated in Firebase:", id)
+      return todo
+    } catch (error) {
+      console.error("Failed to update todo in Firebase:", error)
+      throw error
+    }
   }
 
-  deleteTodo(id: string): boolean {
-    const success = this._list.delete(id)
-    if (success) {
-      this.onTodoDeleted.trigger(id)
+  async deleteTodo(id: string): Promise<boolean> {
+    try {
+      // Delete from Firebase first
+      await deleteTodoFromFirebase(id)
+      
+      // Remove from local state
+      const success = this._list.delete(id)
+      if (success) {
+        this.onTodoDeleted.trigger(id)
+        console.log("Todo deleted from Firebase:", id)
+      }
+      return success
+    } catch (error) {
+      console.error("Failed to delete todo from Firebase:", error)
+      throw error
     }
-    return success
   }
 
   async highlightTodo(todo: Todo) {
