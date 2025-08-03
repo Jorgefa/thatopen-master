@@ -271,7 +271,9 @@ export function IFCViewer(props: Props) {
         floatingGrid.layout = "second"
         updatePropsTable({ fragmentIdMap })
         propsTable.expanded = false
-        await simpleQto.sumQuantities(fragmentIdMap)
+        // Reset quantities first to avoid accumulation
+        simpleQto.resetQuantities()
+        // Use the optimized V2 method
         await simpleQto.sumQuantitiesV2(fragmentIdMap)
       })
 
